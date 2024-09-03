@@ -1,0 +1,21 @@
+---
+layout: home
+title: "Home"
+---
+
+<div class="intro">
+  <h1>Hello, I'm Jason</h1>
+  <p>Welcome to my portfolio! I'm a software developer. Below you'll find some of the projects I've worked on.</p>
+</div>
+
+<div class="projects-grid">
+  {% for project in site.projects %}
+    <div class="project-item">
+      <a href="{{ project.url }}">
+        <img src="{{ project.image }}" alt="{{ project.title }}">
+        <h2>{{ project.title }}</h2>
+        <p>{{ project.description }}</p>
+      </a>
+    </div>
+  {% endfor %}
+</div>
