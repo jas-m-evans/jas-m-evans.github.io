@@ -1,0 +1,24 @@
+---
+layout: default
+---
+
+<article class="project-content">
+  <header class="project-header">
+    <h1>{{ page.title }}</h1>
+  </header>
+
+  <section class="project-body">
+    <p>{{ page.description }}</p>
+    {{ content }}
+  </section>
+
+  {% if page.image %}
+    <figure>
+      <img src="{{ page.image }}" alt="{{ page.title }}">
+    </figure>
+  {% endif %}
+
+  <footer class="project-footer">
+    <p>Published on: {{ page.date | date: "%B %d, %Y" }}</p>
+  </footer>
+</article>

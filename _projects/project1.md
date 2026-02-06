@@ -1,5 +1,5 @@
 ---
-title: "Project Title"
+title: "Supervised Learning"
 description: "A brief description of the project."
 #image: "/path/to/image.jpg"
 layout: project
