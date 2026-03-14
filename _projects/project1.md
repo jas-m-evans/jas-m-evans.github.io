@@ -1,21 +1,40 @@
 ---
-title: "Supervised Learning Experiments"
-description: "A collection of supervised learning experiments exploring classical ML and deep learning approaches on benchmark datasets."
+title: "Supervised Learning on Wine and Census Data"
+description: "A rigorous comparative study of five supervised learning algorithms with hyperparameter tuning, validation curves, and runtime analysis."
 layout: project
 ---
 
 ## Overview
 
-This project covers a series of supervised learning experiments, benchmarking classical algorithms (logistic regression, random forests, SVMs) against modern deep learning approaches on tabular and image datasets.
+This project was completed in CS7641 (Machine Learning) and focuses on end-to-end experimental design for supervised classification. I compared multiple model families across two datasets, then analyzed performance, generalization, and computational trade-offs.
 
-## Goals
+## Research Focus
 
-- Compare model performance across different dataset types
-- Evaluate the impact of feature engineering and preprocessing
-- Document lessons learned about bias-variance tradeoff in practice
+- How do different model classes behave under the same evaluation protocol?
+- Which models are most robust across different data regimes?
+- What accuracy vs. runtime trade-offs matter in practical settings?
 
-## Tech Stack
+## Approach
 
-- Python, scikit-learn, PyTorch
-- Jupyter Notebooks for experimentation
-- pandas, matplotlib, seaborn for analysis and visualization
+- Algorithms evaluated: Decision Trees, k-NN, SVM, MLP, Gradient Boosting
+- Systematic hyperparameter sweeps and validation curves for each model family
+- Learning curves to diagnose underfitting and overfitting
+- Runtime benchmarking to compare training/inference cost
+
+## Key Findings
+
+- No single model dominated every scenario; performance depended strongly on feature space and data distribution.
+- Tree-based methods provided a strong speed-performance balance for rapid iteration.
+- Higher-capacity models delivered gains but required stricter regularization and tuning to avoid overfitting.
+- Comparative analysis quality mattered more than raw leaderboard-style metrics.
+
+## Artifacts
+
+- Course: CS7641 Machine Learning
+- OMSCS path: `ML/A1/`
+- Core implementation: `ML/A1/main.py`
+- Writeup guidance and methodology context: `ML/A1/README.txt`
+
+## Policy Note
+
+This page intentionally shares methodology and outcomes only. Source code is kept private to respect course policy and academic integrity constraints.
