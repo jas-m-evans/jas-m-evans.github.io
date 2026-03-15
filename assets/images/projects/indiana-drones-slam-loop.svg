@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" role="img" aria-labelledby="title desc">
+  <title id="title">SLAM estimation loop</title>
+  <desc id="desc">A process diagram showing measurements, belief update, motion model, and planning/extraction in a closed loop.</desc>
+  <rect width="900" height="360" rx="28" fill="#f6faf9"/>
+  <g font-family="IBM Plex Sans, Arial, sans-serif">
+    <text x="52" y="58" font-size="28" font-weight="700" fill="#173042">SLAM + Planning Loop</text>
+    <text x="52" y="88" font-size="17" fill="#5d6d7e">Derived from the course workflow: measurements refine belief, belief informs movement, and movement changes what can be observed next.</text>
+  </g>
+  <g>
+    <rect x="56" y="130" width="170" height="118" rx="22" fill="#ffffff" stroke="#d9e5e1" stroke-width="2"/>
+    <rect x="264" y="130" width="170" height="118" rx="22" fill="#ffffff" stroke="#d9e5e1" stroke-width="2"/>
+    <rect x="472" y="130" width="170" height="118" rx="22" fill="#ffffff" stroke="#d9e5e1" stroke-width="2"/>
+    <rect x="680" y="130" width="170" height="118" rx="22" fill="#ffffff" stroke="#d9e5e1" stroke-width="2"/>
+  </g>
+  <g font-family="IBM Plex Sans, Arial, sans-serif">
+    <text x="83" y="170" font-size="20" font-weight="700" fill="#173042">1. Sense</text>
+    <text x="83" y="198" font-size="16" fill="#5d6d7e">Distance, bearing,</text>
+    <text x="83" y="220" font-size="16" fill="#5d6d7e">landmark visibility</text>
+
+    <text x="291" y="170" font-size="20" font-weight="700" fill="#173042">2. Update Belief</text>
+    <text x="291" y="198" font-size="16" fill="#5d6d7e">Pose estimate</text>
+    <text x="291" y="220" font-size="16" fill="#5d6d7e">Landmark geometry</text>
+
+    <text x="499" y="170" font-size="20" font-weight="700" fill="#173042">3. Move</text>
+    <text x="499" y="198" font-size="16" fill="#5d6d7e">Steering + forward</text>
+    <text x="499" y="220" font-size="16" fill="#5d6d7e">subject to noise</text>
+
+    <text x="707" y="170" font-size="20" font-weight="700" fill="#173042">4. Plan / Extract</text>
+    <text x="707" y="198" font-size="16" fill="#5d6d7e">Clearance, target</text>
+    <text x="707" y="220" font-size="16" fill="#5d6d7e">threshold, replanning</text>
+  </g>
+  <g stroke="#0f766e" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M226 189h28"/>
+    <path d="M246 178l16 11-16 11"/>
+    <path d="M434 189h28"/>
+    <path d="M454 178l16 11-16 11"/>
+    <path d="M642 189h28"/>
+    <path d="M662 178l16 11-16 11"/>
+    <path d="M758 270c-14 36-53 56-98 56H188c-69 0-120-28-120-76" stroke="#c68b12"/>
+    <path d="M80 262l-12-18-12 18" stroke="#c68b12"/>
+  </g>
+</svg>

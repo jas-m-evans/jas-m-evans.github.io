@@ -26,6 +26,9 @@ baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://jas-m-evans.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 #twitter_username: jekyllrb
 github_username:  jas-m-evans
+linkedin_url: "https://www.linkedin.com/in/jasmevans/"
+spotify_url: "https://open.spotify.com/artist/6A0yJMXzU5N9a7vXe9hCuG"
+spotify_embed_url: "https://open.spotify.com/embed/artist/6A0yJMXzU5N9a7vXe9hCuG"
 
 # Build settings
 plugins:

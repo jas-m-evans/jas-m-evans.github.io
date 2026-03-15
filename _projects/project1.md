@@ -6,7 +6,7 @@ layout: project
 
 ## Overview
 
-This project was completed in CS7641 (Machine Learning) and focuses on end-to-end experimental design for supervised classification. I compared multiple model families across two datasets, then analyzed performance, generalization, and computational trade-offs.
+This project was completed in [CS 7641: Machine Learning](https://omscs.gatech.edu/cs-7641-machine-learning) and focuses on end-to-end experimental design for supervised classification. I compared multiple model families across two datasets, then analyzed performance, generalization, and computational trade-offs.
 
 ## Research Focus
 
@@ -30,7 +30,7 @@ This project was completed in CS7641 (Machine Learning) and focuses on end-to-en
 
 ## Artifacts
 
-- Course: CS7641 Machine Learning
+- Course: [CS 7641: Machine Learning](https://omscs.gatech.edu/cs-7641-machine-learning)
 - OMSCS path: `ML/A1/`
 - Core implementation: `ML/A1/main.py`
 - Writeup guidance and methodology context: `ML/A1/README.txt`

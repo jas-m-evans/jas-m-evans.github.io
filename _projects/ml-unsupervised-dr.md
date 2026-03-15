@@ -6,7 +6,7 @@ layout: project
 
 ## Overview
 
-This CS7641 project investigated unsupervised learning quality through a structured comparison of clustering methods and dimensionality reduction techniques. The emphasis was on research process: hypothesis, controlled experiments, metric interpretation, and synthesis.
+This [CS 7641: Machine Learning](https://omscs.gatech.edu/cs-7641-machine-learning) project investigated unsupervised learning quality through a structured comparison of clustering methods and dimensionality reduction techniques. The emphasis was on research process: hypothesis, controlled experiments, metric interpretation, and synthesis.
 
 ## Research Focus
 
@@ -29,7 +29,7 @@ This CS7641 project investigated unsupervised learning quality through a structu
 
 ## Artifacts
 
-- Course: CS7641 Machine Learning
+- Course: [CS 7641: Machine Learning](https://omscs.gatech.edu/cs-7641-machine-learning)
 - OMSCS path: ML/A3/
 - Experiment implementation: ML/A3/main.py
 - Analysis traces and report draft materials: ML/A3/log.txt and ML/A3/bak.txt

@@ -7,7 +7,7 @@ image: "/assets/images/projects/ml4t-p8-experiment1.png"
 
 ## Overview
 
-In this ML4T project, I built and evaluated two equity trading approaches on historical market data: a manual indicator-based strategy and a learned strategy. The goal was to test whether machine learning could outperform hand-crafted rules under realistic friction settings.
+In this [CS 7646: Machine Learning for Trading](https://omscs.gatech.edu/cs-7646-machine-learning-trading) project, I built and evaluated two equity trading approaches on historical market data: a manual indicator-based strategy and a learned strategy. The goal was to test whether machine learning could outperform hand-crafted rules under realistic friction settings.
 
 ![Strategy learner experiment chart](/assets/images/projects/ml4t-p8-experiment1.png)
 
@@ -38,7 +38,7 @@ In this ML4T project, I built and evaluated two equity trading approaches on his
 
 ## Artifacts
 
-- Course: CS7646 Machine Learning for Trading
+- Course: [CS 7646: Machine Learning for Trading](https://omscs.gatech.edu/cs-7646-machine-learning-trading)
 - OMSCS path: ML4T/P8/
 - Experiment scripts: ML4T/P8/experiment1.py and ML4T/P8/experiment2.py
 - Report: ML4T/P8/report.pdf

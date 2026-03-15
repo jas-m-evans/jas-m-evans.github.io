@@ -2,15 +2,20 @@
 title: "Indiana Drones: SLAM Under Uncertainty"
 description: "A robotics-focused study of simultaneous localization and mapping, with noisy sensing, constrained motion, and extraction planning."
 layout: project
+image: "/assets/images/projects/indiana-drones-map.svg"
 ---
 
 ## Research Context
 
-This project comes from CS7638 (AI for Robotics) and centers on a classic robotics problem: how does an autonomous agent build a map and localize itself at the same time, while its sensors and movement are noisy?
+This project comes from [CS 7638: Robotics: AI Techniques](https://omscs.gatech.edu/cs-7638-robotics-ai-techniques) and centers on a classic robotics problem: how does an autonomous agent build a map and localize itself at the same time, while its sensors and movement are noisy?
 
 In the assignment environment, the drone starts at an unknown global position, represents that start as a local origin, receives noisy landmark measurements, and must navigate to extract treasure while avoiding tree obstacles.
 
 The challenge is not just path planning. The harder problem is state estimation under uncertainty.
+
+![Representative course-style SLAM environment](/assets/images/projects/indiana-drones-map.svg)
+
+The diagram above is a cleaned-up reconstruction of the kind of map used in the published test harness: sparse-to-dense tree landmarks, a hidden-reference start state, and a target that turns estimation error into downstream task failure.
 
 ## What Is SLAM (High-Level)
 
@@ -79,6 +84,10 @@ A practical way to think about the estimator is as a probabilistic state tracker
 
 The representation in the assignment code references matrix-based information form concepts (Omega/Xi style structure), which is common in graph-style and information-filter SLAM formulations.
 
+![SLAM estimation loop](/assets/images/projects/indiana-drones-slam-loop.svg)
+
+That loop is the core of the assignment. Measurements update belief; belief informs movement; movement changes the next measurement set. Once that loop becomes unstable, planning quality drops with it.
+
 ## Evaluation Conditions I Analyzed
 
 From the test harness and case definitions in the repository, the evaluation emphasizes robustness under realistic constraints:
@@ -94,6 +103,12 @@ For planning tasks, the drone must not only estimate correctly, but also complet
 ## Results and Analysis Summary
 
 This project produced its strongest insights in error behavior and robustness, not in one-off trajectory demos.
+
+One useful way to read the project is as an integration problem across three layers:
+
+- Perception: noisy range-and-bearing measurements to visible trees
+- Estimation: maintaining a coherent pose and landmark geometry over time
+- Decision-making: choosing motion commands that preserve enough accuracy to reach extraction range
 
 ### 1) Estimation Stability Is the Core Bottleneck
 
@@ -126,7 +141,7 @@ For a research-oriented profile, this project demonstrates more than implementat
 
 ## Artifacts and Provenance
 
-- Course: CS7638 AI for Robotics
+- Course: [CS 7638: Robotics: AI Techniques](https://omscs.gatech.edu/cs-7638-robotics-ai-techniques)
 - OMSCS path: rait/IndianaDrones/
 - Assignment implementation scaffold: rait/IndianaDrones/indiana_drones.py
 - Evaluation harness: rait/IndianaDrones/testing_suite_indiana_drones.py

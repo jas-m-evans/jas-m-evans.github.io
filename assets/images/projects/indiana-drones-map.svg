@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" role="img" aria-labelledby="title desc">
+  <title id="title">Representative Indiana Drones SLAM test environment</title>
+  <desc id="desc">A grid map derived from the course test cases showing tree landmarks, a drone start position, and a treasure target.</desc>
+  <rect width="900" height="520" rx="28" fill="#f7faf8"/>
+  <rect x="32" y="32" width="836" height="456" rx="24" fill="#ffffff" stroke="#d8e3df" stroke-width="2"/>
+  <g stroke="#d6e2de" stroke-width="1">
+    <path d="M112 56v408M192 56v408M272 56v408M352 56v408M432 56v408M512 56v408M592 56v408M672 56v408M752 56v408"/>
+    <path d="M56 104h788M56 152h788M56 200h788M56 248h788M56 296h788M56 344h788M56 392h788M56 440h788"/>
+  </g>
+  <g font-family="IBM Plex Sans, Arial, sans-serif" font-size="16" fill="#5d6d7e">
+    <text x="60" y="476">Representative map derived from the published test harness structure.</text>
+    <text x="64" y="78">0</text>
+    <text x="64" y="126">1</text>
+    <text x="64" y="174">2</text>
+    <text x="64" y="222">3</text>
+    <text x="64" y="270">4</text>
+    <text x="64" y="318">5</text>
+    <text x="64" y="366">6</text>
+    <text x="64" y="414">7</text>
+    <text x="64" y="462">8</text>
+  </g>
+  <g font-family="IBM Plex Sans, Arial, sans-serif" font-size="18" font-weight="600" fill="#173042">
+    <text x="144" y="84">A</text>
+    <text x="224" y="84">B</text>
+    <text x="304" y="84">D</text>
+    <text x="384" y="84">E</text>
+    <text x="704" y="84">C</text>
+    <text x="144" y="420">F</text>
+    <text x="224" y="420">H</text>
+    <text x="304" y="420">I</text>
+    <text x="384" y="420">J</text>
+    <text x="544" y="420">T</text>
+    <text x="624" y="420">R</text>
+    <text x="144" y="180">M</text>
+    <text x="224" y="276">N</text>
+    <text x="704" y="180">K</text>
+    <text x="704" y="276">L</text>
+    <text x="144" y="372">O</text>
+  </g>
+  <g fill="#70a37f" stroke="#37634b" stroke-width="3" opacity="0.95">
+    <circle cx="152" cy="74" r="10"/>
+    <circle cx="232" cy="74" r="10"/>
+    <circle cx="312" cy="74" r="14"/>
+    <circle cx="392" cy="74" r="10"/>
+    <circle cx="712" cy="74" r="10"/>
+    <circle cx="152" cy="410" r="20"/>
+    <circle cx="232" cy="410" r="10"/>
+    <circle cx="312" cy="410" r="16"/>
+    <circle cx="392" cy="410" r="10"/>
+    <circle cx="552" cy="410" r="16"/>
+    <circle cx="632" cy="410" r="20"/>
+    <circle cx="152" cy="170" r="28"/>
+    <circle cx="232" cy="266" r="14"/>
+    <circle cx="712" cy="170" r="32"/>
+    <circle cx="712" cy="266" r="8"/>
+    <circle cx="152" cy="362" r="14"/>
+  </g>
+  <g>
+    <circle cx="312" cy="218" r="16" fill="#0f766e"/>
+    <path d="M312 190l14 24h-28z" fill="#0f766e"/>
+    <circle cx="312" cy="218" r="30" fill="none" stroke="#0f766e" stroke-opacity="0.18" stroke-width="16"/>
+    <text x="340" y="224" font-family="IBM Plex Sans, Arial, sans-serif" font-size="18" font-weight="700" fill="#173042">Drone start</text>
+  </g>
+  <g>
+    <path d="M471 139l10 22 24 3-18 16 5 23-21-12-21 12 5-23-18-16 24-3z" fill="#c68b12" stroke="#8c6107" stroke-width="2"/>
+    <text x="505" y="175" font-family="IBM Plex Sans, Arial, sans-serif" font-size="18" font-weight="700" fill="#173042">Treasure target</text>
+  </g>
+  <g>
+    <path d="M328 226C380 210 425 192 460 166" fill="none" stroke="#0f766e" stroke-width="4" stroke-dasharray="10 8" stroke-linecap="round"/>
+    <path d="M452 150l18 12-20 5" fill="none" stroke="#0f766e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
