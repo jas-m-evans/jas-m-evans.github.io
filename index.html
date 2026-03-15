@@ -4,9 +4,60 @@ title: "Home"
 author_profile: true
 ---
 
-<div class="intro">
-  <h1>Hello, I'm Jason</h1>
-  <p>I'm a computer scientist with an M.Sc., specializing in data engineering and machine learning. I build data platforms, explore ML research, and ship things I care about.</p>
+<style>
+  .home-hero {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    margin: 0.5rem 0 1.5rem;
+  }
+
+  .home-hero__photo {
+    flex: 0 0 auto;
+  }
+
+  .home-hero__photo img {
+    width: 144px;
+    height: 144px;
+    border-radius: 16px;
+    object-fit: cover;
+    object-position: center 20%;
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.7);
+  }
+
+  .home-hero__copy h1 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .home-hero__copy p {
+    margin: 0;
+  }
+
+  @media (max-width: 640px) {
+    .home-hero {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .home-hero__photo img {
+      width: 116px;
+      height: 116px;
+      border-radius: 14px;
+    }
+  }
+</style>
+
+<div class="home-hero">
+  <div class="home-hero__photo">
+    <img src="/assets/images/me.jpeg" alt="Portrait of Jason Evans" loading="eager" decoding="async">
+  </div>
+  <div class="home-hero__copy">
+    <h1>Hello, I'm Jason</h1>
+    <p>I'm a computer scientist with an M.Sc., specializing in data engineering and machine learning. I build data platforms, explore ML research, and ship things I care about.</p>
+  </div>
 </div>
 
 ## Recent Projects
