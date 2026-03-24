@@ -5,6 +5,10 @@ layout: project
 image: "/assets/images/projects/indiana-drones-map.svg"
 ---
 
+## Abstract
+
+This project implements and analyzes Simultaneous Localization and Mapping (SLAM) for an autonomous drone navigating a forest environment with noisy sensors and uncertain motion. Using an Extended Kalman Filter framework, the system jointly estimates the drone's pose and landmark positions from noisy range-and-bearing measurements, then applies the resulting map to plan a path to a target. Key findings establish the primacy of estimation stability over aggressive motion planning and demonstrate how horizon-limited sensing makes exploration order a first-class planning constraint — insights that generalize broadly to real robotics and autonomy systems.
+
 ## The Big Idea (No Math Required)
 
 Close your eyes and picture walking through your house in the dark. You don't bump into walls — not because you can see them, but because you've built a *mental map* from years of experience. You know roughly where you are, and you update that sense as you move.
@@ -28,9 +32,11 @@ In the assignment environment, the drone starts at an unknown global position, r
 
 The challenge is not just path planning. The harder problem is state estimation under uncertainty.
 
-![Representative course-style SLAM environment](/assets/images/projects/indiana-drones-map.svg)
+![Representative SLAM environment: tree landmarks, drone start, and treasure target](/assets/images/projects/indiana-drones-map.svg)
 
-The diagram above is a cleaned-up reconstruction of the kind of map used in the published test harness: sparse-to-dense tree landmarks, a hidden-reference start state, and a target that turns estimation error into downstream task failure.
+*Representative map showing tree landmarks (green circles), drone start position, and treasure target. Landmark positions and obstacle geometry are reconstructed from the published test harness structure. SLAM requires jointly estimating the drone's pose and all landmark positions from noisy observations. Map layout inspired by the landmark-based SLAM formulation described in Thrun, Burgard & Fox (2005).*
+
+> **Image source:** Map structure derived from the CS 7638 course test harness (Georgia Tech OMSCS). SLAM formulation follows Thrun, S., Burgard, W., & Fox, D. (2005). *Probabilistic Robotics*. MIT Press.
 
 ## What Is SLAM (High-Level)
 
@@ -99,9 +105,11 @@ A practical way to think about the estimator is as a probabilistic state tracker
 
 The representation in the assignment code references matrix-based information form concepts (Omega/Xi style structure), which is common in graph-style and information-filter SLAM formulations.
 
-![SLAM estimation loop](/assets/images/projects/indiana-drones-slam-loop.svg)
+![SLAM estimation loop: sense, update belief, move, plan/extract](/assets/images/projects/indiana-drones-slam-loop.svg)
 
-That loop is the core of the assignment. Measurements update belief; belief informs movement; movement changes the next measurement set. Once that loop becomes unstable, planning quality drops with it.
+*The four-phase SLAM loop: (1) sense visible landmarks, (2) update joint pose-and-map belief, (3) apply motion command with noise, (4) plan and attempt extraction. Loop structure follows the EKF-SLAM formulation in Thrun, Burgard & Fox (2005, Ch. 10).*
+
+> **Image source:** Loop structure based on the Extended Kalman Filter SLAM cycle described in Thrun, S., Burgard, W., & Fox, D. (2005). *Probabilistic Robotics*, Ch. 10. MIT Press.
 
 ## Evaluation Conditions I Analyzed
 
@@ -163,7 +171,7 @@ For a research-oriented profile, this project demonstrates more than implementat
 - Test scenarios and constraints: rait/IndianaDrones/test_cases.py
 - Project brief: rait/IndianaDrones/cs7638-indiana-drones.pdf
 
-## Reader-Friendly TL;DR
+## Summary
 
 If you are new to SLAM, this project is a concrete demonstration of a key robotics idea:
 

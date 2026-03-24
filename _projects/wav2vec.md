@@ -5,9 +5,15 @@ layout: project
 image: "/assets/images/projects/wav2vec-pipeline.svg"
 ---
 
+## Abstract
+
+This project fine-tunes Meta AI's wav2vec 2.0, a self-supervised speech representation model (Baevski et al., 2020), for automatic speech recognition on a labeled speech corpus. The model's contrastive pretraining objective — predicting quantized acoustic units from masked audio segments using a Transformer context network — is examined alongside the Connectionist Temporal Classification (CTC) fine-tuning procedure that enables alignment-free sequence learning. Evaluation using Word Error Rate (WER) demonstrates the model's exceptional data efficiency: a system pretrained on hundreds of hours of unlabeled audio requires only minutes of transcribed speech to achieve competitive transcription accuracy, with implications for speech technology in low-resource languages.
+
 ![wav2vec 2.0 training pipeline diagram](/assets/images/projects/wav2vec-pipeline.svg)
 
-*Two-phase approach: learn the structure of audio without any transcriptions, then fine-tune on a small labeled dataset.*
+*Two-phase pipeline: (1) self-supervised pretraining on raw unlabeled audio using a contrastive objective over masked spans; (2) supervised fine-tuning on a small labeled dataset using CTC loss. Architecture based on Figure 1 in Baevski et al. (2020).*
+
+> **Image source:** Pipeline architecture based on Figure 1 in Baevski, A., Zhou, Y., Mohamed, A., & Auli, M. (2020). wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations. *Advances in Neural Information Processing Systems (NeurIPS), 33*, 12449–12460. [arXiv:2006.11477](https://arxiv.org/abs/2006.11477)
 
 ## The Big Idea (No Math Required)
 
@@ -128,7 +134,7 @@ The gap between "I ran a fine-tuning script" and "I understand *why* the archite
 - Reference paper: [wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations](https://arxiv.org/abs/2006.11477), Baevski et al. 2020
 - Fine-tuning guide: [Fine-Tune Wav2Vec2 for English ASR](https://huggingface.co/blog/fine-tune-wav2vec2-english) (Hugging Face blog)
 
-## Reader-Friendly TL;DR
+## Summary
 
 Speech recognition normally requires thousands of hours of transcribed audio. wav2vec 2.0 changes that equation by pretraining on raw audio without transcriptions — learning what speech sounds like at a deep level — and then adapting to a specific language or domain with only minutes or hours of labeled data. This project fine-tuned that pretrained model, explored how to measure and improve its transcription quality, and examined why the self-supervised pretraining approach works as well as it does.
 

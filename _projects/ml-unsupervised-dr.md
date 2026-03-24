@@ -5,9 +5,15 @@ layout: project
 image: "/assets/images/projects/unsupervised-overview.svg"
 ---
 
+## Abstract
+
+This study compares two clustering algorithms (K-Means and Expectation Maximization with Gaussian Mixture Models) and four dimensionality reduction methods (Principal Component Analysis, Independent Component Analysis, random projection, and feature selection) across two structurally contrasting real-world datasets. Cluster quality is evaluated using silhouette scores and Davies-Bouldin indices without ground-truth labels, while computational cost is benchmarked through wall-clock timing. Results demonstrate that algorithm rankings are strongly dataset-dependent, no single method dominates universally, and pairing dimensionality reduction with clustering improves quality in ways that vary systematically with the underlying data geometry — establishing that method selection requires understanding both algorithmic assumptions and data structure.
+
 ![Unsupervised learning overview: clustering and dimensionality reduction](/assets/images/projects/unsupervised-overview.svg)
 
-*Two fundamental questions: which groups exist in unlabeled data (clustering), and what is the minimal set of dimensions needed to describe its shape (dimensionality reduction)?*
+*Two fundamental questions in unsupervised learning: which groups exist in unlabeled data (clustering), and what is the minimal set of dimensions needed to describe its shape (dimensionality reduction)? Visualization adapted from concepts in Bishop (2006) and Murphy (2012).*
+
+> **Image source:** Conceptual framework based on Bishop, C.M. (2006). *Pattern Recognition and Machine Learning*, Ch. 9–12. Springer; and Murphy, K.P. (2012). *Machine Learning: A Probabilistic Perspective*, Ch. 11–12. MIT Press.
 
 ## The Big Idea (No Math Required)
 
@@ -191,7 +197,7 @@ The methodology scales directly to production settings where labels are unavaila
 - Experiment implementation: `ML/A3/main.py`
 - Analysis traces and report draft materials: `ML/A3/log.txt` and `ML/A3/bak.txt`
 
-## Reader-Friendly TL;DR
+## Summary
 
 Unsupervised learning finds structure in data without labels. This project ran two clustering algorithms (K-Means and EM) and four dimensionality reduction methods (PCA, ICA, random projection, feature selection) across two datasets, measuring quality with silhouette scores, Davies-Bouldin indices, and wall-clock time.
 

@@ -5,9 +5,15 @@ layout: project
 image: "/assets/images/projects/supervised-learning-overview.svg"
 ---
 
+## Abstract
+
+This study provides a controlled experimental comparison of five supervised learning algorithms — Decision Trees, k-Nearest Neighbors, Support Vector Machines, Multilayer Perceptrons, and Gradient Boosting — across two structurally dissimilar real-world datasets (UCI Wine Quality and UCI Adult Census). Each algorithm undergoes systematic hyperparameter search with cross-validation, and performance is analyzed through validation curves, learning curves, and wall-clock runtime benchmarking. Results confirm that no single algorithm dominates across both domains; gradient boosting provides the most consistent performance relative to tuning effort; and the difficulty of the wine quality task traces directly to its noisy labels, class imbalance, and nonlinear feature interactions — consistent with the No Free Lunch theorem (Wolpert & Macready, 1997).
+
 ![Five supervised learning algorithms compared side by side](/assets/images/projects/supervised-learning-overview.svg)
 
-*Five different "philosophies" for teaching a computer to make decisions — each with its own assumptions, strengths, and failure modes.*
+*Five "philosophies" for learning a decision boundary — each with distinct inductive bias, computational cost, and failure modes. Conceptual illustration adapted from Mitchell (1997) and Hastie, Tibshirani & Friedman (2009).*
+
+> **Image source:** Algorithm characterizations based on Mitchell, T.M. (1997). *Machine Learning*. McGraw-Hill; and Hastie, T., Tibshirani, R., & Friedman, J. (2009). *The Elements of Statistical Learning* (2nd ed.). Springer. Datasets: Cortez et al. (2009), UCI Wine Quality; Kohavi (1996), UCI Adult Census.
 
 ## The Big Idea (No Math Required)
 
@@ -188,7 +194,7 @@ The methodology here scales directly to production ML: define a baseline, run co
 - Writeup guidance and methodology context: `ML/A1/README.txt`
 - Reference datasets: [UCI Wine Quality](https://archive.ics.uci.edu/ml/datasets/wine+quality), [UCI Adult Census](https://archive.ics.uci.edu/ml/datasets/adult)
 
-## Reader-Friendly TL;DR
+## Summary
 
 If you want one sentence: this project ran five learning algorithms on two structurally different datasets, systematically tuned each one, and analyzed the results to understand *why* performance differed — not just *that* it differed.
 

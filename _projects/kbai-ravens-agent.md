@@ -2,8 +2,12 @@
 title: "KBAI Raven's Progressive Matrices Agent"
 description: "Built a symbolic visual reasoning agent to solve Raven's Progressive Matrices — the gold-standard IQ test for fluid intelligence — and analyzed its performance across hundreds of benchmark problems."
 layout: project
-image: "/assets/images/projects/kbai-rpm-sample.png"
+image: "/assets/images/projects/kbai-rpm-sample.svg"
 ---
+
+## Abstract
+
+This project constructs a symbolic visual reasoning agent capable of solving Raven's Progressive Matrices — standardized nonverbal puzzles used to measure fluid intelligence — through explicit representation of visual objects, attributes, and transformation rules. The agent parses each figure into structured semantic descriptions, detects transformation patterns across matrix rows and columns, and selects the answer that best extends the observed pattern. Evaluated against benchmark problem sets of increasing difficulty, the agent demonstrates competitive performance on regular transformations and illuminates the precise conditions under which symbolic, interpretable approaches succeed and where they reach their limits.
 
 ## The Big Idea (No Math Required)
 
@@ -23,9 +27,11 @@ The structure of each problem is deceptively simple. You are given a 2×2 or 3×
 
 This project, completed in [CS 7637: Knowledge-Based Artificial Intelligence](https://omscs.gatech.edu/cs-7637-knowledge-based-artificial-intelligence-cognitive-systems) at Georgia Tech, was the construction of exactly such an agent.
 
-![Sample Raven's Progressive Matrices problem](/assets/images/projects/kbai-rpm-sample.png)
+![Sample Raven's Progressive Matrices problem — 3×3 format with size-progression pattern](/assets/images/projects/kbai-rpm-sample.svg)
 
-*A stylized representation of a 3×3 Raven's matrix. The agent must determine which of eight candidates completes the bottom-right cell.*
+*Representative 3×3 Raven's Progressive Matrix showing a size-and-shape progression pattern. The agent must identify which answer option correctly completes the bottom-right cell by detecting transformation rules across rows and columns. Problem structure based on Raven (1938) and Carpenter, Just & Shell (1990).*
+
+> **Image source:** Problem structure and format derived from Raven, J.C. (1938). *Progressive Matrices: A Perceptual Test of Intelligence*. H.K. Lewis & Co.; and Carpenter, P.A., Just, M.A., & Shell, P. (1990). What one intelligence test measures: A theoretical account of the processing in the Raven Progressive Matrices Test. *Psychological Review, 97*(3), 404–431.
 
 ## Why This Problem Is Hard for AI
 
@@ -139,7 +145,7 @@ The debate between symbolic and neural approaches to cognition is ongoing. This 
 - Milestone writeup: `KBAI/RPM Project_ Milestone 3.pdf`
 - Reference: Carpenter, Just & Shell (1990), *What one intelligence test measures: A theoretical account of the processing in the Raven Progressive Matrices Test*, Psychological Review
 
-## Reader-Friendly TL;DR
+## Summary
 
 Raven's matrices are the visual analogy puzzles used to measure fluid intelligence on IQ tests. Building a machine that solves them requires representing figures as structured descriptions, detecting transformations across the matrix, and selecting the answer that best extends the pattern. This agent did that through explicit symbolic rules, which made it both competitive on benchmark problems and easy to diagnose when it went wrong.
 
