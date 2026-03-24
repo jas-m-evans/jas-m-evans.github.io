@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 480" font-family="IBM Plex Sans, Arial, sans-serif">
+  <!-- Background -->
+  <rect width="920" height="480" rx="16" fill="#f8fbfb"/>
+
+  <!-- Title -->
+  <text x="460" y="40" text-anchor="middle" font-size="21" font-weight="700" fill="#152536">Finding Hidden Structure — Without Labels</text>
+  <text x="460" y="62" text-anchor="middle" font-size="13" fill="#5d6d7e">Clustering groups similar points together · Dimensionality reduction strips away noise to reveal essential shape</text>
+
+  <!-- ============================================================ -->
+  <!-- LEFT PANEL: CLUSTERING  -->
+  <!-- ============================================================ -->
+  <rect x="18" y="80" width="430" height="376" rx="14" fill="#e8f5f3" stroke="#0f766e" stroke-width="1.5"/>
+  <rect x="18" y="80" width="430" height="36" rx="14" fill="#0f766e"/>
+  <rect x="18" y="98" width="430" height="18" fill="#0f766e"/>
+  <text x="233" y="103" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">Clustering — "Which groups exist?"</text>
+
+  <!-- K-Means sub-card -->
+  <rect x="30" y="124" width="196" height="196" rx="10" fill="#ffffff" stroke="#0b4f4a" stroke-width="1.2"/>
+  <text x="128" y="143" text-anchor="middle" font-size="12" font-weight="700" fill="#152536">K-Means</text>
+  <text x="128" y="157" text-anchor="middle" font-size="10" fill="#5d6d7e">Hard assignments, spherical clusters</text>
+
+  <!-- K-means clusters (3 groups) -->
+  <!-- Cluster A (teal) -->
+  <circle cx="75" cy="195" r="5" fill="#0f766e" opacity="0.8"/>
+  <circle cx="88" cy="210" r="5" fill="#0f766e" opacity="0.8"/>
+  <circle cx="68" cy="218" r="5" fill="#0f766e" opacity="0.8"/>
+  <circle cx="82" cy="228" r="5" fill="#0f766e" opacity="0.8"/>
+  <circle cx="95" cy="200" r="5" fill="#0f766e" opacity="0.8"/>
+  <circle cx="72" cy="238" r="5" fill="#0f766e" opacity="0.8"/>
+  <!-- Centroid A -->
+  <circle cx="80" cy="215" r="9" fill="none" stroke="#0f766e" stroke-width="2.5"/>
+  <text x="80" y="219" text-anchor="middle" font-size="10" font-weight="700" fill="#0f766e">✕</text>
+
+  <!-- Cluster B (amber) -->
+  <circle cx="138" cy="178" r="5" fill="#c68b12" opacity="0.8"/>
+  <circle cx="152" cy="192" r="5" fill="#c68b12" opacity="0.8"/>
+  <circle cx="143" cy="205" r="5" fill="#c68b12" opacity="0.8"/>
+  <circle cx="160" cy="178" r="5" fill="#c68b12" opacity="0.8"/>
+  <circle cx="168" cy="196" r="5" fill="#c68b12" opacity="0.8"/>
+  <circle cx="155" cy="210" r="5" fill="#c68b12" opacity="0.8"/>
+  <!-- Centroid B -->
+  <circle cx="153" cy="193" r="9" fill="none" stroke="#c68b12" stroke-width="2.5"/>
+  <text x="153" y="197" text-anchor="middle" font-size="10" font-weight="700" fill="#c68b12">✕</text>
+
+  <!-- Cluster C (dark) -->
+  <circle cx="100" cy="268" r="5" fill="#5d6d7e" opacity="0.8"/>
+  <circle cx="118" cy="258" r="5" fill="#5d6d7e" opacity="0.8"/>
+  <circle cx="110" cy="278" r="5" fill="#5d6d7e" opacity="0.8"/>
+  <circle cx="130" cy="265" r="5" fill="#5d6d7e" opacity="0.8"/>
+  <circle cx="122" cy="280" r="5" fill="#5d6d7e" opacity="0.8"/>
+  <!-- Centroid C -->
+  <circle cx="116" cy="268" r="9" fill="none" stroke="#5d6d7e" stroke-width="2.5"/>
+  <text x="116" y="272" text-anchor="middle" font-size="10" font-weight="700" fill="#5d6d7e">✕</text>
+
+  <text x="128" y="305" text-anchor="middle" font-size="10" fill="#5d6d7e">Each point belongs to exactly</text>
+  <text x="128" y="318" text-anchor="middle" font-size="10" fill="#5d6d7e">one group. ✕ = centroid (mean)</text>
+
+  <!-- EM/GMM sub-card -->
+  <rect x="240" y="124" width="196" height="196" rx="10" fill="#ffffff" stroke="#0b4f4a" stroke-width="1.2"/>
+  <text x="338" y="143" text-anchor="middle" font-size="12" font-weight="700" fill="#152536">EM / Gaussian Mixture</text>
+  <text x="338" y="157" text-anchor="middle" font-size="10" fill="#5d6d7e">Soft assignments, elliptical clusters</text>
+
+  <!-- GMM ellipses (3 overlapping Gaussians) -->
+  <ellipse cx="295" cy="200" rx="32" ry="22" fill="#0f766e" opacity="0.15" stroke="#0f766e" stroke-width="1.5"/>
+  <ellipse cx="295" cy="200" rx="18" ry="12" fill="#0f766e" opacity="0.25"/>
+  <ellipse cx="368" cy="190" rx="28" ry="18" fill="#c68b12" opacity="0.15" stroke="#c68b12" stroke-width="1.5"/>
+  <ellipse cx="368" cy="190" rx="14" ry="9" fill="#c68b12" opacity="0.25"/>
+  <ellipse cx="330" cy="258" rx="38" ry="16" fill="#5d6d7e" opacity="0.15" stroke="#5d6d7e" stroke-width="1.5"/>
+  <ellipse cx="330" cy="258" rx="20" ry="8" fill="#5d6d7e" opacity="0.25"/>
+
+  <!-- Dots in the overlap zones (uncertain membership) -->
+  <circle cx="320" cy="210" r="5" fill="#0f766e" opacity="0.5"/>
+  <circle cx="328" cy="218" r="5" fill="#c68b12" opacity="0.5"/>
+  <circle cx="315" cy="225" r="5" fill="#5d6d7e" opacity="0.5"/>
+
+  <text x="338" y="305" text-anchor="middle" font-size="10" fill="#5d6d7e">Points near a border have</text>
+  <text x="338" y="318" text-anchor="middle" font-size="10" fill="#5d6d7e">partial membership in each cluster</text>
+
+  <!-- Insight row -->
+  <rect x="30" y="332" width="406" height="48" rx="8" fill="#0f766e" opacity="0.1" stroke="#0f766e" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="233" y="352" text-anchor="middle" font-size="11" font-weight="600" fill="#0b4f4a">Key Insight</text>
+  <text x="233" y="370" text-anchor="middle" font-size="10" fill="#5d6d7e">GMM is K-Means with uncertainty — it admits that some points live on boundaries between worlds.</text>
+
+  <!-- ============================================================ -->
+  <!-- RIGHT PANEL: DIMENSIONALITY REDUCTION  -->
+  <!-- ============================================================ -->
+  <rect x="462" y="80" width="440" height="376" rx="14" fill="#fef7ea" stroke="#c68b12" stroke-width="1.5"/>
+  <rect x="462" y="80" width="440" height="36" rx="14" fill="#c68b12"/>
+  <rect x="462" y="98" width="440" height="18" fill="#c68b12"/>
+  <text x="682" y="103" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">Dimensionality Reduction — "What's essential?"</text>
+
+  <!-- PCA sub-card -->
+  <rect x="474" y="124" width="196" height="196" rx="10" fill="#ffffff" stroke="#8a5e0a" stroke-width="1.2"/>
+  <text x="572" y="143" text-anchor="middle" font-size="12" font-weight="700" fill="#152536">PCA</text>
+  <text x="572" y="157" text-anchor="middle" font-size="10" fill="#5d6d7e">Find directions of max variance</text>
+
+  <!-- Data cloud -->
+  <ellipse cx="572" cy="220" rx="62" ry="38" fill="#fde9c8" opacity="0.5"/>
+  <!-- Dots in elongated cloud -->
+  <circle cx="534" cy="235" r="4" fill="#c68b12" opacity="0.7"/>
+  <circle cx="545" cy="225" r="4" fill="#c68b12" opacity="0.7"/>
+  <circle cx="558" cy="215" r="4" fill="#c68b12" opacity="0.7"/>
+  <circle cx="568" cy="218" r="4" fill="#c68b12" opacity="0.7"/>
+  <circle cx="578" cy="212" r="4" fill="#c68b12" opacity="0.7"/>
+  <circle cx="590" cy="208" r="4" fill="#c68b12" opacity="0.7"/>
+  <circle cx="600" cy="220" r="4" fill="#c68b12" opacity="0.7"/>
+  <circle cx="610" cy="228" r="4" fill="#c68b12" opacity="0.7"/>
+  <circle cx="560" cy="230" r="4" fill="#c68b12" opacity="0.5"/>
+  <circle cx="582" cy="232" r="4" fill="#c68b12" opacity="0.5"/>
+  <!-- PC1 arrow (main direction) -->
+  <line x1="530" y1="242" x2="617" y2="198" stroke="#152536" stroke-width="2.5" marker-end="url(#arrowDark2)"/>
+  <text x="585" y="252" text-anchor="middle" font-size="10" font-weight="600" fill="#152536">PC1</text>
+  <!-- PC2 arrow (orthogonal, smaller) -->
+  <line x1="572" y1="253" x2="558" y2="209" stroke="#5d6d7e" stroke-width="1.5" marker-end="url(#arrowGrey)"/>
+  <text x="550" y="262" text-anchor="middle" font-size="10" fill="#5d6d7e">PC2</text>
+
+  <text x="572" y="300" text-anchor="middle" font-size="10" fill="#5d6d7e">Keep only the biggest axes</text>
+  <text x="572" y="313" text-anchor="middle" font-size="10" fill="#5d6d7e">(highest variance) — compress</text>
+  <text x="572" y="326" text-anchor="middle" font-size="10" fill="#5d6d7e">without losing much info</text>
+
+  <!-- ICA sub-card -->
+  <rect x="684" y="124" width="206" height="196" rx="10" fill="#ffffff" stroke="#8a5e0a" stroke-width="1.2"/>
+  <text x="787" y="143" text-anchor="middle" font-size="12" font-weight="700" fill="#152536">ICA</text>
+  <text x="787" y="157" text-anchor="middle" font-size="10" fill="#5d6d7e">Separate mixed-signal sources</text>
+
+  <!-- Two source signals -->
+  <text x="695" y="177" font-size="9" fill="#5d6d7e">Signal A</text>
+  <polyline points="695,190 702,178 708,196 714,176 720,194 726,178 732,194" fill="none" stroke="#0f766e" stroke-width="1.8"/>
+  <text x="695" y="214" font-size="9" fill="#5d6d7e">Signal B</text>
+  <polyline points="695,228 702,215 712,240 720,218 730,232 740,220 750,238" fill="none" stroke="#c68b12" stroke-width="1.8"/>
+
+  <!-- Mix arrow -->
+  <line x1="756" y1="208" x2="776" y2="208" stroke="#152536" stroke-width="1.5" marker-end="url(#arrowDark2)"/>
+  <text x="766" y="203" text-anchor="middle" font-size="8" fill="#5d6d7e">mix</text>
+
+  <!-- Mixed signal (noisy) -->
+  <text x="784" y="177" font-size="9" fill="#5d6d7e">Mixed</text>
+  <polyline points="780,190 786,178 792,196 800,176 806,195 812,178 818,195 824,179 830,196 836,178 842,194 848,180 855,196 862,179 868,196 874,179" fill="none" stroke="#5d6d7e" stroke-width="1.5"/>
+  <!-- ICA arrow -->
+  <line x1="756" y1="245" x2="776" y2="245" stroke="#152536" stroke-width="1.5" marker-end="url(#arrowDark2)"/>
+  <text x="766" y="240" text-anchor="middle" font-size="8" fill="#5d6d7e">ICA</text>
+  <!-- Separated signals (neat) -->
+  <text x="784" y="215" font-size="9" fill="#5d6d7e">Sep. A</text>
+  <polyline points="782,228 789,216 795,234 802,214 808,232 815,214 822,231" fill="none" stroke="#0f766e" stroke-width="1.6"/>
+  <text x="784" y="248" font-size="9" fill="#5d6d7e">Sep. B</text>
+  <polyline points="782,262 789,249 799,274 807,252 817,266 827,254 837,270" fill="none" stroke="#c68b12" stroke-width="1.6"/>
+
+  <text x="787" y="300" text-anchor="middle" font-size="10" fill="#5d6d7e">Unmix overlapping signals</text>
+  <text x="787" y="313" text-anchor="middle" font-size="10" fill="#5d6d7e">by maximizing statistical</text>
+  <text x="787" y="326" text-anchor="middle" font-size="10" fill="#5d6d7e">independence of outputs</text>
+
+  <!-- Insight row (right) -->
+  <rect x="474" y="332" width="416" height="48" rx="8" fill="#c68b12" opacity="0.1" stroke="#c68b12" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="682" y="352" text-anchor="middle" font-size="11" font-weight="600" fill="#8a5e0a">Key Insight</text>
+  <text x="682" y="370" text-anchor="middle" font-size="10" fill="#5d6d7e">PCA asks "what's big?" · ICA asks "what's independent?" — different lenses on the same data.</text>
+
+  <!-- Arrow defs -->
+  <defs>
+    <marker id="arrowDark2" markerWidth="7" markerHeight="7" refX="4" refY="3.5" orient="auto">
+      <path d="M0,0 L0,7 L7,3.5 z" fill="#152536"/>
+    </marker>
+    <marker id="arrowGrey" markerWidth="7" markerHeight="7" refX="4" refY="3.5" orient="auto">
+      <path d="M0,0 L0,7 L7,3.5 z" fill="#5d6d7e"/>
+    </marker>
+  </defs>
+
+  <!-- Bottom caption -->
+  <text x="460" y="467" text-anchor="middle" font-size="11" fill="#5d6d7e">Evaluated on wine quality &amp; census income datasets · Georgia Tech CS 7641 · Methods: K-Means, EM, PCA, ICA, RP, RF</text>
+</svg>

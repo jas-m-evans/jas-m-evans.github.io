@@ -2,7 +2,30 @@
 title: "Supervised Learning: Five Algorithms, Two Domains, One Experimental Framework"
 description: "A rigorous comparative study of five supervised learning algorithms across two structurally different datasets — examining bias, variance, decision geometry, and the true cost of generalization."
 layout: project
+image: "/assets/images/projects/supervised-learning-overview.svg"
 ---
+
+![Five supervised learning algorithms compared side by side](/assets/images/projects/supervised-learning-overview.svg)
+
+*Five different "philosophies" for teaching a computer to make decisions — each with its own assumptions, strengths, and failure modes.*
+
+## The Big Idea (No Math Required)
+
+Imagine you work at a winery and you want to teach a new employee to identify whether a wine is high quality or low quality just by tasting it. You show them hundreds of examples — "this wine is a 7, this one is a 4" — and let them figure out the pattern.
+
+That is supervised learning in a nutshell. You give the computer **labeled examples** (wine measurements + quality scores), and it learns a rule that maps measurements to quality. Then you test it on wines it has never seen before.
+
+The twist: there isn't one single way to learn that rule. Five very different approaches are compared in this project:
+
+| Algorithm | The Analogy | The Tradeoff |
+|---|---|---|
+| **Decision Tree** | A flowchart of yes/no questions | Simple to explain; can memorize noise |
+| **k-Nearest Neighbors** | "Ask your nearest neighbors" | No training cost; slow at test time |
+| **SVM** | Find the widest gap between groups | Great geometry; slow on big data |
+| **Neural Network** | Layered brain-inspired computation | Highest flexibility; needs lots of data |
+| **Gradient Boosting** | Team of specialists fixing each other's mistakes | Often the most accurate; harder to tune |
+
+The real question isn't *which one is best* — it's **why** one works better than another on a given dataset, and whether that reason tells us something real about the problem.
 
 ## The Question Behind the Experiment
 

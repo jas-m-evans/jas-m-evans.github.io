@@ -1,0 +1,232 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 480" font-family="IBM Plex Sans, Arial, sans-serif">
+  <!-- Background -->
+  <rect width="920" height="480" rx="16" fill="#f8fbfb"/>
+
+  <!-- Title -->
+  <text x="460" y="44" text-anchor="middle" font-size="22" font-weight="700" fill="#152536">5 Ways a Computer Learns to Decide</text>
+  <text x="460" y="68" text-anchor="middle" font-size="13" fill="#5d6d7e">Each algorithm has a different "intuition" for drawing boundaries between categories</text>
+
+  <!-- ===== CARD 1: Decision Tree ===== -->
+  <rect x="20" y="90" width="163" height="360" rx="12" fill="#ffffff" stroke="#0f766e" stroke-width="1.5"/>
+  <rect x="20" y="90" width="163" height="42" rx="12" fill="#0f766e"/>
+  <rect x="20" y="116" width="163" height="16" fill="#0f766e"/>
+  <text x="101" y="117" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Decision Tree</text>
+
+  <!-- Tree diagram -->
+  <circle cx="101" cy="167" r="14" fill="#e8f5f3" stroke="#0f766e" stroke-width="2"/>
+  <text x="101" y="172" text-anchor="middle" font-size="10" fill="#0f766e">Age?</text>
+  <!-- Left branch -->
+  <line x1="88" y1="178" x2="65" y2="207" stroke="#5d6d7e" stroke-width="1.5"/>
+  <text x="72" y="200" font-size="9" fill="#5d6d7e">≤30</text>
+  <circle cx="55" cy="217" r="13" fill="#e8f5f3" stroke="#0f766e" stroke-width="2"/>
+  <text x="55" y="222" text-anchor="middle" font-size="9" fill="#0f766e">Edu?</text>
+  <line x1="44" y1="228" x2="35" y2="252" stroke="#5d6d7e" stroke-width="1.5"/>
+  <line x1="66" y1="228" x2="75" y2="252" stroke="#5d6d7e" stroke-width="1.5"/>
+  <rect x="22" y="252" width="28" height="18" rx="4" fill="#c8ede9" stroke="#0f766e" stroke-width="1"/>
+  <text x="36" y="264" text-anchor="middle" font-size="8" fill="#0b4f4a">Yes</text>
+  <rect x="62" y="252" width="28" height="18" rx="4" fill="#fde9c8" stroke="#c68b12" stroke-width="1"/>
+  <text x="76" y="264" text-anchor="middle" font-size="8" fill="#8a5e0a">No</text>
+  <!-- Right branch -->
+  <line x1="114" y1="178" x2="140" y2="207" stroke="#5d6d7e" stroke-width="1.5"/>
+  <text x="131" y="200" font-size="9" fill="#5d6d7e">&gt;30</text>
+  <circle cx="150" cy="217" r="13" fill="#e8f5f3" stroke="#0f766e" stroke-width="2"/>
+  <text x="150" y="222" text-anchor="middle" font-size="9" fill="#0f766e">Hrs?</text>
+  <line x1="140" y1="228" x2="133" y2="252" stroke="#5d6d7e" stroke-width="1.5"/>
+  <line x1="160" y1="228" x2="167" y2="252" stroke="#5d6d7e" stroke-width="1.5"/>
+  <rect x="120" y="252" width="28" height="18" rx="4" fill="#fde9c8" stroke="#c68b12" stroke-width="1"/>
+  <text x="134" y="264" text-anchor="middle" font-size="8" fill="#8a5e0a">No</text>
+  <rect x="155" y="252" width="28" height="18" rx="4" fill="#c8ede9" stroke="#0f766e" stroke-width="1"/>
+  <text x="169" y="264" text-anchor="middle" font-size="8" fill="#0b4f4a">Yes</text>
+
+  <text x="101" y="303" text-anchor="middle" font-size="11" font-weight="600" fill="#152536">Like a flowchart</text>
+  <text x="101" y="320" text-anchor="middle" font-size="10" fill="#5d6d7e">Asks yes/no questions</text>
+  <text x="101" y="335" text-anchor="middle" font-size="10" fill="#5d6d7e">in sequence until</text>
+  <text x="101" y="350" text-anchor="middle" font-size="10" fill="#5d6d7e">it reaches a decision.</text>
+  <text x="101" y="375" text-anchor="middle" font-size="10" fill="#0f766e" font-weight="600">✦ Highly interpretable</text>
+  <text x="101" y="392" text-anchor="middle" font-size="10" fill="#5d6d7e">Can overfit if</text>
+  <text x="101" y="407" text-anchor="middle" font-size="10" fill="#5d6d7e">grown too deep</text>
+
+  <!-- ===== CARD 2: k-NN ===== -->
+  <rect x="197" y="90" width="163" height="360" rx="12" fill="#ffffff" stroke="#0f766e" stroke-width="1.5"/>
+  <rect x="197" y="90" width="163" height="42" rx="12" fill="#0f766e"/>
+  <rect x="197" y="116" width="163" height="16" fill="#0f766e"/>
+  <text x="278" y="117" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">k-Nearest Neighbors</text>
+
+  <!-- Scatter plot for k-NN -->
+  <!-- Teal dots (class A) -->
+  <circle cx="230" cy="165" r="7" fill="#0f766e" opacity="0.85"/>
+  <circle cx="248" cy="180" r="7" fill="#0f766e" opacity="0.85"/>
+  <circle cx="222" cy="195" r="7" fill="#0f766e" opacity="0.85"/>
+  <circle cx="240" cy="208" r="7" fill="#0f766e" opacity="0.85"/>
+  <circle cx="255" cy="170" r="7" fill="#0f766e" opacity="0.85"/>
+  <!-- Amber dots (class B) -->
+  <circle cx="315" cy="162" r="7" fill="#c68b12" opacity="0.85"/>
+  <circle cx="330" cy="178" r="7" fill="#c68b12" opacity="0.85"/>
+  <circle cx="320" cy="195" r="7" fill="#c68b12" opacity="0.85"/>
+  <circle cx="340" cy="165" r="7" fill="#c68b12" opacity="0.85"/>
+  <circle cx="328" cy="208" r="7" fill="#c68b12" opacity="0.85"/>
+  <!-- Unknown point (? mark) -->
+  <circle cx="278" cy="188" r="10" fill="#f8fbfb" stroke="#152536" stroke-width="2" stroke-dasharray="3,2"/>
+  <text x="278" y="193" text-anchor="middle" font-size="12" font-weight="700" fill="#152536">?</text>
+  <!-- Dashed radius circle -->
+  <circle cx="278" cy="188" r="42" fill="none" stroke="#0f766e" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.5"/>
+  <!-- Label "k=3 neighbors" -->
+  <text x="278" y="248" text-anchor="middle" font-size="10" fill="#5d6d7e">k = 3 neighbors</text>
+
+  <text x="278" y="303" text-anchor="middle" font-size="11" font-weight="600" fill="#152536">Ask your neighbors</text>
+  <text x="278" y="320" text-anchor="middle" font-size="10" fill="#5d6d7e">Classify by majority</text>
+  <text x="278" y="335" text-anchor="middle" font-size="10" fill="#5d6d7e">vote among the k</text>
+  <text x="278" y="350" text-anchor="middle" font-size="10" fill="#5d6d7e">closest known points.</text>
+  <text x="278" y="375" text-anchor="middle" font-size="10" fill="#0f766e" font-weight="600">✦ No training needed</text>
+  <text x="278" y="392" text-anchor="middle" font-size="10" fill="#5d6d7e">Slow at prediction</text>
+  <text x="278" y="407" text-anchor="middle" font-size="10" fill="#5d6d7e">on large datasets</text>
+
+  <!-- ===== CARD 3: SVM ===== -->
+  <rect x="374" y="90" width="163" height="360" rx="12" fill="#ffffff" stroke="#0f766e" stroke-width="1.5"/>
+  <rect x="374" y="90" width="163" height="42" rx="12" fill="#0f766e"/>
+  <rect x="374" y="116" width="163" height="16" fill="#0f766e"/>
+  <text x="455" y="117" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Support Vector Machine</text>
+
+  <!-- SVM margin diagram -->
+  <!-- Boundary line -->
+  <line x1="455" y1="148" x2="455" y2="242" stroke="#152536" stroke-width="2.5"/>
+  <!-- Margin lines -->
+  <line x1="430" y1="148" x2="430" y2="242" stroke="#152536" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+  <line x1="480" y1="148" x2="480" y2="242" stroke="#152536" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+  <!-- Margin label -->
+  <text x="455" y="145" text-anchor="middle" font-size="9" fill="#5d6d7e">← margin →</text>
+  <!-- Left class (teal circles) -->
+  <circle cx="405" cy="168" r="7" fill="#0f766e" opacity="0.85"/>
+  <circle cx="395" cy="190" r="7" fill="#0f766e" opacity="0.85"/>
+  <circle cx="412" cy="208" r="7" fill="#0f766e" opacity="0.85"/>
+  <circle cx="400" cy="228" r="7" fill="#0f766e" opacity="0.85"/>
+  <!-- Support vectors (circled) -->
+  <circle cx="424" cy="180" r="7" fill="#0f766e" opacity="0.85"/>
+  <circle cx="424" cy="180" r="11" fill="none" stroke="#0f766e" stroke-width="1.5"/>
+  <circle cx="424" cy="218" r="7" fill="#0f766e" opacity="0.85"/>
+  <circle cx="424" cy="218" r="11" fill="none" stroke="#0f766e" stroke-width="1.5"/>
+  <!-- Right class (amber) -->
+  <circle cx="500" cy="168" r="7" fill="#c68b12" opacity="0.85"/>
+  <circle cx="510" cy="190" r="7" fill="#c68b12" opacity="0.85"/>
+  <circle cx="498" cy="210" r="7" fill="#c68b12" opacity="0.85"/>
+  <circle cx="508" cy="228" r="7" fill="#c68b12" opacity="0.85"/>
+  <!-- Support vectors (right, circled) -->
+  <circle cx="486" cy="180" r="7" fill="#c68b12" opacity="0.85"/>
+  <circle cx="486" cy="180" r="11" fill="none" stroke="#c68b12" stroke-width="1.5"/>
+  <circle cx="486" cy="218" r="7" fill="#c68b12" opacity="0.85"/>
+  <circle cx="486" cy="218" r="11" fill="none" stroke="#c68b12" stroke-width="1.5"/>
+
+  <text x="455" y="303" text-anchor="middle" font-size="11" font-weight="600" fill="#152536">Find the widest gap</text>
+  <text x="455" y="320" text-anchor="middle" font-size="10" fill="#5d6d7e">Draws the dividing</text>
+  <text x="455" y="335" text-anchor="middle" font-size="10" fill="#5d6d7e">line that is farthest</text>
+  <text x="455" y="350" text-anchor="middle" font-size="10" fill="#5d6d7e">from both groups.</text>
+  <text x="455" y="375" text-anchor="middle" font-size="10" fill="#0f766e" font-weight="600">✦ Strong on complex data</text>
+  <text x="455" y="392" text-anchor="middle" font-size="10" fill="#5d6d7e">Slow to train on</text>
+  <text x="455" y="407" text-anchor="middle" font-size="10" fill="#5d6d7e">large datasets</text>
+
+  <!-- ===== CARD 4: Neural Network ===== -->
+  <rect x="551" y="90" width="163" height="360" rx="12" fill="#ffffff" stroke="#0f766e" stroke-width="1.5"/>
+  <rect x="551" y="90" width="163" height="42" rx="12" fill="#0f766e"/>
+  <rect x="551" y="116" width="163" height="16" fill="#0f766e"/>
+  <text x="632" y="117" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Neural Network</text>
+
+  <!-- MLP layer diagram -->
+  <!-- Input layer -->
+  <circle cx="580" cy="163" r="9" fill="#e8f5f3" stroke="#0f766e" stroke-width="2"/>
+  <circle cx="580" cy="188" r="9" fill="#e8f5f3" stroke="#0f766e" stroke-width="2"/>
+  <circle cx="580" cy="213" r="9" fill="#e8f5f3" stroke="#0f766e" stroke-width="2"/>
+  <text x="580" y="233" text-anchor="middle" font-size="9" fill="#5d6d7e">Input</text>
+  <!-- Hidden layer 1 -->
+  <circle cx="622" cy="155" r="9" fill="#0f766e"/>
+  <circle cx="622" cy="178" r="9" fill="#0f766e"/>
+  <circle cx="622" cy="201" r="9" fill="#0f766e"/>
+  <circle cx="622" cy="224" r="9" fill="#0f766e"/>
+  <text x="622" y="240" text-anchor="middle" font-size="9" fill="#5d6d7e">Hidden</text>
+  <!-- Hidden layer 2 -->
+  <circle cx="664" cy="163" r="9" fill="#0b4f4a"/>
+  <circle cx="664" cy="188" r="9" fill="#0b4f4a"/>
+  <circle cx="664" cy="213" r="9" fill="#0b4f4a"/>
+  <text x="664" y="233" text-anchor="middle" font-size="9" fill="#5d6d7e">Hidden</text>
+  <!-- Output -->
+  <circle cx="700" cy="175" r="9" fill="#c68b12"/>
+  <circle cx="700" cy="200" r="9" fill="#c68b12"/>
+  <text x="700" y="220" text-anchor="middle" font-size="9" fill="#5d6d7e">Out</text>
+  <!-- Connections (input → hidden1) -->
+  <line x1="589" y1="163" x2="613" y2="155" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <line x1="589" y1="163" x2="613" y2="178" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <line x1="589" y1="163" x2="613" y2="201" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <line x1="589" y1="163" x2="613" y2="224" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <line x1="589" y1="188" x2="613" y2="155" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <line x1="589" y1="188" x2="613" y2="178" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <line x1="589" y1="188" x2="613" y2="201" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <line x1="589" y1="188" x2="613" y2="224" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <line x1="589" y1="213" x2="613" y2="155" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <line x1="589" y1="213" x2="613" y2="178" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <line x1="589" y1="213" x2="613" y2="201" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <line x1="589" y1="213" x2="613" y2="224" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <!-- Connections (hidden1 → hidden2) -->
+  <line x1="631" y1="155" x2="655" y2="163" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <line x1="631" y1="178" x2="655" y2="163" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <line x1="631" y1="155" x2="655" y2="188" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <line x1="631" y1="178" x2="655" y2="188" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <line x1="631" y1="201" x2="655" y2="188" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <line x1="631" y1="201" x2="655" y2="213" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <line x1="631" y1="224" x2="655" y2="213" stroke="#0f766e" stroke-width="0.8" opacity="0.4"/>
+  <!-- Connections (hidden2 → output) -->
+  <line x1="673" y1="163" x2="691" y2="175" stroke="#c68b12" stroke-width="1" opacity="0.5"/>
+  <line x1="673" y1="188" x2="691" y2="175" stroke="#c68b12" stroke-width="1" opacity="0.5"/>
+  <line x1="673" y1="213" x2="691" y2="200" stroke="#c68b12" stroke-width="1" opacity="0.5"/>
+  <line x1="673" y1="188" x2="691" y2="200" stroke="#c68b12" stroke-width="1" opacity="0.5"/>
+
+  <text x="632" y="303" text-anchor="middle" font-size="11" font-weight="600" fill="#152536">Layered brain-inspired</text>
+  <text x="632" y="320" text-anchor="middle" font-size="10" fill="#5d6d7e">Learns complex patterns</text>
+  <text x="632" y="335" text-anchor="middle" font-size="10" fill="#5d6d7e">through interconnected</text>
+  <text x="632" y="350" text-anchor="middle" font-size="10" fill="#5d6d7e">layers of "neurons."</text>
+  <text x="632" y="375" text-anchor="middle" font-size="10" fill="#0f766e" font-weight="600">✦ Highest capacity</text>
+  <text x="632" y="392" text-anchor="middle" font-size="10" fill="#5d6d7e">Needs more data</text>
+  <text x="632" y="407" text-anchor="middle" font-size="10" fill="#5d6d7e">to avoid memorizing</text>
+
+  <!-- ===== CARD 5: Gradient Boosting ===== -->
+  <rect x="728" y="90" width="163" height="360" rx="12" fill="#ffffff" stroke="#0f766e" stroke-width="1.5"/>
+  <rect x="728" y="90" width="163" height="42" rx="12" fill="#0f766e"/>
+  <rect x="728" y="116" width="163" height="16" fill="#0f766e"/>
+  <text x="809" y="117" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Gradient Boosting</text>
+
+  <!-- Stacked small trees -->
+  <!-- Tree 1 (base, biggest) -->
+  <rect x="753" y="148" width="24" height="52" rx="3" fill="#c8ede9" stroke="#0f766e" stroke-width="1.5"/>
+  <text x="765" y="178" text-anchor="middle" font-size="9" fill="#0b4f4a">Tree</text>
+  <text x="765" y="191" text-anchor="middle" font-size="9" fill="#0b4f4a">1</text>
+  <!-- Tree 2 -->
+  <rect x="753" y="205" width="24" height="40" rx="3" fill="#a8dcd6" stroke="#0f766e" stroke-width="1.5"/>
+  <text x="765" y="228" text-anchor="middle" font-size="9" fill="#0b4f4a">+T2</text>
+  <!-- Tree 3 -->
+  <rect x="753" y="250" width="24" height="32" rx="3" fill="#88cfc9" stroke="#0f766e" stroke-width="1.5"/>
+  <text x="765" y="270" text-anchor="middle" font-size="9" fill="#0b4f4a">+T3</text>
+
+  <!-- Arrow + final output -->
+  <line x1="785" y1="200" x2="800" y2="200" stroke="#152536" stroke-width="1.5" marker-end="url(#arr)"/>
+  <defs>
+    <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L6,3 z" fill="#152536"/>
+    </marker>
+  </defs>
+  <text x="820" y="186" text-anchor="middle" font-size="10" fill="#5d6d7e">Each tree</text>
+  <text x="820" y="200" text-anchor="middle" font-size="10" fill="#5d6d7e">fixes the</text>
+  <text x="820" y="214" text-anchor="middle" font-size="10" fill="#5d6d7e">mistakes of</text>
+  <text x="820" y="228" text-anchor="middle" font-size="10" fill="#5d6d7e">the last</text>
+  <!-- Sum arrow -->
+  <rect x="782" y="240" width="54" height="30" rx="5" fill="#0f766e"/>
+  <text x="809" y="259" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">Final ✓</text>
+
+  <text x="809" y="303" text-anchor="middle" font-size="11" font-weight="600" fill="#152536">Team of specialists</text>
+  <text x="809" y="320" text-anchor="middle" font-size="10" fill="#5d6d7e">Many small weak trees</text>
+  <text x="809" y="335" text-anchor="middle" font-size="10" fill="#5d6d7e">each correcting the</text>
+  <text x="809" y="350" text-anchor="middle" font-size="10" fill="#5d6d7e">previous one's errors.</text>
+  <text x="809" y="375" text-anchor="middle" font-size="10" fill="#0f766e" font-weight="600">✦ Often best accuracy</text>
+  <text x="809" y="392" text-anchor="middle" font-size="10" fill="#5d6d7e">Sensitive to noisy</text>
+  <text x="809" y="407" text-anchor="middle" font-size="10" fill="#5d6d7e">labels; slower to tune</text>
+
+  <!-- Bottom credit line -->
+  <text x="460" y="467" text-anchor="middle" font-size="11" fill="#5d6d7e">Evaluated on wine quality prediction &amp; census income classification · Georgia Tech CS 7641</text>
+</svg>

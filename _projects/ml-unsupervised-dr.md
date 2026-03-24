@@ -2,7 +2,36 @@
 title: "Unsupervised Learning and Dimensionality Reduction"
 description: "A comparative study of clustering and dimensionality reduction across two real-world datasets — examining when structure exists, how to find it, and what happens when you reduce a high-dimensional space to its essential geometry."
 layout: project
+image: "/assets/images/projects/unsupervised-overview.svg"
 ---
+
+![Unsupervised learning overview: clustering and dimensionality reduction](/assets/images/projects/unsupervised-overview.svg)
+
+*Two fundamental questions: which groups exist in unlabeled data (clustering), and what is the minimal set of dimensions needed to describe its shape (dimensionality reduction)?*
+
+## The Big Idea (No Math Required)
+
+Imagine you're handed a box of 10,000 photographs of people — no names, no labels, nothing. Can you sort them into meaningful groups? You might notice that some photos look like they're taken outdoors, some indoors. Some people are wearing formal clothes, some are casual. Without anyone telling you the categories, your brain naturally finds patterns and draws distinctions.
+
+That is exactly what **unsupervised learning** does. There are no labels. No teacher. Just raw data, and the question: *what structure exists here?*
+
+This project explored two techniques for doing exactly that:
+
+**Clustering — "Which groups exist?"**
+
+Like sorting a messy pile of photographs into albums, clustering algorithms group similar data points together. Two methods were compared:
+
+- **K-Means**: Each point belongs to exactly one group. The algorithm finds the group centers (centroids) that minimize the total distance from points to their assigned center. Fast and intuitive, but assumes groups are roughly round.
+- **Expectation Maximization (GMM)**: Like K-Means, but more honest about uncertainty — a point near the boundary between two groups gets *partial membership* in both. This is closer to how the real world works.
+
+**Dimensionality Reduction — "What's essential?"**
+
+Most real-world datasets have many features (columns). A lot of those features are redundant or noisy. Dimensionality reduction is like summarizing a 300-page report into a 2-page executive summary — you lose some details, but the key structure is preserved. Two methods:
+
+- **PCA (Principal Component Analysis)**: Finds the directions in which the data varies the most. Rotate and compress to keep only the "important" axes. Like discovering that all those different wine measurements can mostly be explained by two underlying factors.
+- **ICA (Independent Component Analysis)**: Separates mixed signals into their independent sources. Imagine two people talking simultaneously in a room — ICA unmixes the overlapping audio to isolate each voice.
+
+The deeper experiment: does reducing the dimensions *before* clustering make the clusters better? The answer depends entirely on the structure of the data — which is precisely what makes the comparison interesting.
 
 ## The Problem with Labels
 

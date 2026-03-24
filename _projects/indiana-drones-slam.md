@@ -5,6 +5,21 @@ layout: project
 image: "/assets/images/projects/indiana-drones-map.svg"
 ---
 
+## The Big Idea (No Math Required)
+
+Close your eyes and picture walking through your house in the dark. You don't bump into walls — not because you can see them, but because you've built a *mental map* from years of experience. You know roughly where you are, and you update that sense as you move.
+
+Now imagine doing that in a completely unknown environment, with a faulty GPS, sensors that are slightly wrong, and every step introducing a small random error in your position. That is the SLAM problem.
+
+**SLAM** stands for *Simultaneous Localization and Mapping* — and it's the core challenge for any autonomous robot navigating a new space:
+
+- *Localization*: Where am I?
+- *Mapping*: What does the world around me look like?
+
+The catch is that these two problems are *circular*: your map is only as good as your position estimate, and your position estimate is only as good as your map. A tiny error in one compounds into a large error in the other.
+
+This project implemented a SLAM solution for an autonomous drone tasked with navigating a forest environment to retrieve a target — all with noisy distance sensors, uncertain movement, and no GPS. The key insight: a mathematical framework called the **Extended Kalman Filter** lets the drone continuously fuse its uncertain sensor readings into a progressively more accurate joint belief about both its location and the map of its surroundings.
+
 ## Research Context
 
 This project comes from [CS 7638: Robotics: AI Techniques](https://omscs.gatech.edu/cs-7638-robotics-ai-techniques) and centers on a classic robotics problem: how does an autonomous agent build a map and localize itself at the same time, while its sensors and movement are noisy?
