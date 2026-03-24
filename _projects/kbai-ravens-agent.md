@@ -5,6 +5,16 @@ layout: project
 image: "/assets/images/projects/kbai-rpm-sample.png"
 ---
 
+## The Big Idea (No Math Required)
+
+You've probably seen puzzles like this: a 3×3 grid of geometric shapes, with one cell missing. Eight possible answers are shown below — which one completes the pattern?
+
+Humans find these almost automatic after a moment of thought. But for a computer, this is surprisingly hard. Why? Because the puzzle isn't testing whether you can *see* the shapes — it's testing whether you can reason about *relationships between changes*. You must notice that "each row adds a dot," or "each column rotates the shape 90°," and then *apply that rule* to a new context you've never seen before.
+
+This kind of reasoning — called *analogical reasoning* — is considered one of the hallmarks of human intelligence. It's why these puzzles are used in IQ tests and why building a computer agent that solves them is a meaningful research challenge.
+
+This project built such an agent using *symbolic AI*: no neural network, no pixel statistics, just a structured representation of objects, relationships, and transformation rules. The agent describes what it *sees*, reasons about what *changed*, and selects the answer that best continues the pattern — exactly the way a human does.
+
 ## The Test That Stumps Machines
 
 In 1936, psychologist John C. Raven published a series of visual analogy puzzles designed to measure *fluid intelligence* — the capacity to reason about novel problems without relying on prior knowledge. His Progressive Matrices have since become the most widely used nonverbal intelligence test in the world, employed in everything from military selection to clinical psychology research. They are also, notoriously, hard for computers.

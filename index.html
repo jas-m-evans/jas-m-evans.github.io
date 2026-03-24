@@ -28,6 +28,11 @@ author_profile: true
   {% assign recent_projects = site.projects | sort: "title" %}
   {% for project in recent_projects limit:4 %}
     <div class="project-item">
+      {% if project.image %}
+        <a href="{{ project.url }}" class="project-item__image-link">
+          <img src="{{ project.image }}" alt="{{ project.title }}" class="project-item__image" loading="lazy">
+        </a>
+      {% endif %}
       <h3><a href="{{ project.url }}">{{ project.title }}</a></h3>
       <p>{{ project.description }}</p>
     </div>

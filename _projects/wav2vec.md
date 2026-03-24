@@ -2,7 +2,24 @@
 title: "wav2vec 2.0: Learning to Listen Without Labels"
 description: "Fine-tuned Meta's self-supervised wav2vec 2.0 model for automatic speech recognition, exploring how a network trained on raw audio without transcriptions learns acoustic representations powerful enough to enable high-accuracy transcription with only a fraction of the labeled data a conventional system requires."
 layout: project
+image: "/assets/images/projects/wav2vec-pipeline.svg"
 ---
+
+![wav2vec 2.0 training pipeline diagram](/assets/images/projects/wav2vec-pipeline.svg)
+
+*Two-phase approach: learn the structure of audio without any transcriptions, then fine-tune on a small labeled dataset.*
+
+## The Big Idea (No Math Required)
+
+Think about how a baby learns to understand language. Long before they can read a single word, they've heard thousands of hours of speech — absorbing the rhythms, sounds, and patterns of their language. By the time they start matching sounds to written words, they already have an incredibly rich internal model of what speech *sounds like*.
+
+wav2vec 2.0 works the same way.
+
+**Phase 1 — Learning to "hear" (no labels needed):** The model is trained on hundreds of hours of raw audio with no transcriptions. It learns by playing a fill-in-the-blank game: mask out a portion of the audio, then predict what sound should go there from a set of candidates. There are no right-or-wrong answers from a human — just the structure of the audio itself. After this phase, the model has a sophisticated internal vocabulary of acoustic patterns.
+
+**Phase 2 — Learning to transcribe (tiny labeled dataset):** Now you add a thin layer on top and fine-tune on actual (audio, text) pairs. Because the model already understands the sound of speech deeply, it only needs a *tiny* amount of labeled data — as little as 10 minutes — to learn to transcribe.
+
+The payoff is dramatic. Traditional speech recognition required 960 hours of human-transcribed audio. wav2vec 2.0 matched its performance with just 10 minutes — a **5,760× reduction** in labeling cost. For rare languages with little transcribed data, this is the difference between having a working system and having nothing at all.
 
 ## The Labeling Problem in Speech AI
 

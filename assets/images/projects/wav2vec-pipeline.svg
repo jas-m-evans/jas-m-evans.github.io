@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 440" font-family="IBM Plex Sans, Arial, sans-serif">
+  <!-- Background -->
+  <rect width="920" height="440" rx="16" fill="#f8fbfb"/>
+
+  <!-- Title -->
+  <text x="460" y="40" text-anchor="middle" font-size="21" font-weight="700" fill="#152536">How wav2vec 2.0 Learns to Transcribe Speech</text>
+  <text x="460" y="62" text-anchor="middle" font-size="13" fill="#5d6d7e">Two phases: learn from unlabeled audio first, then fine-tune with a tiny amount of transcribed speech</text>
+
+  <!-- ============================================================ -->
+  <!-- PHASE 1: SELF-SUPERVISED PRE-TRAINING (left 56%) -->
+  <!-- ============================================================ -->
+  <rect x="18" y="80" width="508" height="328" rx="14" fill="#e8f5f3" stroke="#0f766e" stroke-width="1.5"/>
+  <rect x="18" y="80" width="508" height="36" rx="14" fill="#0f766e"/>
+  <rect x="18" y="98" width="508" height="18" fill="#0f766e"/>
+  <text x="272" y="103" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">Phase 1 — Self-supervised Pre-training (No Labels Needed)</text>
+
+  <!-- Raw audio waveform box -->
+  <rect x="34" y="126" width="112" height="76" rx="10" fill="#ffffff" stroke="#0b4f4a" stroke-width="1.5"/>
+  <text x="90" y="145" text-anchor="middle" font-size="11" font-weight="600" fill="#152536">Raw Audio</text>
+  <!-- Waveform lines -->
+  <polyline points="44,175 52,158 58,185 65,150 72,180 79,160 86,178 93,155 100,172 107,162 114,177 121,155 128,182 136,167" fill="none" stroke="#0f766e" stroke-width="1.8"/>
+  <text x="90" y="195" text-anchor="middle" font-size="10" fill="#5d6d7e">16 kHz waveform</text>
+
+  <!-- Arrow -->
+  <line x1="148" y1="164" x2="175" y2="164" stroke="#0f766e" stroke-width="2" marker-end="url(#arrowTeal)"/>
+
+  <!-- Feature Encoder box -->
+  <rect x="178" y="126" width="108" height="76" rx="10" fill="#ffffff" stroke="#0b4f4a" stroke-width="1.5"/>
+  <text x="232" y="148" text-anchor="middle" font-size="11" font-weight="600" fill="#152536">Feature</text>
+  <text x="232" y="162" text-anchor="middle" font-size="11" font-weight="600" fill="#152536">Encoder</text>
+  <text x="232" y="178" text-anchor="middle" font-size="10" fill="#0f766e">(CNN layers)</text>
+  <text x="232" y="195" text-anchor="middle" font-size="10" fill="#5d6d7e">1 vector / 20ms</text>
+
+  <!-- Arrow -->
+  <line x1="288" y1="164" x2="315" y2="164" stroke="#0f766e" stroke-width="2" marker-end="url(#arrowTeal)"/>
+
+  <!-- Quantizer box -->
+  <rect x="318" y="126" width="108" height="76" rx="10" fill="#ffffff" stroke="#0b4f4a" stroke-width="1.5"/>
+  <text x="372" y="148" text-anchor="middle" font-size="11" font-weight="600" fill="#152536">Quantizer</text>
+  <text x="372" y="163" text-anchor="middle" font-size="10" fill="#0f766e">(codebook)</text>
+  <!-- Small grid representing codebook -->
+  <rect x="348" y="168" width="12" height="12" rx="2" fill="#0f766e" opacity="0.7"/>
+  <rect x="363" y="168" width="12" height="12" rx="2" fill="#0f766e" opacity="0.4"/>
+  <rect x="378" y="168" width="12" height="12" rx="2" fill="#0f766e" opacity="0.9"/>
+  <rect x="393" y="168" width="12" height="12" rx="2" fill="#0f766e" opacity="0.5"/>
+  <text x="372" y="196" text-anchor="middle" font-size="10" fill="#5d6d7e">discrete tokens</text>
+
+  <!-- Masking annotation -->
+  <rect x="34" y="218" width="392" height="58" rx="8" fill="#0f766e" opacity="0.08" stroke="#0f766e" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="230" y="238" text-anchor="middle" font-size="11" font-weight="600" fill="#0b4f4a">The Training Trick: Masking</text>
+  <text x="230" y="254" text-anchor="middle" font-size="10" fill="#5d6d7e">Some audio segments are hidden ("masked"). The Transformer must</text>
+  <text x="230" y="268" text-anchor="middle" font-size="10" fill="#5d6d7e">predict the correct token — like fill-in-the-blank for sound waves.</text>
+
+  <!-- Transformer box (full width below) -->
+  <rect x="34" y="288" width="476" height="54" rx="10" fill="#0f766e"/>
+  <text x="272" y="311" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">Transformer Context Network</text>
+  <text x="272" y="329" text-anchor="middle" font-size="11" fill="#c8ede9">Sees the full utterance · Learns long-range acoustic patterns · Builds rich audio "vocabulary"</text>
+
+  <!-- Upward arrow from encoder to transformer (implied) -->
+  <line x1="232" y1="202" x2="232" y2="285" stroke="#0f766e" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.5"/>
+
+  <!-- ============================================================ -->
+  <!-- PHASE 2: FINE-TUNING (right 40%) -->
+  <!-- ============================================================ -->
+  <rect x="540" y="80" width="362" height="328" rx="14" fill="#fef7ea" stroke="#c68b12" stroke-width="1.5"/>
+  <rect x="540" y="80" width="362" height="36" rx="14" fill="#c68b12"/>
+  <rect x="540" y="98" width="362" height="18" fill="#c68b12"/>
+  <text x="721" y="103" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">Phase 2 — Fine-tuning (Tiny Labeled Dataset)</text>
+
+  <!-- Pretrained model icon -->
+  <rect x="556" y="124" width="120" height="54" rx="8" fill="#ffffff" stroke="#c68b12" stroke-width="1.5"/>
+  <text x="616" y="147" text-anchor="middle" font-size="11" font-weight="600" fill="#152536">Pretrained</text>
+  <text x="616" y="162" text-anchor="middle" font-size="11" font-weight="600" fill="#0f766e">Transformer</text>
+  <text x="616" y="175" text-anchor="middle" font-size="10" fill="#5d6d7e">(frozen CNN)</text>
+
+  <!-- Arrow -->
+  <line x1="678" y1="151" x2="705" y2="151" stroke="#c68b12" stroke-width="2" marker-end="url(#arrowAmber)"/>
+
+  <!-- CTC Head -->
+  <rect x="708" y="124" width="100" height="54" rx="8" fill="#ffffff" stroke="#c68b12" stroke-width="1.5"/>
+  <text x="758" y="147" text-anchor="middle" font-size="11" font-weight="600" fill="#152536">CTC</text>
+  <text x="758" y="162" text-anchor="middle" font-size="11" font-weight="600" fill="#152536">Decoder</text>
+  <text x="758" y="175" text-anchor="middle" font-size="10" fill="#5d6d7e">+ linear head</text>
+
+  <!-- Arrow down to transcript -->
+  <line x1="758" y1="180" x2="758" y2="205" stroke="#c68b12" stroke-width="2" marker-end="url(#arrowAmber)"/>
+
+  <!-- Transcript output box -->
+  <rect x="690" y="208" width="170" height="40" rx="8" fill="#c68b12"/>
+  <text x="775" y="231" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">"Hello, World!"</text>
+
+  <!-- Data efficiency callout -->
+  <rect x="556" y="260" width="328" height="76" rx="10" fill="#ffffff" stroke="#c68b12" stroke-width="1.5"/>
+  <text x="720" y="282" text-anchor="middle" font-size="12" font-weight="700" fill="#152536">Why This Matters</text>
+  <text x="720" y="300" text-anchor="middle" font-size="11" fill="#5d6d7e">Traditional systems needed 960 hrs of labeled audio.</text>
+  <text x="720" y="316" text-anchor="middle" font-size="11" fill="#5d6d7e">wav2vec 2.0 matches them with just 10 minutes —</text>
+  <text x="720" y="330" text-anchor="middle" font-size="11" font-weight="600" fill="#0f766e">a 5,760× reduction in labeling cost.</text>
+
+  <!-- Connecting arrow between Phase 1 and Phase 2 -->
+  <line x1="524" y1="330" x2="538" y2="330" stroke="#152536" stroke-width="2.5" marker-end="url(#arrowDark)"/>
+
+  <!-- Bottom caption -->
+  <text x="460" y="423" text-anchor="middle" font-size="11" fill="#5d6d7e">Architecture: Meta AI (2020) · Fine-tuned using Hugging Face Transformers · Evaluated with Word Error Rate (WER)</text>
+
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="arrowTeal" markerWidth="7" markerHeight="7" refX="4" refY="3.5" orient="auto">
+      <path d="M0,0 L0,7 L7,3.5 z" fill="#0f766e"/>
+    </marker>
+    <marker id="arrowAmber" markerWidth="7" markerHeight="7" refX="4" refY="3.5" orient="auto">
+      <path d="M0,0 L0,7 L7,3.5 z" fill="#c68b12"/>
+    </marker>
+    <marker id="arrowDark" markerWidth="7" markerHeight="7" refX="4" refY="3.5" orient="auto">
+      <path d="M0,0 L0,7 L7,3.5 z" fill="#152536"/>
+    </marker>
+  </defs>
+</svg>

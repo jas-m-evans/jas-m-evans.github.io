@@ -5,6 +5,19 @@ layout: project
 image: "/assets/images/projects/ml4t-p8-experiment1.png"
 ---
 
+## The Big Idea (No Math Required)
+
+Imagine you're trying to decide when to buy and sell a stock. You could do it two ways:
+
+1. **By hand**: Study charts, read books about technical analysis, and write down explicit rules — "if the price drops below its 20-day average AND volume is rising, buy."
+2. **Let a machine figure it out**: Feed the computer years of historical prices and returns, and let it discover patterns you might never think to look for.
+
+This project did both, then asked the harder question: *which one actually works, and why does it appear to work?*
+
+It turns out that almost any strategy can look brilliant on historical data if you stare at it long enough — that's called **overfitting**, and it's the central hazard of quantitative trading. The real test is whether the strategy's apparent edge survives realistic market conditions: transaction costs, slippage, and the fact that every trade you make slightly moves the price against you.
+
+Both strategies were evaluated under a systematic range of those realistic constraints. The result: the machine-learned strategy was more adaptive in volatile markets, but both strategies degraded gracefully (and in revealing ways) as market friction increased. Understanding *why* the edge eroded — and where it didn't — is the whole point.
+
 ## The Central Question of Quantitative Finance
 
 Every trading strategy carries an implicit theory about the market: that prices are predictable, that certain signals carry information about future returns, that there is an edge to be found if you look in the right place. The hard part is not finding a strategy that appears to work on historical data. The hard part is knowing *why* it appears to work and whether that reason will hold in the future.
