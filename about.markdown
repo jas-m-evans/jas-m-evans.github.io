@@ -17,7 +17,7 @@ I'm a computer scientist with an M.Sc., specializing in data engineering and mac
 
 ## What I'm Working On
 
-Recently I've been exploring speech and audio machine learning — including fine-tuning and applying models like wav2vec 2.0 for automatic speech recognition tasks. I'm also interested in building end-to-end data platforms that are reliable, observable, and easy to maintain.
+Recently I've been exploring speech and audio machine learning, including fine-tuning and applying models like wav2vec 2.0 for automatic speech recognition tasks. I'm also interested in building end-to-end data platforms that are reliable, observable, and easy to maintain.
 
 ## Get in Touch
 

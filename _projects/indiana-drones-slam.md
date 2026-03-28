@@ -5,162 +5,104 @@ layout: project
 image: "/assets/images/projects/indiana-drones-map.svg"
 ---
 
-## Abstract
+## The Problem: Lost in Your Own Map
 
-This project implements and analyzes Simultaneous Localization and Mapping (SLAM) for an autonomous drone navigating a forest environment with noisy sensors and uncertain motion. Using an Extended Kalman Filter framework, the system jointly estimates the drone's pose and landmark positions from noisy range-and-bearing measurements, then applies the resulting map to plan a path to a target. Key findings establish the primacy of estimation stability over aggressive motion planning and demonstrate how horizon-limited sensing makes exploration order a first-class planning constraint — insights that generalize broadly to real robotics and autonomy systems.
+Imagine you're in a completely dark room. Your only tool is a camera that flashes for one second every few minutes. In that brief moment of light, you glimpse the couch on the far wall and a chair nearby. Then darkness returns.
 
-## The Big Idea (No Math Required)
+As you move forward cautiously, two questions plague you: *Where am I now?* and *What does this room actually look like?* These aren't independent. If your mental map is wrong, you'll misevaluate your position. If you misjudge where you stand, every new piece of information you gather warps the map further.
 
-Close your eyes and picture walking through your house in the dark. You don't bump into walls — not because you can see them, but because you've built a *mental map* from years of experience. You know roughly where you are, and you update that sense as you move.
+This is the core problem of robotics: **Simultaneous Localization and Mapping (SLAM).**
 
-Now imagine doing that in a completely unknown environment, with a faulty GPS, sensors that are slightly wrong, and every step introducing a small random error in your position. That is the SLAM problem.
+For the past decade, SLAM has been the unsolved technical challenge preventing robots from operating in unmapped, GPS-denied environments. Drones over buildings with no landmarks. Submarines investigating the ocean floor. Rovers exploring other planets. All face this same fundamental dilemma.
 
-**SLAM** stands for *Simultaneous Localization and Mapping* — and it's the core challenge for any autonomous robot navigating a new space:
+This project from [CS 7638: Robotics: AI Techniques](https://omscs.gatech.edu/cs-7638-robotics-ai-techniques) explores how to build robust SLAM systems when *every sensor lies a little*, *every movement misses its target a little*, and the stakes require precision anyway.
 
-- *Localization*: Where am I?
-- *Mapping*: What does the world around me look like?
+## The Challenge
 
-The catch is that these two problems are *circular*: your map is only as good as your position estimate, and your position estimate is only as good as your map. A tiny error in one compounds into a large error in the other.
+In the assignment environment, an autonomous drone wakes up at an unknown global position. It doesn't know where it is. It receives noisy measurements to visible landmarks (trees with known radii), and must navigate to extract treasure while avoiding obstacles. All while building an accurate map and localizing itself simultaneously.
 
-This project implemented a SLAM solution for an autonomous drone tasked with navigating a forest environment to retrieve a target — all with noisy distance sensors, uncertain movement, and no GPS. The key insight: a mathematical framework called the **Extended Kalman Filter** lets the drone continuously fuse its uncertain sensor readings into a progressively more accurate joint belief about both its location and the map of its surroundings.
+![Representative course-style SLAM environment](/assets/images/projects/indiana-drones-map.svg)
 
-## Research Context
+The constraints are punishing:
+- **Measurement noise**: Distance and bearing readings are off by 5% and 3% respectively
+- **Motion uncertainty**: The drone overshoots, undershoots, or drifts in unexpected ways
+- **Partial observability**: The drone's sensors only see trees within a limited horizon
+- **Discrete task requirements**: Treasure extraction succeeds only within a strict distance threshold, typically 0.25 meters
 
-This project comes from [CS 7638: Robotics: AI Techniques](https://omscs.gatech.edu/cs-7638-robotics-ai-techniques) and centers on a classic robotics problem: how does an autonomous agent build a map and localize itself at the same time, while its sensors and movement are noisy?
+The core insight: this isn't primarily a path planning problem. It's an **estimation problem masquerading as a planning problem**.
 
-In the assignment environment, the drone starts at an unknown global position, represents that start as a local origin, receives noisy landmark measurements, and must navigate to extract treasure while avoiding tree obstacles.
+## How Robots See and Think: The Kalman Filter
 
-The challenge is not just path planning. The harder problem is state estimation under uncertainty.
+At the heart of SLAM lies a deceptively elegant algorithm called the **Kalman filter**, a mathematical technique that solves one of the 20th century's most consequential problems: *How do you blend predictions and measurements when both contain error?*
 
-![Representative SLAM environment: tree landmarks, drone start, and treasure target](/assets/images/projects/indiana-drones-map.svg)
+### The Core Idea: Two-Phase Reasoning
 
-*Representative map showing tree landmarks (green circles), drone start position, and treasure target. Landmark positions and obstacle geometry are reconstructed from the published test harness structure. SLAM requires jointly estimating the drone's pose and all landmark positions from noisy observations. Map layout inspired by the landmark-based SLAM formulation described in Thrun, Burgard & Fox (2005).*
+The Kalman filter operates in a predict-then-update cycle:
 
-> **Image source:** Map structure derived from the CS 7638 course test harness (Georgia Tech OMSCS). SLAM formulation follows Thrun, S., Burgard, W., & Fox, D. (2005). *Probabilistic Robotics*. MIT Press.
+**Phase 1 (Prediction):** Based on what you know and the motion command you just issued, predict where you should be and what you should see. But quantify your uncertainty: "I'm probably here, but I'm only 70% confident."
 
-## What Is SLAM (High-Level)
+**Phase 2 (Update):** New measurements arrive from sensors. These measurements contain noise and error, but they ground the estimate in reality. The filter asks: "Which should I trust more, my prediction or this measurement?" It doesn't simply average them. Instead, it weights them intelligently based on *how much uncertainty each one carries*.
 
-SLAM stands for Simultaneous Localization and Mapping.
+This is the magic: **uncertainty quantification.**
 
-At a high level, SLAM answers two questions continuously:
+### Why Uncertainty Matters
 
-- Where am I?
-- What does the world around me look like?
+Every estimate doesn't just have a "best guess." It has an associated "confidence band." Your smartphone's GPS might say "you're here, plus-or-minus 50 feet." Dead reckoning (calculating position from accelerometer readings) might say "you're here, plus-or-minus 3 feet, but that uncertainty *grows* as time passes."
 
-Those two questions are coupled:
+When these estimates conflict, the Kalman filter combines them optimally. It's not a heuristic guess. The mathematics that produces this optimal weighting comes from probability theory, specifically from understanding how Gaussian distributions (bell curves) behave when combined. The filter computes a quantity called the **Kalman gain**, which answers: "Given the uncertainty in my prediction and the uncertainty in this measurement, what weighted average should I use?"
 
-- If your map is wrong, your location estimate drifts.
-- If your location estimate drifts, your map updates become wrong.
+The result: an estimate more accurate than any single sensor could provide, and resilient to sensor failures. If GPS goes out, the filter continues tracking using wheel odometry and corrects drift when GPS returns.
 
-So SLAM solves a feedback loop. The robot uses landmarks and motion updates to refine both the map and its own pose over time.
+### Why It's Recursive and Efficient  
 
-In human terms, this is similar to walking through a dark room with a flashlight. You infer where furniture is, but at the same time you also infer where you are standing relative to that furniture.
+Every second (or millisecond, depending on the system), the filter updates using the previous estimate and the new measurement. This recursive nature is why Kalman filters appear in everything from spacecraft to smartphones to autonomous vehicles. They're computationally efficient enough to run everywhere.
 
-## Why This Problem Is Hard
+### Extended and Nonlinear Variants
 
-This project includes multiple uncertainty sources:
+The classical Kalman filter assumes linear systems. Real robots don't behave that way. When a drone turns, the relationship between its wheel rotations and its position becomes nonlinear. The **Extended Kalman Filter (EKF)** linearizes these relationships locally, and **Unscented Kalman Filters** use clever sampling to handle nonlinearity even better.
 
-- Measurement noise in distance and bearing readings
-- Motion uncertainty in executed moves
-- Partial observability from sensor horizon limits
-- Dynamic landmark visibility (new trees can appear as the drone moves)
+For SLAM specifically, robots maintain a state vector that includes not just *their own pose* (position + orientation), but *all landmark positions too*. This couples the localization and mapping problems: as the robot localizes itself better, its landmarks snap into focus. As landmarks become more precise, errors in robot pose become visible. Both estimates improve together, step by step.
 
-Even when each individual uncertainty looks small, they compound over many steps. Without robust update logic, small errors become large trajectory drift.
+## Applied to Robotics and Autonomous Systems
 
-## Technical Problem Setup
+In this assignment, the drone faces a concrete sensor fusion problem:
 
-The coursework is split into two linked parts.
+- **Perception**: Noisy range-and-bearing measurements to visible trees update the belief about tree locations
+- **Estimation**: A state tracker (using Kalman-style updates) maintains a coherent drone pose and landmark geometry despite compounding errors
+- **Decision-making**: The planner chooses motion commands that preserve enough accuracy to reach treasure extraction range
 
-### Part A: Estimation Core
+The coupling is tight. Once errors in the drone's pose estimate exceed the extraction distance threshold, the treasure becomes unreachable. The planner doesn't fail because of bad planning logic. It fails because bad estimation created an unusable world model.
 
-Build a SLAM module that consumes:
+### From Theory to Practice  
 
-- Landmark measurements in the form of distance, bearing, and radius
-- Movement commands in the form of turn + forward move
+In the project, this manifests as several insights:
 
-And returns:
+**Estimation Stability Is the Core Bottleneck**: The dominant failure mode isn't poor planning. It's pose drift. Once pose drift grows, the planner appears to collapse because actions are evaluated against an increasingly inaccurate world model.
 
-- Estimated drone pose
-- Estimated landmark positions
+**Noise-Tolerant Logic Beats Aggressive Movement**: Cases with nonzero distance and bearing noise reward conservative, geometry-consistent updates. In short missions, aggressive movement looks fast, but under uncertainty it amplifies downstream extraction error. Slow, careful estimation beats fast, confident mistakes.
 
-### Part B: Action Planning
+**Information Gathering as Exploration**: When the drone's sensor horizon is limited, map completeness becomes path-dependent. The order of exploration matters because landmark acquisition itself becomes an information-gathering action, not just a navigation side effect.
 
-Build a planner that chooses actions to reach and extract treasure:
+**Obstacle Geometry as First-Class Constraint**: Tree radii and corridor shapes materially affect feasible trajectories. A planner that ignores clearance margins succeeds in open environments but fails in dense ones.
 
-- move distance steering
-- extract type x y
+**Strict Thresholds Expose Real Accuracy**: The extraction distance requirement forces practical precision. Many estimators *look* visually close while still failing discrete task objectives. This mirrors real-world robotics where "approximately correct" isn't good enough.
 
-Extraction only succeeds when the drone is within a strict distance threshold of the treasure.
+## Historical Context: The Algorithm That Went to the Moon
 
-## SLAM in More Detail (Coursework Level)
+The Kalman filter was invented by Rudolf Kálmán in the 1960s and immediately found its killer application: the Apollo Guidance Computer. Apollo needed to know its position in space with remarkable precision, with the margin of error for a lunar landing measured in meters across 238,000 miles of travel.
 
-In this assignment framing, SLAM behavior follows a repeated cycle:
+Remarkably, the Apollo Guidance Computer had **2 kilobytes of memory**, less computing power than a modern wristwatch. Yet it successfully performed Kalman filtering operations that steered humanity to the Moon. This single achievement secured the algorithm's place in every navigation system since, from submarines to smartphones to autonomous vehicles.
 
-1. Receive measurements to visible landmarks.
-2. Update belief about landmark geometry and current pose.
-3. Apply motion update (with steering and distance constraints).
-4. Reconcile expected and observed geometry on the next cycle.
+## Why This Research Matters
 
-A practical way to think about the estimator is as a probabilistic state tracker. Rather than treating each reading as ground truth, it accumulates evidence across timesteps and seeks internally consistent geometry.
+For those studying robotics and autonomous systems, this project demonstrates more than code:
 
-The representation in the assignment code references matrix-based information form concepts (Omega/Xi style structure), which is common in graph-style and information-filter SLAM formulations.
+- **Uncertainty as a modeling problem**, not just an implementation detail
+- **The inseparability of sensing, inference, and planning** in autonomous systems
+- **Why modest sensor noise becomes catastrophic estimation error** if not handled carefully
+- **The power of probabilistic reasoning** under constraints
 
-![SLAM estimation loop: sense, update belief, move, plan/extract](/assets/images/projects/indiana-drones-slam-loop.svg)
-
-*The four-phase SLAM loop: (1) sense visible landmarks, (2) update joint pose-and-map belief, (3) apply motion command with noise, (4) plan and attempt extraction. Loop structure follows the EKF-SLAM formulation in Thrun, Burgard & Fox (2005, Ch. 10).*
-
-> **Image source:** Loop structure based on the Extended Kalman Filter SLAM cycle described in Thrun, S., Burgard, W., & Fox, D. (2005). *Probabilistic Robotics*, Ch. 10. MIT Press.
-
-## Evaluation Conditions I Analyzed
-
-From the test harness and case definitions in the repository, the evaluation emphasizes robustness under realistic constraints:
-
-- Position tolerances on drone and landmark estimates at approximately 0.25 m
-- Typical measurement noise settings around 0.05 (distance) and 0.03 (bearing)
-- Horizon-limited sensing in harder cases (for example horizons of 3 or 4)
-- Steering and movement limits per action
-- Obstacle-rich maps with varying tree radii
-
-For planning tasks, the drone must not only estimate correctly, but also complete treasure extraction with strict geometric requirements.
-
-## Results and Analysis Summary
-
-This project produced its strongest insights in error behavior and robustness, not in one-off trajectory demos.
-
-One useful way to read the project is as an integration problem across three layers:
-
-- Perception: noisy range-and-bearing measurements to visible trees
-- Estimation: maintaining a coherent pose and landmark geometry over time
-- Decision-making: choosing motion commands that preserve enough accuracy to reach extraction range
-
-### 1) Estimation Stability Is the Core Bottleneck
-
-The dominant failure mode in SLAM-style tasks is not usually "bad planning" first, it is pose drift. Once pose drift grows, planner quality appears to collapse because actions are evaluated against an increasingly inaccurate world model.
-
-### 2) Noise-Tolerant Logic Matters More Than Aggressive Motion
-
-Cases with nonzero distance and bearing noise reward conservative, geometry-consistent updates. In short missions, aggressive movement may look fast, but under uncertainty it can amplify downstream extraction error.
-
-### 3) Partial Visibility Changes the Strategy
-
-When horizon is limited, map completeness becomes path dependent. The order in which the drone explores matters because landmark acquisition itself becomes an information-gathering action, not just a navigation side effect.
-
-### 4) Obstacle Geometry Is a First-Class Constraint
-
-Tree radii and corridor shapes materially affect feasible trajectories. A planner that ignores clearance margins can appear correct in open maps but fail in dense maps.
-
-### 5) Strict Extraction Thresholds Expose Real Accuracy
-
-The extraction distance requirement forces practical precision. This is important because many estimators can look visually close while still failing discrete task objectives.
-
-## Why This Project Is Research-Relevant
-
-For a research-oriented profile, this project demonstrates more than implementation:
-
-- It frames uncertainty as a modeling problem, not just a coding task.
-- It links estimation quality to downstream decision quality.
-- It develops intuition for the trade-off between exploration, confidence, and control.
-- It mirrors real robotics and autonomy workflows where sensing, inference, and planning are inseparable.
+The broader lesson: robotics isn't about building the fastest or most complex system. It's about managing uncertainty intelligently, step by step, until coherence emerges.
 
 ## Artifacts and Provenance
 
@@ -171,16 +113,30 @@ For a research-oriented profile, this project demonstrates more than implementat
 - Test scenarios and constraints: rait/IndianaDrones/test_cases.py
 - Project brief: rait/IndianaDrones/cs7638-indiana-drones.pdf
 
-## Summary
+## Key Sources on Kalman Filtering and SLAM
 
-If you are new to SLAM, this project is a concrete demonstration of a key robotics idea:
+1. **Thrun, S., Burgard, W., & Fox, D. (2005).** Probabilistic Robotics. MIT Press. Available: https://mitpress.mit.edu/9780262201629/probabilistic-robotics/
 
-- Navigation is easy when the map is perfect.
-- Mapping is easy when your location is perfect.
-- Real robots have neither.
+2. **Bzarg, T.** Kalman Filters Explained Simply. Online tutorial: https://bzarg.com/p/reading-sensor-data/
 
-SLAM is the method that makes both estimates improve together, step by step, under uncertainty.
+3. **Labbe, R.** Kalman and Bayesian Filters in Python. Comprehensive notebook: https://github.com/rlabbe/filterpy
+
+4. **MIT OpenCourseWare.** 6.S198: Introduction to Nonlinear Filtering. https://ocw.mit.edu/
+
+5. **FilterPy Documentation.** Kalman filtering library for Python: https://filterpy.readthedocs.io/
+
+6. **Welch, G., & Bishop, G. (2006).** An Introduction to the Kalman Filter. UNC Computer Science. https://www.cs.unc.edu/~welch/media/pdf/kalman_intro.pdf
+
+## Reader-Friendly TL;DR
+
+If you're new to SLAM and robotics:
+
+- **Navigation is easy** when the map is perfect and you know where you are
+- **Mapping is easy** when your location is perfect
+- **Real robots have neither**
+
+SLAM is the method that makes both estimates improve together, step by step, under uncertainty. The Kalman filter is the mathematical engine that powers this feedback loop.
 
 ## Policy Note
 
-This writeup intentionally presents methodology and analysis only. Assignment solution code is not reproduced here.
+This writeup intentionally presents methodology, concepts, and analysis only. Assignment solution code is not reproduced here.
