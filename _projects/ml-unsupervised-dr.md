@@ -4,86 +4,71 @@ description: "A comparative study of clustering and dimensionality reduction acr
 layout: project
 ---
 
-## Overview
+## The Problem: Structure Without Labels
 
-This [CS 7641: Machine Learning](https://omscs.gatech.edu/cs-7641-machine-learning) project investigated unsupervised learning quality through a structured comparison of clustering methods and dimensionality reduction techniques. The emphasis was on research process: hypothesis, controlled experiments, metric interpretation, and synthesis.
+Supervised learning gets clear instructions. Unsupervised learning gets silence.
 
-## Research Focus
+No target labels. No direct objective tied to business outcomes. Just raw feature space and a question: *is there meaningful structure here, or am I seeing patterns that are not real?*
 
-- How do K-Means and Expectation Maximization differ in cluster quality across domains?
-- Which dimensionality reduction methods preserve structure best for downstream tasks?
-- How should quality metrics and runtime be balanced when choosing a method?
+This project from [CS 7641: Machine Learning](https://omscs.gatech.edu/cs-7641-machine-learning) explores that question through clustering and dimensionality reduction across multiple datasets.
 
-## Approach
+The heart of the work is not model tuning for a single score. It is method selection under ambiguity.
+
+## Research Questions
+
+- When does K-Means beat EM, and when does EM beat K-Means?
+- Which reduction method keeps useful signal while shrinking the feature space?
+- How often do quality metrics disagree with runtime reality?
+- Can we turn these experiments into a repeatable decision process?
+
+## Experimental Design
+
+I compared methods in a controlled pipeline:
 
 - Clustering: K-Means and Gaussian Mixture Models (EM)
 - Dimensionality reduction: PCA, ICA, Random Projection, feature selection
-- Metrics: Silhouette score, Davies-Bouldin score, and wall-clock time
-- Cross-dataset evaluation to test stability of conclusions
+- Evaluation metrics: Silhouette score, Davies-Bouldin score, and wall-clock time
+- Cross-dataset validation: test whether conclusions transfer or collapse
+
+This made it easier to separate true algorithm behavior from dataset-specific noise.
+
+## Why Clustering Is Fascinating
+
+Clustering is often presented as a one-click preprocessing step. In practice, it is deeply geometric.
+
+- K-Means assumes roughly spherical, equally scaled clusters and can perform beautifully when that assumption is close to true.
+- EM is softer and probabilistic, which helps when real clusters overlap or have different covariance structures.
+
+The interesting result was not that one model always won. The interesting result was that **the winner changed with data geometry**. That shift is exactly why unsupervised model selection needs evidence, not habit.
+
+## Why PCA Stood Out
+
+PCA consistently delivered the strongest first-pass reduction in this project.
+
+- It provided compact representations that were easy to reason about.
+- It preserved enough variance to support downstream clustering quality.
+- It improved iteration speed without immediately destroying structure.
+
+ICA and random projection still had value, especially for specific constraints, but PCA was the most reliable default when balancing interpretability, stability, and performance.
 
 ## Key Findings
 
-- Method ranking changed across datasets, highlighting the importance of context-specific model selection.
-- Some reductions improved clustering separability while others mainly improved computational efficiency.
-- Runtime analysis surfaced practical trade-offs often missed by metric-only comparisons.
+- Algorithm ranking changed by dataset, so fixed preferences were fragile.
+- Better reduction did not always mean better clustering, which exposed interaction effects between preprocessing and cluster geometry.
+- Runtime profiling changed final recommendations in several cases where metric differences were small.
+- Reconstruction behavior was a useful warning signal: when information loss rose too quickly, cluster quality usually degraded next.
 
-## Visualizations and Analysis
+## Practical Playbook From This Project
 
-The original assignment produced many diagnostic plots; the portfolio page now shows a smaller set of representative figures and focuses on interpretation.
+- Start with PCA as a baseline reduction strategy.
+- Compare K-Means and EM early instead of committing to one family.
+- Treat internal metrics as directional signals, not absolute truth.
+- Use runtime as a first-class criterion when methods are close in quality.
+- Re-check conclusions on a second dataset before calling them general.
 
-### 1) Clustering behavior differs by dataset
+## Visual Notes
 
-On Wine, both methods recovered meaningful structure, but they separated classes for different reasons.
-
-![K-Means clustering on Wine dataset](/assets/images/projects/wine_kmeans_clusters.jpg)
-
-![EM clustering on Wine dataset](/assets/images/projects/wine_em_clusters.jpg)
-
-Interpretation:
-
-- K-Means gave cleaner geometric partitions when cluster shape was compact.
-- EM handled overlap more gracefully when clusters were not strictly spherical.
-- The practical takeaway was to select by data geometry, not by a fixed algorithm preference.
-
-### 2) PCA was most stable for compact summaries
-
-PCA loadings on Wine and Census showed that a relatively small subset of components captured most variance.
-
-![PCA loadings on Wine](/assets/images/projects/pca_loading_wine.jpg)
-
-![PCA loadings on Census](/assets/images/projects/pca_loading_census.jpg)
-
-Interpretation:
-
-- PCA offered the best interpretability-to-performance trade-off for first-pass reduction.
-- ICA and random projection were still useful, but less consistent across both datasets.
-- In workflow terms: PCA first, then verify alternatives if domain constraints require them.
-
-### 3) Information retention exposed method trade-offs
-
-Reconstruction error provided a direct signal of information loss after reduction.
-
-![Wine reconstruction error](/assets/images/projects/wine_recon_error.jpg)
-
-![Census reconstruction error](/assets/images/projects/census_recon_error.jpg)
-
-Interpretation:
-
-- Lower-dimensional representations on Wine retained structure more reliably than on Census.
-- Census required more careful component selection to avoid aggressive information loss.
-- This matched clustering behavior: when reconstruction degraded, downstream cluster quality usually degraded as well.
-
-### 4) Convergence profiles matter in real usage
-
-Metric quality alone did not pick a winner; runtime and convergence behavior changed deployment choices.
-
-![Training loss across methods](/assets/images/projects/loss.jpg)
-
-Interpretation:
-
-- Some methods reached acceptable quality quickly and were preferred for iterative analysis cycles.
-- Others yielded marginally better scores but at significantly higher runtime cost.
-- Final recommendation favored methods that balanced quality and speed for repeatable experimentation.
+The original assignment included many plots. For this portfolio version, I intentionally trimmed most large figures and focused on interpretation and decision logic.
 
 ## Artifacts
 
