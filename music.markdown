@@ -28,10 +28,6 @@ author_profile: true
     </div>
   </section>
 
-  <section class="music-note">
-    A couple tracks I played on are below. Honestly, if you even click one, I appreciate you.
-  </section>
-
   {% comment %}
   {% if site.spotify_embed_url != "" %}
     <section class="music-embed">
