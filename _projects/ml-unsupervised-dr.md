@@ -6,13 +6,11 @@ layout: project
 
 ## The Problem: Structure Without Labels
 
-Imagine walking into a crowded room where everyone is talking at once, and nobody is wearing a name tag.
+Unsupervised learning starts from a harsher place than most of machine learning.
 
-That is unsupervised learning.
+The data offers no labels, no clean objective, and no guarantee that the patterns you find mean anything at all. All you have are geometry, density, correlation, and the uneasy possibility that an algorithm can produce a beautiful answer to the wrong question.
 
-No labels. No answer key. Just patterns hiding in feature space, and the constant risk of convincing yourself that noise is signal.
-
-This project from [CS 7641: Machine Learning](https://omscs.gatech.edu/cs-7641-machine-learning) asks a hard question: *when data has no labels, how do we decide which structure to trust?*
+This project from [CS 7641: Machine Learning](https://omscs.gatech.edu/cs-7641-machine-learning) asks the version of that problem I find most interesting: *when labels disappear, how do we tell the difference between real structure and convenient fiction?*
 
 ## Research Questions
 
@@ -23,12 +21,12 @@ This project from [CS 7641: Machine Learning](https://omscs.gatech.edu/cs-7641-m
 
 ## A Quick Way To Think About It
 
-If clustering is grouping people at a party by conversation style, PCA is dimming the noisy lights so the group shapes become easier to see.
+Clustering and dimensionality reduction do different jobs, but they work on the same underlying challenge: making structure visible.
 
-- Clustering says: "Who belongs together?"
-- PCA says: "Which directions in this data actually matter most?"
+- Clustering asks whether the data naturally separates into groups.
+- PCA asks which directions in the data carry the most meaningful variation.
 
-Together, they turn a chaotic high-dimensional dataset into something you can reason about.
+Put together, they offer a way to simplify a dataset without pretending it was simple to begin with.
 
 ## Experimental Design
 
@@ -46,58 +44,45 @@ Dataset context from the original assignment artifacts:
 - Wine dataset: 1,599 rows, 12 attributes (binary target transformation in the assignment workflow)
 - Adult Census dataset: 32,561 rows, 15 attributes with encoded categorical variables
 
-## Clustering, Taught Quickly
+## Clustering, Clearly
 
 Clustering looks simple until geometry fights back.
 
 - **K-Means** places centroids and pulls points to the nearest center. It is fast and strong when cluster shapes are compact.
 - **EM (Gaussian Mixture Models)** models each cluster as a probability distribution. It is more flexible when boundaries are fuzzy and overlap is real.
 
-The key lesson from my runs: there is no permanent champion. The winner changes with data geometry.
+That difference matters. K-Means is decisive and efficient, but it likes neat boundaries. EM is more patient with ambiguity. It can represent overlap, softness, and unequal spread in ways K-Means cannot.
 
-## PCA, Taught Quickly
+The important lesson from this project is that neither algorithm deserves blind loyalty. Their behavior depends on the shape of the data.
 
-PCA finds the directions where data varies most, then projects data onto those directions.
+## PCA, As a Way of Seeing
 
-- In plain terms: PCA keeps the strongest signal and drops weaker directions.
-- In practice: this often makes clustering cleaner, faster, or both.
-- In this project: PCA was the most reliable first reduction pass across both datasets.
+PCA is often introduced as a dimensionality reduction algorithm, which is true but incomplete. It is also a way of changing perspective.
+
+High-dimensional data can be difficult to reason about because variation is scattered across too many axes at once. PCA rotates that space so the strongest directions of variation appear first. If those early components capture most of the useful structure, the rest of the analysis becomes easier to interpret.
+
+That is why PCA mattered so much here. It was not just compressing the data. It was exposing a cleaner version of the problem.
 
 ICA and random projection still had value, especially for specific constraints, but PCA was the most reliable default when balancing interpretability, stability, and performance.
 
-## Evidence From My OMSCS Artifacts
+## What Emerged From the Experiments
 
-The results below come from my original A3 artifacts (`ML/A3/log.txt`, `ML/A3/bak.txt`, `ML/A3/jevans99-analysis.pdf`).
+Across both datasets, a few conclusions held up repeatedly.
 
-### Snapshot Table: Four High-Signal Results
+- PCA was the strongest general-purpose reduction method for preserving structure while keeping the analysis interpretable.
+- K-Means and EM each had legitimate wins, but their strengths depended on the geometry of the dataset.
+- Small values of `k` were often the most defensible once cluster quality and runtime were considered together.
+- Methods that looked promising on one dataset could become much less convincing on another.
 
-| Dataset | Pipeline | Best k | Silhouette | Davies-Bouldin | Time (s) |
-| --- | --- | --- | --- | --- | --- |
-| Wine | PCA + K-Means | 2 | 0.6082 | 0.6073 | 0.0732 |
-| Wine | ICA + K-Means | 3 | 0.0776 | 3.8938 | 0.0514 |
-| Census | PCA + K-Means | 2 | 0.5846 | 0.6088 | 0.0690 |
-| Census | PCA + EM | 2 | 0.6066 | 0.5434 | 0.0966 |
+That last point is the one I trust most. In unsupervised learning, the real test is not whether a method can produce an appealing pattern once. It is whether the pattern survives contact with a different dataset.
 
-Why this table matters:
-
-- PCA consistently held strong quality on both datasets.
-- ICA could be competitive in narrow cases, but was much less stable in cluster quality.
-- Best settings often happened at low k, especially k=2.
-- Runtime stayed practical for strong PCA combinations.
-
-One practical pattern repeated throughout the experiments: the strongest quality settings were usually at small k, often k=2, and quality dropped as k increased while runtime climbed.
-
-## Selected Visuals
-
-I kept a small set of figures that directly support the main story.
-
-### 1) Cluster geometry on Wine
+## Cluster Geometry on Wine
 
 ![Wine K-Means clusters](/assets/images/projects/wine_kmeans_clusters.jpg)
 
 ![Wine EM clusters](/assets/images/projects/wine_em_clusters.jpg)
 
-These two plots tell a useful story fast. K-Means produces tighter geometric partitions, while EM is more comfortable when boundaries blur. Same data, different assumptions, different behavior.
+These two views are useful because they reveal the core tradeoff visually. K-Means carves the space into cleaner geometric regions. EM is more comfortable with overlap and softer boundaries. Same dataset, same objective, different assumptions about what a cluster is.
 
 ## Key Findings
 
@@ -108,16 +93,11 @@ These two plots tell a useful story fast. K-Means produces tighter geometric par
 - On Wine, PCA and RCA repeatedly outperformed ICA for clustering quality.
 - On Census, PCA remained a strong baseline while ICA was more sensitive and often slower.
 
-## If You Are New To This Topic
+## Why It Matters
 
-Use this simple workflow:
+The most interesting part of this project was not discovering that one algorithm beat another. It was seeing how quickly "obvious" conclusions fell apart when the dataset changed.
 
-1. Start with PCA to simplify the space.
-2. Run both K-Means and EM, do not assume one will win.
-3. Compare Silhouette, Davies-Bouldin, and runtime together.
-4. Favor solutions that stay strong at small k before scaling complexity.
-
-Unsupervised learning is less about finding one perfect algorithm and more about building confidence that your pattern is real.
+That is why clustering and PCA are worth learning. They force you to think about structure, signal, and representation before you ever get the comfort of prediction accuracy. For someone new to the subject, that is the right lesson to take away: these methods do not reveal truth automatically. They help you form better questions about the data.
 
 ## Practical Playbook From This Project
 
@@ -135,9 +115,6 @@ The original assignment included many plots. This portfolio version keeps only a
 
 - Course: [CS 7641: Machine Learning](https://omscs.gatech.edu/cs-7641-machine-learning)
 - OMSCS path: ML/A3/
-- Experiment implementation: ML/A3/main.py
-- Analysis traces and report draft materials: ML/A3/log.txt and ML/A3/bak.txt
-- Full assignment report draft: ML/A3/jevans99-analysis.pdf
 
 ## Policy Note
 
