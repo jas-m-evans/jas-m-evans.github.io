@@ -4,69 +4,99 @@ description: "Fine-tuning and applying Meta's wav2vec 2.0 model for automatic sp
 layout: project
 ---
 
-## What Is Wave2Vec 2.0?
+## The Problem: Speech Is Messy in the Real World
 
-Wave2Vec 2.0 is a self-supervised learning framework for speech representations, developed by Meta's AI Research team. Unlike traditional speech recognition systems that require hundreds of hours of carefully transcribed audio, wav2vec 2.0 learns powerful speech representations directly from raw waveforms using unlabeled data.
+Most speech demos are clean. A single voice. Quiet room. Studio microphone.
 
-The breakthrough: **self-supervised pretraining can outperform semi-supervised methods**, using dramatically less labeled data. On standard benchmarks, it achieved competitive performance with only 1 hour of labeled data by leveraging 53,000+ hours of unlabeled speech.
+Real speech is not like that.
 
-## How It Works
+People interrupt each other. Mic quality changes between devices. Background noise leaks in from traffic, fans, and keyboard clicks. Accents and speaking rates vary widely, and domain vocabulary changes everything from medicine to finance to education.
 
-Wave2Vec 2.0 uses a two-stage approach:
+This project asks a simple practical question:
 
-1. **Feature Extraction**: Convolutional layers extract acoustic features directly from raw audio waveforms
-2. **Contrastive Learning**: The model masks portions of the learned representation and solves a contrastive task, learning to distinguish true future states from random negative samples. This forces the model to understand linguistic and acoustic structure.
+**Can we build robust speech recognition without collecting huge, expensive, fully transcribed datasets?**
 
-The model jointly learns a discrete quantization of representations, using a product codebook with multiple codevector groups. This allows flexible, efficient representations suitable for fine-tuning on downstream tasks.
+wav2vec 2.0 is one of the most important answers to that question.
 
-## Multilingual Capability
+## Why wav2vec 2.0 Matters
 
-The XLSR-53 variant demonstrates wave2vec's power across languages:
-- Trained on speech from 53 different languages
-- Achieved 72% relative phoneme error rate reduction on the CommonVoice benchmark
-- Enables transfer learning across language families, particularly powerful for low-resource languages
+Traditional ASR pipelines usually depend on large labeled corpora. Labeling speech at scale is slow, expensive, and often impossible for low-resource languages.
 
-## Real-World Applications
+wav2vec 2.0 flips that process:
 
-**Automatic Speech Recognition (ASR)**: Production-ready transcription with minimal labeled training data, effective for low-resource languages where transcribed data is scarce.
+- Learn rich speech representations from **raw unlabeled audio**
+- Use a much smaller labeled set for downstream fine-tuning
+- Retain strong recognition quality with far less annotation cost
 
-**Multilingual Speech Recognition**: Single models handle 53+ languages simultaneously, with particularly strong performance compared to language-specific models.
+The headline result from the original work is compelling: with enough unlabeled pretraining data, competitive recognition is possible with very little labeled supervision.
 
-**Accessibility Tools**: Real-time video captioning, automatic subtitle generation, and accessibility features for hearing-impaired users.
+## How the Model Learns
 
-**Domain-Specific Transcription**: Healthcare (medical dictation), legal services (court proceedings), and customer service (call analysis).
+At a high level, wav2vec 2.0 learns in two phases.
 
-**Speech Emotion Recognition**: Detecting speaker emotion from audio signals for customer service and mental health applications.
+1. **Representation learning from waveform audio**
+	Convolutional layers transform raw audio into latent frame-level features.
 
-**Audio Classification**: Keyword spotting, audio event detection, and multi-label audio classification tasks.
+2. **Context learning with masking and contrastive objectives**
+	Portions of the latent sequence are masked. The model predicts the correct latent targets among distractors, which forces stronger phonetic and linguistic structure in the learned representation.
 
-## Project Approach
+The model also uses quantized targets during pretraining, which encourages compact and discriminative acoustic units.
 
-This project explores applying wave2vec 2.0's capabilities to custom speech recognition tasks:
+## Project Focus
 
-- Load pre-trained `facebook/wav2vec2-base` checkpoint via Hugging Face Transformers
-- Fine-tune on domain-specific labeled speech datasets using CTC (Connectionist Temporal Classification) loss
-- Evaluate using Word Error Rate (WER) as the primary metric
-- Experiment with data augmentation techniques (noise injection, speed perturbation) to improve robustness
-- Compare sample-efficient transfer learning performance
+This project explores wav2vec 2.0 as a practical transfer learning pipeline for custom ASR tasks:
+
+- Start from a pretrained checkpoint (`facebook/wav2vec2-base`)
+- Fine-tune with CTC loss on domain-specific labeled speech
+- Evaluate with Word Error Rate (WER)
+- Stress-test robustness under realistic noise and speaking variation
+- Compare behavior under low-data versus moderate-data fine-tuning
+
+The main goal is not to beat leaderboard numbers. The goal is to understand where pretrained speech representations help most, where they fail, and how to push reliability in realistic conditions.
+
+## Why This Is Interesting for AI Systems
+
+What makes this project exciting is the systems perspective:
+
+- **Data efficiency**: performance gains from better pretraining, not just bigger labels
+- **Generalization**: transfer from broad speech exposure to specialized domains
+- **Deployment relevance**: accuracy, latency, and robustness tradeoffs matter more than clean-benchmark scores
+- **Language inclusion**: multilingual transfer opens doors for communities with limited labeled resources
+
+In other words, this is not only a model architecture story. It is also a story about making speech technology usable outside ideal lab settings.
+
+## Practical Applications
+
+- **Accessibility**: live captioning and improved subtitle generation
+- **Domain transcription**: healthcare notes, interviews, support calls, legal proceedings
+- **Multilingual systems**: shared speech backbones across related languages
+- **Human-computer interfaces**: better voice interaction under noisy conditions
 
 ## Tech Stack
 
 - Python, PyTorch
-- Hugging Face Transformers & Datasets libraries
-- torchaudio for audio preprocessing and feature extraction
-- Weights & Biases for experiment tracking and visualization
+- Hugging Face Transformers and Datasets
+- torchaudio for loading and augmentation
+- Weights and Biases for experiment tracking
 
-## Key Results
+## Current Status
 
-*Experiments and findings are ongoing. This represents the current understanding of the wav2vec 2.0 framework and its applications to speech recognition.*
+Experiments are in progress. Current work is centered on dataset curation quality, decoder configuration, and robustness sweeps (noise, speed, and speaker variation).
+
+## Artifacts and Provenance
+
+- Model family: wav2vec 2.0
+- Baseline checkpoint: `facebook/wav2vec2-base`
+- Fine-tuning objective: CTC
+- Core metric: Word Error Rate (WER)
 
 ## Sources
 
-1. Baevski, A., Zhou, H., Mohamed, A., & Auli, M. (2020). "wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations." arXiv:2006.11477. https://arxiv.org/abs/2006.11477
+1. Baevski, A., Zhou, H., Mohamed, A., and Auli, M. (2020). "wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations." arXiv:2006.11477. https://arxiv.org/abs/2006.11477
+2. Conneau, A., Baevski, A., Collobert, R., Mohamed, A., and Auli, M. (2020). "Unsupervised Cross-lingual Representation Learning for Speech Recognition." arXiv:2006.13979. https://arxiv.org/abs/2006.13979
+3. Hugging Face Transformers wav2vec2 docs: https://huggingface.co/docs/transformers/model_doc/wav2vec2
+4. fairseq repository: https://github.com/facebookresearch/fairseq
 
-2. Conneau, A., Baevski, A., Collobert, R., Mohamed, A., & Auli, M. (2020). "Unsupervised Cross-lingual Representation Learning for Speech Recognition." arXiv:2006.13979. https://arxiv.org/abs/2006.13979
+## Policy Note
 
-3. Hugging Face Transformers wav2vec2 Documentation: https://huggingface.co/docs/transformers/model_doc/wav2vec2
-
-4. Meta AI Research fairseq: https://github.com/facebookresearch/fairseq
+This writeup focuses on methods and results framing. Assignment or proprietary solution code is not reproduced.
