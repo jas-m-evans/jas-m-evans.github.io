@@ -151,6 +151,20 @@ a:focus {
   box-shadow: 0 14px 28px rgba(35, 122, 143, 0.28);
 }
 
+.btn--music {
+  color: #ffffff;
+  background: linear-gradient(140deg, #264861, #1d354a);
+  border-color: rgba(16, 35, 55, 0.45);
+  box-shadow: 0 10px 24px rgba(16, 35, 55, 0.25);
+}
+
+.btn--music:hover,
+.btn--music:focus {
+  color: #ffffff;
+  background: linear-gradient(140deg, #203e54, #142a3a);
+  box-shadow: 0 14px 28px rgba(16, 35, 55, 0.3);
+}
+
 .author__avatar img {
   border-radius: 18px;
   border: 2px solid rgba(255, 255, 255, 0.8);
