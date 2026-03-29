@@ -6,13 +6,13 @@ layout: project
 
 ## The Problem: Structure Without Labels
 
-Supervised learning gets clear instructions. Unsupervised learning gets silence.
+Imagine walking into a crowded room where everyone is talking at once, and nobody is wearing a name tag.
 
-No target labels. No direct objective tied to business outcomes. Just raw feature space and a question: *is there meaningful structure here, or am I seeing patterns that are not real?*
+That is unsupervised learning.
 
-This project from [CS 7641: Machine Learning](https://omscs.gatech.edu/cs-7641-machine-learning) explores that question through clustering and dimensionality reduction across multiple datasets.
+No labels. No answer key. Just patterns hiding in feature space, and the constant risk of convincing yourself that noise is signal.
 
-The heart of the work is not model tuning for a single score. It is method selection under ambiguity.
+This project from [CS 7641: Machine Learning](https://omscs.gatech.edu/cs-7641-machine-learning) asks a hard question: *when data has no labels, how do we decide which structure to trust?*
 
 ## Research Questions
 
@@ -20,6 +20,15 @@ The heart of the work is not model tuning for a single score. It is method selec
 - Which reduction method keeps useful signal while shrinking the feature space?
 - How often do quality metrics disagree with runtime reality?
 - Can we turn these experiments into a repeatable decision process?
+
+## A Quick Way To Think About It
+
+If clustering is grouping people at a party by conversation style, PCA is dimming the noisy lights so the group shapes become easier to see.
+
+- Clustering says: "Who belongs together?"
+- PCA says: "Which directions in this data actually matter most?"
+
+Together, they turn a chaotic high-dimensional dataset into something you can reason about.
 
 ## Experimental Design
 
@@ -37,37 +46,44 @@ Dataset context from the original assignment artifacts:
 - Wine dataset: 1,599 rows, 12 attributes (binary target transformation in the assignment workflow)
 - Adult Census dataset: 32,561 rows, 15 attributes with encoded categorical variables
 
-## Why Clustering Is Fascinating
+## Clustering, Taught Quickly
 
-Clustering is often presented as a one-click preprocessing step. In practice, it is deeply geometric.
+Clustering looks simple until geometry fights back.
 
-- K-Means assumes roughly spherical, equally scaled clusters and can perform beautifully when that assumption is close to true.
-- EM is softer and probabilistic, which helps when real clusters overlap or have different covariance structures.
+- **K-Means** places centroids and pulls points to the nearest center. It is fast and strong when cluster shapes are compact.
+- **EM (Gaussian Mixture Models)** models each cluster as a probability distribution. It is more flexible when boundaries are fuzzy and overlap is real.
 
-The interesting result was not that one model always won. The interesting result was that **the winner changed with data geometry**. That shift is exactly why unsupervised model selection needs evidence, not habit.
+The key lesson from my runs: there is no permanent champion. The winner changes with data geometry.
 
-## Why PCA Stood Out
+## PCA, Taught Quickly
 
-PCA consistently delivered the strongest first-pass reduction in this project.
+PCA finds the directions where data varies most, then projects data onto those directions.
 
-- It provided compact representations that were easy to reason about.
-- It preserved enough variance to support downstream clustering quality.
-- It improved iteration speed without immediately destroying structure.
+- In plain terms: PCA keeps the strongest signal and drops weaker directions.
+- In practice: this often makes clustering cleaner, faster, or both.
+- In this project: PCA was the most reliable first reduction pass across both datasets.
 
 ICA and random projection still had value, especially for specific constraints, but PCA was the most reliable default when balancing interpretability, stability, and performance.
 
 ## Evidence From My OMSCS Artifacts
 
-The points above are based on my original outputs in `ML/A3/log.txt` and `ML/A3/bak.txt`, not only portfolio-level summaries.
+The results below come from my original A3 artifacts (`ML/A3/log.txt`, `ML/A3/bak.txt`, `ML/A3/jevans99-analysis.pdf`).
 
-Selected examples:
+### Snapshot Table: Four High-Signal Results
 
-- Wine + K-Means + PCA at k=2: Silhouette 0.6082, Davies-Bouldin 0.6073, time 0.0732s
-- Wine + K-Means + ICA best case (k=3): Silhouette 0.0776, Davies-Bouldin 3.8938, time 0.0514s
-- Wine + EM + PCA at k=2: Silhouette 0.5054, Davies-Bouldin 0.7088, time 0.0580s
-- Census + K-Means + PCA at k=2: Silhouette 0.5846, Davies-Bouldin 0.6088, time 0.0690s
-- Census + EM + PCA at k=2: Silhouette 0.6066, Davies-Bouldin 0.5434, time 0.0966s
-- Census + EM + ICA best case (k=7): Silhouette 0.4569, Davies-Bouldin 1.7561, time 0.2043s
+| Dataset | Pipeline | Best k | Silhouette | Davies-Bouldin | Time (s) |
+| --- | --- | --- | --- | --- | --- |
+| Wine | PCA + K-Means | 2 | 0.6082 | 0.6073 | 0.0732 |
+| Wine | ICA + K-Means | 3 | 0.0776 | 3.8938 | 0.0514 |
+| Census | PCA + K-Means | 2 | 0.5846 | 0.6088 | 0.0690 |
+| Census | PCA + EM | 2 | 0.6066 | 0.5434 | 0.0966 |
+
+Why this table matters:
+
+- PCA consistently held strong quality on both datasets.
+- ICA could be competitive in narrow cases, but was much less stable in cluster quality.
+- Best settings often happened at low k, especially k=2.
+- Runtime stayed practical for strong PCA combinations.
 
 One practical pattern repeated throughout the experiments: the strongest quality settings were usually at small k, often k=2, and quality dropped as k increased while runtime climbed.
 
@@ -81,13 +97,7 @@ I kept a small set of figures that directly support the main story.
 
 ![Wine EM clusters](/assets/images/projects/wine_em_clusters.jpg)
 
-These two plots show why comparing K-Means and EM is not optional. They respond differently to overlap and shape, even on the same dataset.
-
-### 2) PCA structure signal on Wine
-
-![Wine PCA loading plot](/assets/images/projects/pca_loading_wine.jpg)
-
-This loading plot supports the case for PCA as an effective first reduction pass: major structure is captured early, which helped downstream clustering stability.
+These two plots tell a useful story fast. K-Means produces tighter geometric partitions, while EM is more comfortable when boundaries blur. Same data, different assumptions, different behavior.
 
 ## Key Findings
 
@@ -97,6 +107,17 @@ This loading plot supports the case for PCA as an effective first reduction pass
 - Reconstruction behavior was a useful warning signal: when information loss rose too quickly, cluster quality usually degraded next.
 - On Wine, PCA and RCA repeatedly outperformed ICA for clustering quality.
 - On Census, PCA remained a strong baseline while ICA was more sensitive and often slower.
+
+## If You Are New To This Topic
+
+Use this simple workflow:
+
+1. Start with PCA to simplify the space.
+2. Run both K-Means and EM, do not assume one will win.
+3. Compare Silhouette, Davies-Bouldin, and runtime together.
+4. Favor solutions that stay strong at small k before scaling complexity.
+
+Unsupervised learning is less about finding one perfect algorithm and more about building confidence that your pattern is real.
 
 ## Practical Playbook From This Project
 
