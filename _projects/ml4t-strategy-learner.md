@@ -148,9 +148,13 @@ The methodology is not specific to trading. The pattern — build a baseline, tr
 ## Artifacts and Provenance
 
 - Course: [CS 7646: Machine Learning for Trading](https://omscs.gatech.edu/cs-7646-machine-learning-trading)
-- OMSCS path: `ML4T/P8/`
-- Experiment scripts: `ML4T/P8/experiment1.py` and `ML4T/P8/experiment2.py`
-- Report: `ML4T/P8/report.pdf`
+
+{% comment %}
+Internal references (hidden from rendered page):
+- OMSCS path: ML4T/P8/
+- Experiment scripts: ML4T/P8/experiment1.py and ML4T/P8/experiment2.py
+- Report: ML4T/P8/report.pdf
+{% endcomment %}
 
 ## Summary
 

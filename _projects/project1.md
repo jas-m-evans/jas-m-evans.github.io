@@ -189,10 +189,14 @@ The methodology here scales directly to production ML: define a baseline, run co
 ## Artifacts and Provenance
 
 - Course: [CS 7641: Machine Learning](https://omscs.gatech.edu/cs-7641-machine-learning)
-- OMSCS path: `ML/A1/`
-- Core implementation: `ML/A1/main.py`
-- Writeup guidance and methodology context: `ML/A1/README.txt`
 - Reference datasets: [UCI Wine Quality](https://archive.ics.uci.edu/ml/datasets/wine+quality), [UCI Adult Census](https://archive.ics.uci.edu/ml/datasets/adult)
+
+{% comment %}
+Internal references (hidden from rendered page):
+- OMSCS path: ML/A1/
+- Core implementation: ML/A1/main.py
+- Writeup guidance and methodology context: ML/A1/README.txt
+{% endcomment %}
 
 ## Summary
 

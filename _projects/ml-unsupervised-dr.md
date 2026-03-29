@@ -114,7 +114,11 @@ The original assignment included many plots. This portfolio version keeps only a
 ## Artifacts
 
 - Course: [CS 7641: Machine Learning](https://omscs.gatech.edu/cs-7641-machine-learning)
+
+{% comment %}
+Internal references (hidden from rendered page):
 - OMSCS path: ML/A3/
+{% endcomment %}
 
 ## Policy Note
 

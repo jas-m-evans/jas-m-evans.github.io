@@ -33,9 +33,13 @@ This project focused on classical AI reasoning for visual analogy problems in Ra
 ## Artifacts
 
 - Course: [CS 7637: Knowledge-Based Artificial Intelligence and Cognitive Systems](https://omscs.gatech.edu/cs-7637-knowledge-based-artificial-intelligence-cognitive-systems)
+
+{% comment %}
+Internal references (hidden from rendered page):
 - OMSCS path: KBAI/RPM-Project-Code/
 - Driver and evaluation outputs: KBAI/RPM-Project-Code/RavensProject.py and AgentAnswers.csv
 - Milestone writeup: KBAI/RPM Project_ Milestone 3.pdf
+{% endcomment %}
 
 ## Policy Note
 

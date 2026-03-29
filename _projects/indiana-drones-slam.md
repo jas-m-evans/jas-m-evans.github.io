@@ -107,11 +107,15 @@ The broader lesson: robotics isn't about building the fastest or most complex sy
 ## Artifacts and Provenance
 
 - Course: [CS 7638: Robotics: AI Techniques](https://omscs.gatech.edu/cs-7638-robotics-ai-techniques)
+
+{% comment %}
+Internal references (hidden from rendered page):
 - OMSCS path: rait/IndianaDrones/
 - Assignment implementation scaffold: rait/IndianaDrones/indiana_drones.py
 - Evaluation harness: rait/IndianaDrones/testing_suite_indiana_drones.py
 - Test scenarios and constraints: rait/IndianaDrones/test_cases.py
 - Project brief: rait/IndianaDrones/cs7638-indiana-drones.pdf
+{% endcomment %}
 
 ## Key Sources on Kalman Filtering and SLAM
 

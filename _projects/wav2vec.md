@@ -112,10 +112,14 @@ Current implementation includes:
 ## Artifacts and Provenance
 
 - App repository: https://github.com/jas-m-evans/wave2vector
-- Main web service: `app/main.py`
-- Templates: `app/templates/index.html`, `app/templates/clip_detail.html`
-- Styling: `app/static/styles.css`
-- Data model: `app/models.py`, `app/schemas.py`
+
+{% comment %}
+Internal references (hidden from rendered page):
+- Main web service: app/main.py
+- Templates: app/templates/index.html, app/templates/clip_detail.html
+- Styling: app/static/styles.css
+- Data model: app/models.py, app/schemas.py
+{% endcomment %}
 
 ## Sources
 
