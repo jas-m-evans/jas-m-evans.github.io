@@ -29,57 +29,61 @@ This [CS 7641: Machine Learning](https://omscs.gatech.edu/cs-7641-machine-learni
 
 ## Visualizations and Analysis
 
-### Clustering Analysis
+The original assignment produced many diagnostic plots; the portfolio page now shows a smaller set of representative figures and focuses on interpretation.
 
-K-Means and Expectation Maximization clustering on the Wine dataset:
+### 1) Clustering behavior differs by dataset
+
+On Wine, both methods recovered meaningful structure, but they separated classes for different reasons.
 
 ![K-Means clustering on Wine dataset](/assets/images/projects/wine_kmeans_clusters.jpg)
 
 ![EM clustering on Wine dataset](/assets/images/projects/wine_em_clusters.jpg)
 
-Clustering results on Census data with correlation structure:
+Interpretation:
 
-![K-Means clustering on Census dataset](/assets/images/projects/census_kmeans_clusters1.jpg)
+- K-Means gave cleaner geometric partitions when cluster shape was compact.
+- EM handled overlap more gracefully when clusters were not strictly spherical.
+- The practical takeaway was to select by data geometry, not by a fixed algorithm preference.
 
-![EM clustering on Census dataset](/assets/images/projects/census_em_clusters.jpg)
+### 2) PCA was most stable for compact summaries
 
-Wine dataset correlation and structure:
-
-![Wine dataset correlation heatmap](/assets/images/projects/wine_heatmap.jpg)
-
-![Wine dataset pairwise relationships](/assets/images/projects/wine_pairplot.jpg)
-
-### Dimensionality Reduction
-
-PCA loadings across datasets reveal which features capture the most variance:
+PCA loadings on Wine and Census showed that a relatively small subset of components captured most variance.
 
 ![PCA loadings on Wine](/assets/images/projects/pca_loading_wine.jpg)
 
 ![PCA loadings on Census](/assets/images/projects/pca_loading_census.jpg)
 
-ICA identifies independent sources in the data:
+Interpretation:
 
-![ICA loadings on Wine](/assets/images/projects/ica_loading_wine.jpg)
+- PCA offered the best interpretability-to-performance trade-off for first-pass reduction.
+- ICA and random projection were still useful, but less consistent across both datasets.
+- In workflow terms: PCA first, then verify alternatives if domain constraints require them.
 
-![ICA loadings on Census](/assets/images/projects/ica_loading_census.jpg)
+### 3) Information retention exposed method trade-offs
 
-Random projection and component analysis:
-
-![RCA loadings on Wine](/assets/images/projects/rca_loading_wine.jpg)
-
-![RCA loadings on Census](/assets/images/projects/rca_loading_census.jpg)
-
-### Reconstruction and Convergence
-
-Reconstruction error analysis shows how well each method preserves information:
+Reconstruction error provided a direct signal of information loss after reduction.
 
 ![Wine reconstruction error](/assets/images/projects/wine_recon_error.jpg)
 
 ![Census reconstruction error](/assets/images/projects/census_recon_error.jpg)
 
-Training loss and convergence behavior across methods:
+Interpretation:
+
+- Lower-dimensional representations on Wine retained structure more reliably than on Census.
+- Census required more careful component selection to avoid aggressive information loss.
+- This matched clustering behavior: when reconstruction degraded, downstream cluster quality usually degraded as well.
+
+### 4) Convergence profiles matter in real usage
+
+Metric quality alone did not pick a winner; runtime and convergence behavior changed deployment choices.
 
 ![Training loss across methods](/assets/images/projects/loss.jpg)
+
+Interpretation:
+
+- Some methods reached acceptable quality quickly and were preferred for iterative analysis cycles.
+- Others yielded marginally better scores but at significantly higher runtime cost.
+- Final recommendation favored methods that balanced quality and speed for repeatable experimentation.
 
 ## Artifacts
 

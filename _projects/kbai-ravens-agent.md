@@ -2,14 +2,14 @@
 title: "KBAI Raven's Progressive Matrices Agent"
 description: "Built a symbolic visual reasoning agent for Raven's matrices and analyzed performance across benchmark problem sets."
 layout: project
-image: "/assets/images/projects/kbai-rpm-sample.png"
+image: "/assets/images/projects/kbai-rpm-sample.svg"
 ---
 
 ## Overview
 
 This project focused on classical AI reasoning for visual analogy problems in Raven's Progressive Matrices. The system emphasized interpretable decision rules and structured reasoning rather than end-to-end deep learning.
 
-![Sample Raven's Progressive Matrices problem](/assets/images/projects/kbai-rpm-sample.png)
+![Sample Raven's Progressive Matrices problem](/assets/images/projects/kbai-rpm-sample.svg)
 
 ## Research Focus
 
