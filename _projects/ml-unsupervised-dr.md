@@ -32,6 +32,11 @@ I compared methods in a controlled pipeline:
 
 This made it easier to separate true algorithm behavior from dataset-specific noise.
 
+Dataset context from the original assignment artifacts:
+
+- Wine dataset: 1,599 rows, 12 attributes (binary target transformation in the assignment workflow)
+- Adult Census dataset: 32,561 rows, 15 attributes with encoded categorical variables
+
 ## Why Clustering Is Fascinating
 
 Clustering is often presented as a one-click preprocessing step. In practice, it is deeply geometric.
@@ -51,12 +56,47 @@ PCA consistently delivered the strongest first-pass reduction in this project.
 
 ICA and random projection still had value, especially for specific constraints, but PCA was the most reliable default when balancing interpretability, stability, and performance.
 
+## Evidence From My OMSCS Artifacts
+
+The points above are based on my original outputs in `ML/A3/log.txt` and `ML/A3/bak.txt`, not only portfolio-level summaries.
+
+Selected examples:
+
+- Wine + K-Means + PCA at k=2: Silhouette 0.6082, Davies-Bouldin 0.6073, time 0.0732s
+- Wine + K-Means + ICA best case (k=3): Silhouette 0.0776, Davies-Bouldin 3.8938, time 0.0514s
+- Wine + EM + PCA at k=2: Silhouette 0.5054, Davies-Bouldin 0.7088, time 0.0580s
+- Census + K-Means + PCA at k=2: Silhouette 0.5846, Davies-Bouldin 0.6088, time 0.0690s
+- Census + EM + PCA at k=2: Silhouette 0.6066, Davies-Bouldin 0.5434, time 0.0966s
+- Census + EM + ICA best case (k=7): Silhouette 0.4569, Davies-Bouldin 1.7561, time 0.2043s
+
+One practical pattern repeated throughout the experiments: the strongest quality settings were usually at small k, often k=2, and quality dropped as k increased while runtime climbed.
+
+## Selected Visuals
+
+I kept a small set of figures that directly support the main story.
+
+### 1) Cluster geometry on Wine
+
+![Wine K-Means clusters](/assets/images/projects/wine_kmeans_clusters.jpg)
+
+![Wine EM clusters](/assets/images/projects/wine_em_clusters.jpg)
+
+These two plots show why comparing K-Means and EM is not optional. They respond differently to overlap and shape, even on the same dataset.
+
+### 2) PCA structure signal on Wine
+
+![Wine PCA loading plot](/assets/images/projects/pca_loading_wine.jpg)
+
+This loading plot supports the case for PCA as an effective first reduction pass: major structure is captured early, which helped downstream clustering stability.
+
 ## Key Findings
 
 - Algorithm ranking changed by dataset, so fixed preferences were fragile.
 - Better reduction did not always mean better clustering, which exposed interaction effects between preprocessing and cluster geometry.
 - Runtime profiling changed final recommendations in several cases where metric differences were small.
 - Reconstruction behavior was a useful warning signal: when information loss rose too quickly, cluster quality usually degraded next.
+- On Wine, PCA and RCA repeatedly outperformed ICA for clustering quality.
+- On Census, PCA remained a strong baseline while ICA was more sensitive and often slower.
 
 ## Practical Playbook From This Project
 
@@ -68,7 +108,7 @@ ICA and random projection still had value, especially for specific constraints, 
 
 ## Visual Notes
 
-The original assignment included many plots. For this portfolio version, I intentionally trimmed most large figures and focused on interpretation and decision logic.
+The original assignment included many plots. This portfolio version keeps only a few high-signal visuals and moves the emphasis to interpretation and decision logic.
 
 ## Artifacts
 
@@ -76,6 +116,7 @@ The original assignment included many plots. For this portfolio version, I inten
 - OMSCS path: ML/A3/
 - Experiment implementation: ML/A3/main.py
 - Analysis traces and report draft materials: ML/A3/log.txt and ML/A3/bak.txt
+- Full assignment report draft: ML/A3/jevans99-analysis.pdf
 
 ## Policy Note
 
