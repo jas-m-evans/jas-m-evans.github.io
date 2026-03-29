@@ -167,6 +167,20 @@ a:focus {
   background: rgba(255, 255, 255, 0.94);
 }
 
+.btn--github {
+  color: #ffffff;
+  background: linear-gradient(145deg, #3d4b5a, #243342);
+  border-color: rgba(20, 24, 30, 0.52);
+  box-shadow: 0 10px 24px rgba(20, 24, 30, 0.24);
+}
+
+.btn--github:hover,
+.btn--github:focus {
+  color: #ffffff;
+  background: linear-gradient(145deg, #344250, #1d2b38);
+  box-shadow: 0 14px 28px rgba(20, 24, 30, 0.3);
+}
+
 .btn--info {
   color: #ffffff;
   background: linear-gradient(145deg, #de5b79, var(--site-highlight));
