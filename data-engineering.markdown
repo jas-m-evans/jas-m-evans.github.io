@@ -5,54 +5,64 @@ permalink: /data-engineering/
 author_profile: true
 ---
 
-## Overview
+## The Work Behind the Dashboard
 
-I am a Data Engineer with 4+ years focused on scalable data platforms, plus 10+ years of professional IT experience overall. I like building reliable systems that take complex raw data and turn it into something teams can actually use for analytics and machine learning.
+Most people see the polished output: a chart, a model prediction, a clean report in a meeting.
 
-This page is intentionally practical and high-level: architecture, scale, and outcomes. No proprietary code, no internal diagrams, no confidential implementation details.
+Data engineering is everything that has to be true **before** that moment.
 
-## Current Role
+I build the systems that move raw, messy operational data into trustworthy datasets teams can use for analytics and machine learning. Over the years, I have worked across enterprise platforms and modern cloud pipelines, with a focus on reliability, scale, and maintainability under real constraints.
 
-**Data Engineer (Data Developer), NOVA Chemicals**
+## What I Focus On
 
-- Build and scale ingestion and transformation pipelines for industrial data at very large scale
-- Design batch + streaming workflows across Azure services
-- Partner with data and AI teams to deliver production-grade datasets
-- Mentor teammates on engineering standards and delivery practices
+### 1) Reliability over heroics
 
-## Selected Work Highlights
+I care less about one-off clever scripts and more about pipelines that run consistently week after week. Good data engineering is boring in the best possible way: stable, observable, and predictable.
 
-- Scaled plant data ingestion from small initial volumes to trillions of data points for downstream analytics and ML use cases.
-- Led extraction of 250+ SAP tables into ADLS and built curated Delta tables in Databricks using PySpark and SQL.
-- Built 50+ pipelines from mixed sources (APIs, IoT, enterprise systems) using Azure Databricks, ADLS, and Azure Data Factory.
-- Implemented CI/CD delivery patterns with Azure DevOps to improve reliability and reduce manual deployment risk.
-- Trained and onboarded new team members on data platform practices as the team scaled.
+### 2) Data products, not just data movement
 
-## Earlier Experience
+The goal is not to copy data from system A to system B. The goal is to produce something useful, with clear definitions, quality checks, and enough context that downstream users can trust what they are seeing.
 
-**Systems Administrator (SAP Basis), NOVA Chemicals**
+### 3) Designing for growth
 
-- Supported SAP platform performance, stability, and security
-- Contributed to major platform migration efforts across OS and database stacks
-- Built and maintained scripted interfaces and operational automation
+Volumes, sources, and use cases always grow. I design pipelines and table models that can scale without forcing total rewrites every quarter.
 
-## Tech Stack
+## How I Build
 
-- **Languages:** Python (Pandas, NumPy, PySpark), SQL, R, Java, JavaScript
-- **Data Platform:** Apache Spark, Databricks, Azure Data Lake, Azure Data Factory
-- **Data and Infra:** SQL Server, Oracle, SAP HANA, Linux
-- **Delivery:** Git/GitHub, Azure DevOps, CI/CD
+My work usually spans the full lifecycle:
 
-## Education
+- Ingestion from mixed operational and application sources
+- Transformation and modeling in distributed compute environments
+- Orchestration across batch and event-driven patterns
+- Data quality guardrails and validation logic
+- Delivery workflows that support repeatable releases
 
-- **Georgia Institute of Technology**
-  - Master of Science in Computer Science (OMSCS)
-  - GPA: 4.0/4.0
-  - Coursework includes Machine Learning and Knowledge-Based AI
-- **Mount Royal University**
-  - Bachelor of Computer Information Systems
-  - GPA: 3.5/4.0
+I enjoy working where software engineering discipline meets data complexity: version control, testing, deployment hygiene, and practical architecture tradeoffs.
+
+## Why This Matters
+
+When data infrastructure is weak, every team pays for it:
+
+- Analysts spend time debugging inputs instead of generating insight
+- Data scientists lose confidence in training data quality
+- Business decisions are delayed by reconciliation work
+
+When data infrastructure is strong, teams move faster with less friction. Better systems create better conversations.
+
+## Technical Areas
+
+- Python and SQL for transformation and quality logic
+- Spark/Databricks style distributed data processing
+- Cloud lakehouse patterns and orchestration workflows
+- CI/CD-minded development practices for data systems
+- Cross-functional delivery with analytics and AI stakeholders
+
+## Background
+
+I have spent my career across infrastructure, enterprise systems, and modern data platforms. That blend has shaped how I engineer: practical, systems-oriented, and focused on long-term operability.
+
+I am currently completing the OMSCS program at Georgia Tech, where I continue to deepen my machine learning and systems perspective.
 
 ## Scope Note
 
-Content on this page reflects personal experience and is provided at a portfolio summary level. It does not represent official statements from my employer.
+This page intentionally stays at a portfolio-summary level. It highlights approach and outcomes without sharing proprietary implementation details.
