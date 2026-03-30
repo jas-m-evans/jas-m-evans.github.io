@@ -2,7 +2,7 @@
 title: "Puck Edge: Fantasy Hockey Lineup Optimizer"
 description: "A commercial-quality web app that analyzes your fantasy hockey roster and recommends the optimal weekly move — leveraging off-night schedule advantages, waiver wire intelligence, and real NHL schedule data."
 layout: project
-image: "/assets/images/projects/puck-edge-preview.png"
+image: "/assets/images/projects/puck-edge-lineup-lab.svg"
 link: "https://puck-edge.vercel.app"
 github: "https://github.com/jas-m-evans/puck-edge"
 ---

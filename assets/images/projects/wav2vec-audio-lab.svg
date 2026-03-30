@@ -1,0 +1,74 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Wave2Vector Lab Listening for Similarity</title>
+  <desc id="desc">Audio waveform, spectrogram bars, and embedding nodes for project card artwork.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#101820"/>
+      <stop offset="100%" stop-color="#172A3A"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7BDFF2"/>
+      <stop offset="100%" stop-color="#B2F7EF"/>
+    </linearGradient>
+    <linearGradient id="spec" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#FF6B6B"/>
+      <stop offset="100%" stop-color="#FFE66D"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <rect x="90" y="120" width="1020" height="380" rx="22" fill="#0E1A24" stroke="#6EA8D9" stroke-opacity="0.35"/>
+
+  <g stroke="#2A4A63" stroke-width="1" opacity="0.55">
+    <line x1="130" y1="180" x2="1070" y2="180"/>
+    <line x1="130" y1="250" x2="1070" y2="250"/>
+    <line x1="130" y1="320" x2="1070" y2="320"/>
+    <line x1="130" y1="390" x2="1070" y2="390"/>
+    <line x1="130" y1="460" x2="1070" y2="460"/>
+  </g>
+
+  <polyline
+    points="130,300 170,285 210,320 250,230 290,360 330,265 370,315 410,245 450,340 490,260 530,335 570,250 610,320 650,245 690,300"
+    fill="none"
+    stroke="url(#wave)"
+    stroke-width="7"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <g>
+    <rect x="760" y="390" width="24" height="70" rx="4" fill="url(#spec)"/>
+    <rect x="790" y="350" width="24" height="110" rx="4" fill="url(#spec)"/>
+    <rect x="820" y="310" width="24" height="150" rx="4" fill="url(#spec)"/>
+    <rect x="850" y="270" width="24" height="190" rx="4" fill="url(#spec)"/>
+    <rect x="880" y="320" width="24" height="140" rx="4" fill="url(#spec)"/>
+    <rect x="910" y="360" width="24" height="100" rx="4" fill="url(#spec)"/>
+    <rect x="940" y="335" width="24" height="125" rx="4" fill="url(#spec)"/>
+    <rect x="970" y="285" width="24" height="175" rx="4" fill="url(#spec)"/>
+  </g>
+
+  <g fill="#B2F7EF" opacity="0.95">
+    <circle cx="760" cy="220" r="9"/>
+    <circle cx="805" cy="195" r="8"/>
+    <circle cx="850" cy="220" r="10"/>
+    <circle cx="900" cy="200" r="8"/>
+    <circle cx="950" cy="225" r="9"/>
+    <circle cx="995" cy="198" r="8"/>
+  </g>
+
+  <g stroke="#B2F7EF" stroke-width="2" opacity="0.7">
+    <line x1="760" y1="220" x2="805" y2="195"/>
+    <line x1="805" y1="195" x2="850" y2="220"/>
+    <line x1="850" y1="220" x2="900" y2="200"/>
+    <line x1="900" y1="200" x2="950" y2="225"/>
+    <line x1="950" y1="225" x2="995" y2="198"/>
+  </g>
+
+  <text x="90" y="82" font-family="Helvetica, Arial, sans-serif" font-size="42" font-weight="700" fill="#E8F1F8">
+    Wave2Vector Lab
+  </text>
+  <text x="90" y="560" font-family="Helvetica, Arial, sans-serif" font-size="30" font-weight="500" fill="#9FC2D9">
+    Interactive audio similarity, embeddings, and nearest neighbors
+  </text>
+</svg>

@@ -2,6 +2,7 @@
 title: "Wave2Vector Lab: Listening for Similarity"
 description: "An interactive audio similarity lab for uploads, MFCC embeddings, live playback visualization, and nearest-neighbor discovery."
 layout: project
+image: "/assets/images/projects/wav2vec-audio-lab.svg"
 ---
 
 ## The Problem: Audio Search Usually Feels Invisible

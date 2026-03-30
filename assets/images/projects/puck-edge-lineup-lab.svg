@@ -1,0 +1,68 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Puck Edge Fantasy Hockey Lineup Optimizer</title>
+  <desc id="desc">Hockey rink inspired analytics card with lineup tiles and off-night highlights.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#081C24"/>
+      <stop offset="100%" stop-color="#0F2D3A"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#4ECDC4"/>
+      <stop offset="100%" stop-color="#F7FFF7"/>
+    </linearGradient>
+    <linearGradient id="hot" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#FF6B6B"/>
+      <stop offset="100%" stop-color="#FFD166"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <rect x="90" y="110" width="1020" height="410" rx="24" fill="#0D2531" stroke="#65A5B8" stroke-opacity="0.45"/>
+  <rect x="115" y="135" width="970" height="360" rx="18" fill="#123545" stroke="#8FC7D6" stroke-opacity="0.35"/>
+
+  <g stroke="#9AC9D6" stroke-opacity="0.28" stroke-width="3" fill="none">
+    <line x1="600" y1="135" x2="600" y2="495"/>
+    <circle cx="600" cy="315" r="72"/>
+    <circle cx="315" cy="315" r="54"/>
+    <circle cx="885" cy="315" r="54"/>
+    <line x1="115" y1="250" x2="260" y2="250"/>
+    <line x1="115" y1="380" x2="260" y2="380"/>
+    <line x1="940" y1="250" x2="1085" y2="250"/>
+    <line x1="940" y1="380" x2="1085" y2="380"/>
+  </g>
+
+  <g>
+    <rect x="180" y="190" width="95" height="120" rx="10" fill="#214C5F"/>
+    <rect x="290" y="220" width="95" height="120" rx="10" fill="#214C5F"/>
+    <rect x="400" y="180" width="95" height="120" rx="10" fill="#214C5F"/>
+    <rect x="510" y="240" width="95" height="120" rx="10" fill="#214C5F"/>
+
+    <rect x="680" y="190" width="95" height="120" rx="10" fill="#2D5568"/>
+    <rect x="790" y="220" width="95" height="120" rx="10" fill="#2D5568"/>
+    <rect x="900" y="180" width="95" height="120" rx="10" fill="#2D5568"/>
+  </g>
+
+  <g>
+    <rect x="290" y="220" width="95" height="120" rx="10" fill="url(#hot)" fill-opacity="0.88"/>
+    <rect x="790" y="220" width="95" height="120" rx="10" fill="url(#hot)" fill-opacity="0.88"/>
+  </g>
+
+  <g stroke="url(#accent)" stroke-width="5" stroke-linecap="round" fill="none">
+    <path d="M170 430 C280 370, 420 360, 520 300"/>
+    <path d="M520 300 C600 250, 700 260, 860 210"/>
+    <path d="M860 210 C930 190, 980 185, 1030 170"/>
+  </g>
+
+  <g fill="#DFF7FF">
+    <circle cx="520" cy="300" r="9"/>
+    <circle cx="860" cy="210" r="9"/>
+  </g>
+
+  <text x="90" y="78" font-family="Helvetica, Arial, sans-serif" font-size="44" font-weight="700" fill="#EAF9FF">
+    Puck Edge
+  </text>
+  <text x="90" y="565" font-family="Helvetica, Arial, sans-serif" font-size="30" font-weight="500" fill="#A8D5E2">
+    Weekly lineup optimization with off-night advantage intelligence
+  </text>
+</svg>

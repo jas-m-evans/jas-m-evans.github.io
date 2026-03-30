@@ -2,6 +2,7 @@
 title: "Unsupervised Learning and Dimensionality Reduction"
 description: "A comparative study of clustering and dimensionality reduction across real datasets, with metric-driven evaluation and runtime profiling."
 layout: project
+image: "/assets/images/projects/ml-unsupervised-dr-lab.svg"
 ---
 
 ## The Problem: Structure Without Labels
