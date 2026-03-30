@@ -2,6 +2,7 @@
 title: "Strategy Learner for Algorithmic Trading"
 description: "Designed and backtested two equity trading strategies — one built by hand from technical indicators, one learned from historical data — then systematically dismantled both under varying market friction to understand what drives their behavior."
 layout: project
+image: "/assets/images/projects/ml4t-strategy-learner-icon.svg"
 ---
 
 ## Abstract
