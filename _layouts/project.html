@@ -33,6 +33,8 @@ layout: default
   </section>
 
   <footer class="project-footer">
-    <p>Published on: {{ page.date | date: "%B %d, %Y" }}</p>
+    {% if page.date %}
+      <p>Published on: {{ page.date | date: "%B %d, %Y" }}</p>
+    {% endif %}
   </footer>
 </article>
