@@ -1,6 +1,6 @@
 ---
-title: "Indiana Drones: SLAM Under Uncertainty"
-description: "A robotics-focused study of simultaneous localization and mapping, with noisy sensing, constrained motion, and extraction planning."
+title: "Autonomous Drone SLAM Under Uncertainty"
+description: "A robotics study of simultaneous localization and mapping with noisy sensors, uncertain motion, and precision navigation in GPS-denied environments."
 layout: project
 image: "/assets/images/projects/indiana-drones-map.svg"
 ---
