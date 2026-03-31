@@ -61,97 +61,91 @@ Every second (or millisecond, depending on the system), the filter updates using
 
 To make this concrete, here's a minimal 1D Kalman filter that demonstrates the predict-update cycle. Imagine a robot is trying to track its position along a hallway. It has wheel odometry (which drifts) and occasional GPS readings (which are noisy). The Kalman filter blends these two imperfect sources into a better estimate.
 
+### Step 1: Define the Filter Class
+
+First, we set up the core Kalman filter as a class. The key insight is storing not just our position estimate, but also our confidence in that estimate (the covariance matrix P).
+
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
 
 class SimpleKalmanFilter1D:
-    """
-    A 1D Kalman filter for tracking position.
-    
-    State: position (x) and velocity (v)
-    Measurements: noisy position observations
-    """
+    """A 1D Kalman filter for tracking position."""
     
     def __init__(self, initial_position=0, initial_velocity=0, 
                  process_noise=0.01, measurement_noise=1.0):
-        """
-        Initialize the filter.
-        
-        process_noise: How much we expect the system to deviate from predictions
-                       (models acceleration, wheel slip, etc.)
-        measurement_noise: How much we trust each sensor reading
-        """
         # State vector: [position, velocity]
         self.x = np.array([[initial_position], [initial_velocity]])
         
         # Covariance matrix: uncertainty in [position, velocity]
         self.P = np.eye(2) * 0.5
         
-        # State transition matrix: position += velocity * dt (dt=1 for simplicity)
+        # State transition matrix: position += velocity * dt
         self.F = np.array([[1, 1],
                           [0, 1]])
         
         # Measurement matrix: we observe position only
         self.H = np.array([[1, 0]])
         
-        # Process noise covariance
+        # Noise parameters
         self.Q = np.eye(2) * process_noise
-        
-        # Measurement noise covariance
         self.R = np.array([[measurement_noise]])
-    
+```
+
+The matrices F, H, Q, and R define how the system evolves (F), what we can measure (H), and how much we trust our motion model (Q) versus our sensors (R).
+
+### Step 2: Prediction and Update Methods
+
+The filter operates in two phases each time step. Predict advances the state based on motion, and update incorporates sensor readings.
+
+```python
     def predict(self):
-        """Prediction step: advance the state based on motion model."""
+        """Prediction step: advance based on motion model."""
         self.x = self.F @ self.x
         self.P = self.F @ self.P @ self.F.T + self.Q
     
     def update(self, z):
-        """
-        Update step: incorporate a new measurement.
-        
-        This is where the magic happens. The filter computes the Kalman gain,
-        which tells us how much to trust the measurement vs. the prediction.
-        """
-        # Innovation: difference between measured and predicted observation
+        """Update step: incorporate a new measurement."""
+        # Innovation: mismatch between measurement and prediction
         y = np.array([[z]]) - self.H @ self.x
         
-        # Innovation covariance: uncertainty in the innovation
+        # Innovation covariance
         S = self.H @ self.P @ self.H.T + self.R
         
-        # Kalman gain: how much weight to give the measurement
-        # If measurement noise is low (trusted), gain is high (trust measurement)
-        # If process noise is low (confident in prediction), gain is low (trust prediction)
+        # Kalman gain: optimal weighting factor
         K = self.P @ self.H.T @ np.linalg.inv(S)
         
-        # Update state: blend prediction and measurement
+        # Update state and covariance
         self.x = self.x + K @ y
-        
-        # Update covariance: express new uncertainty
         self.P = (np.eye(2) - K @ self.H) @ self.P
     
     def get_position(self):
         return self.x[0, 0]
     
     def get_uncertainty(self):
-        return np.sqrt(self.P[0, 0])  # Standard deviation in position
+        return np.sqrt(self.P[0, 0])
+```
 
+The Kalman gain K is the mathematical heart of the algorithm. It automatically balances whether to trust the measurement or the prediction based on their respective uncertainties.
 
-# Simulate a robot moving through a hallway
+### Step 3: Run a Simulation
+
+Now we simulate a robot moving through a hallway with noisy measurements.
+
+```python
+# Ground truth trajectory
 np.random.seed(42)
-
-# Ground truth: robot moves at constant velocity
 time_steps = 50
 true_velocity = 0.5
 true_position = np.zeros(time_steps)
 for t in range(1, time_steps):
     true_position[t] = true_position[t-1] + true_velocity
 
-# Noisy measurements from a sensor (e.g., GPS)
+# Add measurement noise
 measurement_noise_std = 1.5
 measurements = true_position + np.random.normal(0, measurement_noise_std, time_steps)
 
-# Initialize filter
+# Initialize and run filter
 kf = SimpleKalmanFilter1D(
     initial_position=measurements[0],
     initial_velocity=0,
@@ -159,7 +153,6 @@ kf = SimpleKalmanFilter1D(
     measurement_noise=measurement_noise_std**2
 )
 
-# Run filter
 estimates = []
 uncertainties = []
 
@@ -171,17 +164,25 @@ for t in range(time_steps):
 
 estimates = np.array(estimates)
 uncertainties = np.array(uncertainties)
+```
 
-# Visualize results
+At each timestep, we predict where the robot should be, then update that prediction with the noisy measurement.
+
+### Step 4: Visualize the Results
+
+Finally, we plot the ground truth, raw measurements, and the filter's estimates with confidence bounds.
+
+```python
 plt.figure(figsize=(12, 6))
 
-# Plot true trajectory
+# Ground truth
 plt.plot(true_position, 'g-', linewidth=2, label='Ground Truth')
 
-# Plot noisy measurements
-plt.scatter(range(time_steps), measurements, alpha=0.5, s=20, label='Noisy Measurements')
+# Raw measurements
+plt.scatter(range(time_steps), measurements, alpha=0.5, s=20, 
+            label='Noisy Measurements')
 
-# Plot Kalman filter estimate with uncertainty bounds
+# Filter estimate with confidence bounds
 plt.plot(estimates, 'r-', linewidth=2, label='Kalman Filter Estimate')
 plt.fill_between(range(time_steps), 
                  estimates - 2*uncertainties, 
@@ -195,22 +196,26 @@ plt.title('Kalman Filter: Blending Predictions and Noisy Measurements')
 plt.grid(True, alpha=0.3)
 plt.show()
 
-# Print results
-print(f"Measurement RMSE: {np.sqrt(np.mean((measurements - true_position)**2)):.3f}")
-print(f"Filter RMSE: {np.sqrt(np.mean((estimates - true_position)**2)):.3f}")
-print(f"Accuracy improvement: {(1 - np.sqrt(np.mean((estimates - true_position)**2)) / np.sqrt(np.mean((measurements - true_position)**2))) * 100:.1f}%")
+# Performance metrics
+meas_rmse = np.sqrt(np.mean((measurements - true_position)**2))
+filt_rmse = np.sqrt(np.mean((estimates - true_position)**2))
+improvement = (1 - filt_rmse / meas_rmse) * 100
+
+print(f"Measurement RMSE: {meas_rmse:.3f}")
+print(f"Filter RMSE: {filt_rmse:.3f}")
+print(f"Accuracy improvement: {improvement:.1f}%")
 ```
 
-**What's happening here:**
+Notice how the red confidence region compresses as the filter gains confidence from multiple consistent measurements, then expands when predictions become unreliable. This is adaptive uncertainty in action.
 
-1. **Predict**: The filter advances the state using a motion model (position increases by velocity).
-2. **Update**: A noisy measurement arrives. The filter computes a **Kalman gain** that answers: "Should I more heavily weight my prediction or this measurement?"
-3. **Covariance tracking**: The filter tracks uncertainty (variance) in both position and velocity. As measurements confirm the prediction, uncertainty shrinks. When predictions drift, uncertainty grows.
-4. **Result**: The filtered trajectory is much smoother and closer to ground truth than the raw measurements alone.
+### What's Happening in Practice
 
-In the visualization, notice how the filter's confidence bounds (red shaded region) compress as measurements accumulate, then widen when fewer independent observations arrive. This adaptive uncertainty quantification is the heart of robustness.
+1. **Predict**: The filter advances position by velocity. Uncertainty grows because we trust odometry less over time.
+2. **Update**: A GPS reading arrives. The filter compares what it predicted versus what it measured.
+3. **Kalman Gain**: The filter automatically decides how much to correct based on which source is more trustworthy.
+4. **Result**: The filtered trajectory is smoother and closer to ground truth than raw measurements alone.
 
-For a 1D hallway, the improvement is modest. But in 6D pose space with 20 landmark coordinates added to the state vector (as in the drone SLAM problem), the multiplier effect of uncertainty propagation is enormous. This is why Kalman-style filters power every GPS/IMU fusion, every smartphone positioning system, and every autonomous vehicle.
+For a 1D hallway, improvements are modest. But in 6D pose space with 20 landmark coordinates (as in full SLAM), the effect compounds. This is why Kalman-style filters power GPS/IMU fusion in smartphones, autonomous vehicles, and spacecraft navigation.
 
 ### Running the Demo Yourself
 
