@@ -214,19 +214,29 @@ For a 1D hallway, the improvement is modest. But in 6D pose space with 20 landma
 
 ### Running the Demo Yourself
 
-If you have Python installed with NumPy and Matplotlib, you can download and run the complete demonstration script:
+We provide two versions of the Kalman filter demonstration:
 
+**Version 1: Full-featured (requires NumPy and Matplotlib)**
 ```bash
 python3 kalman_filter_demo.py
 ```
+This generates publication-quality 2-panel visualizations with:
+- Ground truth, measurements, and filter estimates
+- Adaptive 95% confidence bounds
+- Error reduction comparison
+- Saved PNG output
 
-This will:
-- Execute the 50-step hallway simulation
-- Print detailed results and performance metrics
-- Display a two-panel visualization showing estimates vs. measurements and error reduction
-- Save the plot as `kalman_filter_visualization.png`
+**Version 2: Pure Python (no dependencies - runs anywhere)**
+```bash
+python3 kalman_filter_simple.py
+```
+This uses only Python's built-in `math` and `random` libraries:
+- Detailed results table showing position, measurement, estimate, and error at each step
+- ASCII visualization of filter convergence
+- Educational output explaining key insights
+- Works on any system with Python 3 installed
 
-The script includes extensive comments explaining each step of the predict-update cycle.
+Both scripts include extensive comments explaining each step of the predict-update cycle. The pure Python version is ideal for learning, while the full-featured version produces publication-quality visualizations.
 
 ### Extended and Nonlinear Variants
 
