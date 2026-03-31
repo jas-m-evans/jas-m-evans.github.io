@@ -6,7 +6,7 @@ This directory now contains a comprehensive Kalman filter implementation added t
 ## What Was Added
 
 ### 1. Project Documentation Enhancement
-**File:** `_projects/indiana-drones-slam.md`
+**File:** `_projects/autonomous-drone-slam.md`
 
 Added a new "A Simple Kalman Filter in Python" section containing:
 - Complete SimpleKalmanFilter1D class implementation

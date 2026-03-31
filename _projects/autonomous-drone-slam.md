@@ -291,11 +291,11 @@ The broader lesson: robotics isn't about building the fastest or most complex sy
 
 {% comment %}
 Internal references (hidden from rendered page):
-- OMSCS path: rait/IndianaDrones/
-- Assignment implementation scaffold: rait/IndianaDrones/indiana_drones.py
-- Evaluation harness: rait/IndianaDrones/testing_suite_indiana_drones.py
-- Test scenarios and constraints: rait/IndianaDrones/test_cases.py
-- Project brief: rait/IndianaDrones/cs7638-indiana-drones.pdf
+- OMSCS path: rait/AutonomousDroneSLAM/
+- Assignment implementation scaffold: rait/AutonomousDroneSLAM/autonomous_drone_slam.py
+- Evaluation harness: rait/AutonomousDroneSLAM/testing_suite_slam.py
+- Test scenarios and constraints: rait/AutonomousDroneSLAM/test_cases.py
+- Project brief: rait/CS7638/autonomous-drone-slam.pdf
 {% endcomment %}
 
 ## Key Sources on Kalman Filtering and SLAM
