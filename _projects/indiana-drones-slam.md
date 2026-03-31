@@ -212,6 +212,22 @@ In the visualization, notice how the filter's confidence bounds (red shaded regi
 
 For a 1D hallway, the improvement is modest. But in 6D pose space with 20 landmark coordinates added to the state vector (as in the drone SLAM problem), the multiplier effect of uncertainty propagation is enormous. This is why Kalman-style filters power every GPS/IMU fusion, every smartphone positioning system, and every autonomous vehicle.
 
+### Running the Demo Yourself
+
+If you have Python installed with NumPy and Matplotlib, you can download and run the complete demonstration script:
+
+```bash
+python3 kalman_filter_demo.py
+```
+
+This will:
+- Execute the 50-step hallway simulation
+- Print detailed results and performance metrics
+- Display a two-panel visualization showing estimates vs. measurements and error reduction
+- Save the plot as `kalman_filter_visualization.png`
+
+The script includes extensive comments explaining each step of the predict-update cycle.
+
 ### Extended and Nonlinear Variants
 
 The classical Kalman filter assumes linear systems. Real robots don't behave that way. When a drone turns, the relationship between its wheel rotations and its position becomes nonlinear. The **Extended Kalman Filter (EKF)** linearizes these relationships locally, and **Unscented Kalman Filters** use clever sampling to handle nonlinearity even better.
