@@ -1023,7 +1023,7 @@ permalink: /wave-defect-demo/
       <a href="/">Jason Evans</a>
     </p>
     <p style="margin-top:0.5rem;font-size:0.72rem">
-      OAuth via Spotify PKCE · Read-only scopes · No data retained · Client ID via /api/config on Vercel
+      OAuth via Spotify PKCE · Read-only scopes · No data retained
     </p>
     <!-- SETUP INSTRUCTIONS (hidden from normal view, visible only if client ID was not loaded) -->
     <div id="setup-instructions" style="display:none;margin-top:1.5rem;text-align:left;background:var(--surface);border:1px dashed var(--border-mid);border-radius:var(--radius-sm);padding:1rem;font-size:0.78rem;font-family:'IBM Plex Mono',monospace;color:var(--muted)">
@@ -1092,7 +1092,7 @@ const JASON_PROFILE = {
 // stays empty, showing the setup instructions to the visitor.
 async function fetchConfig() {
   try {
-    const resp = await fetch('/api/config', { cache: 'no-store' });
+    const resp = await fetch('/api/config');
     if (resp.ok) {
       const data = await resp.json();
       if (data.spotifyClientId) {

@@ -1,7 +1,4 @@
 {
   "buildCommand": "bundle exec jekyll build",
-  "outputDirectory": "_site",
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" }
-  ]
+  "outputDirectory": "_site"
 }
