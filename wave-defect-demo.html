@@ -1,0 +1,1518 @@
+---
+layout: null
+permalink: /wave-defect-demo/
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wave·Defect × LiveKit — Spotify Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ─── Design tokens ─────────────────────────────────── */
+    :root {
+      --ink: #0e1117;
+      --surface: #161b22;
+      --surface-2: #1e252e;
+      --surface-3: #252d38;
+      --border: rgba(255,255,255,0.08);
+      --border-mid: rgba(255,255,255,0.14);
+      --teal: #0f8e93;
+      --teal-light: #17b3ba;
+      --teal-glow: rgba(15,142,147,0.22);
+      --pink: #d84b6a;
+      --pink-glow: rgba(216,75,106,0.22);
+      --spotify: #1db954;
+      --spotify-dim: rgba(29,185,84,0.14);
+      --livekit: #5b9cf6;
+      --livekit-dim: rgba(91,156,246,0.14);
+      --muted: #6b7c93;
+      --text: #dce4ef;
+      --text-bright: #f0f5fc;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --shadow: 0 16px 40px rgba(0,0,0,0.45);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      min-height: 100vh;
+      background-color: var(--ink);
+      color: var(--text);
+      font-family: "Space Grotesk", sans-serif;
+      line-height: 1.6;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 12% 8%,  rgba(15,142,147,0.18),  transparent 38%),
+        radial-gradient(circle at 92% 12%, rgba(216,75,106,0.16),  transparent 32%),
+        radial-gradient(circle at 50% 80%, rgba(91,156,246,0.12),  transparent 44%),
+        #0e1117;
+    }
+
+    /* ─── Layout ────────────────────────────────────────── */
+    .app { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+
+    /* ─── Topbar ─────────────────────────────────────────── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.4rem;
+      background: rgba(22,27,34,0.82);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    .topbar__brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .topbar__wordmark {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      letter-spacing: -0.01em;
+    }
+
+    .topbar__wordmark span { color: var(--teal-light); }
+
+    .topbar__badges {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.72rem;
+      font-family: "IBM Plex Mono", monospace;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.28rem 0.65rem;
+      border-radius: 99px;
+      border: 1px solid transparent;
+    }
+
+    .badge--livekit {
+      color: var(--livekit);
+      background: var(--livekit-dim);
+      border-color: rgba(91,156,246,0.28);
+    }
+
+    .badge--live {
+      color: #4ade80;
+      background: rgba(74,222,128,0.12);
+      border-color: rgba(74,222,128,0.28);
+      animation: pulse-badge 2.2s ease-in-out infinite;
+    }
+
+    .badge--spotify {
+      color: var(--spotify);
+      background: var(--spotify-dim);
+      border-color: rgba(29,185,84,0.28);
+    }
+
+    .badge--dot::before {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    @keyframes pulse-badge {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.62; }
+    }
+
+    /* ─── Grid layout ─────────────────────────────────────── */
+    .grid { display: grid; gap: 1.25rem; }
+    .grid--2 { grid-template-columns: 1fr 1fr; }
+    .grid--3 { grid-template-columns: 1fr 1fr 1fr; }
+
+    @media (max-width: 760px) {
+      .grid--2, .grid--3 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 1000px) {
+      .grid--3 { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ─── Cards ──────────────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.4rem;
+      box-shadow: var(--shadow);
+      transition: border-color 0.18s ease;
+    }
+
+    .card:hover { border-color: var(--border-mid); }
+
+    .card--teal  { border-top: 2px solid var(--teal); }
+    .card--pink  { border-top: 2px solid var(--pink); }
+    .card--lk    { border-top: 2px solid var(--livekit); }
+    .card--spot  { border-top: 2px solid var(--spotify); }
+
+    .card__label {
+      font-size: 0.68rem;
+      font-family: "IBM Plex Mono", monospace;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--muted);
+      margin-bottom: 0.55rem;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .card__label-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .card__title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      margin-bottom: 0.3rem;
+    }
+
+    .card__sub {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    /* ─── Hero / landing ──────────────────────────────────── */
+    .hero {
+      text-align: center;
+      padding: 2.5rem 1rem 3rem;
+      max-width: 640px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .hero__eyebrow {
+      font-size: 0.72rem;
+      font-family: "IBM Plex Mono", monospace;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--teal-light);
+      margin-bottom: 0.8rem;
+    }
+
+    .hero__title {
+      font-size: clamp(2rem, 5vw, 3.1rem);
+      font-weight: 700;
+      line-height: 1.12;
+      letter-spacing: -0.025em;
+      color: var(--text-bright);
+      margin-bottom: 1rem;
+    }
+
+    .hero__title em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--teal-light), var(--livekit));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero__desc {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto 1.6rem;
+    }
+
+    /* ─── Buttons ─────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.5rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-family: "IBM Plex Mono", monospace;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      border: 1px solid transparent;
+      text-decoration: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn--spotify {
+      background: var(--spotify);
+      color: #000;
+      box-shadow: 0 8px 24px rgba(29,185,84,0.35);
+    }
+
+    .btn--spotify:hover { box-shadow: 0 12px 28px rgba(29,185,84,0.42); }
+
+    .btn--outline {
+      background: transparent;
+      color: var(--text);
+      border-color: var(--border-mid);
+    }
+
+    .btn--outline:hover { border-color: var(--teal); color: var(--teal-light); }
+
+    .btn--sm { padding: 0.42rem 0.9rem; font-size: 0.78rem; }
+
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    /* ─── Profile avatar ──────────────────────────────────── */
+    .avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: var(--surface-3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+
+    .profile-row {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .profile-name { font-weight: 700; color: var(--text-bright); font-size: 1.05rem; }
+    .profile-sub  { font-size: 0.82rem; color: var(--muted); }
+
+    /* ─── Track list ─────────────────────────────────────── */
+    .track-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .track-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 0.75rem;
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .track-item:hover { background: var(--surface-3); border-color: var(--border-mid); }
+
+    .track-num {
+      font-size: 0.72rem;
+      font-family: "IBM Plex Mono", monospace;
+      color: var(--muted);
+      width: 18px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .track-art {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: var(--surface-3);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      overflow: hidden;
+    }
+
+    .track-art img { width: 100%; height: 100%; object-fit: cover; }
+
+    .track-info { flex: 1; min-width: 0; }
+
+    .track-name {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-bright);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .track-artist {
+      font-size: 0.76rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .track-duration {
+      font-size: 0.72rem;
+      font-family: "IBM Plex Mono", monospace;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    /* ─── Genre pills ─────────────────────────────────────── */
+    .genre-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.6rem;
+    }
+
+    .pill {
+      font-size: 0.72rem;
+      font-family: "IBM Plex Mono", monospace;
+      padding: 0.22rem 0.6rem;
+      border-radius: 99px;
+      border: 1px solid var(--border-mid);
+      color: var(--muted);
+      background: var(--surface-2);
+    }
+
+    /* ─── LiveKit room panel ─────────────────────────────── */
+    .lk-panel {
+      background: var(--surface);
+      border: 1px solid rgba(91,156,246,0.22);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      box-shadow: 0 0 0 1px rgba(91,156,246,0.08), var(--shadow);
+    }
+
+    .lk-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .lk-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--livekit);
+      font-family: "IBM Plex Mono", monospace;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .lk-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-weight: 800;
+      font-size: 0.96rem;
+      color: var(--livekit);
+      letter-spacing: -0.01em;
+    }
+
+    .lk-logo__mark {
+      width: 20px;
+      height: 20px;
+      background: var(--livekit);
+      border-radius: 5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lk-logo__mark svg { width: 12px; height: 12px; fill: #fff; }
+
+    .lk-participants {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .lk-participant {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.5rem 0.7rem;
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+    }
+
+    .lk-participant__avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: var(--teal-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .lk-participant__avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .lk-participant__name { font-size: 0.82rem; font-weight: 600; color: var(--text-bright); flex: 1; }
+
+    .lk-participant__role {
+      font-size: 0.68rem;
+      font-family: "IBM Plex Mono", monospace;
+      text-transform: uppercase;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    .lk-channel {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.7rem;
+      font-size: 0.78rem;
+      font-family: "IBM Plex Mono", monospace;
+      height: 96px;
+      overflow-y: auto;
+      color: var(--muted);
+    }
+
+    .lk-channel-msg { padding: 0.15rem 0; color: var(--text); }
+    .lk-channel-msg--sys { color: var(--teal); }
+    .lk-channel-msg--data { color: var(--livekit); }
+
+    .lk-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .lk-metric {
+      text-align: center;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 0.3rem;
+    }
+
+    .lk-metric__val {
+      display: block;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: "IBM Plex Mono", monospace;
+      color: var(--livekit);
+    }
+
+    .lk-metric__key {
+      font-size: 0.64rem;
+      font-family: "IBM Plex Mono", monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      margin-top: 0.1rem;
+    }
+
+    /* ─── Currently playing ───────────────────────────────── */
+    .now-playing {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.8rem 1rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 1rem;
+    }
+
+    .now-playing__art {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: var(--surface-3);
+      flex-shrink: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .now-playing__art img { width: 100%; height: 100%; object-fit: cover; }
+
+    .now-playing__info { flex: 1; min-width: 0; }
+
+    .now-playing__track {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .now-playing__artist { font-size: 0.78rem; color: var(--muted); }
+
+    .now-playing__eq {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 18px;
+    }
+
+    .now-playing__eq span {
+      width: 3px;
+      background: var(--spotify);
+      border-radius: 1px;
+      animation: eq-bar 0.8s ease-in-out infinite alternate;
+    }
+
+    .now-playing__eq span:nth-child(2) { animation-delay: 0.15s; }
+    .now-playing__eq span:nth-child(3) { animation-delay: 0.3s; }
+    .now-playing__eq span:nth-child(4) { animation-delay: 0.45s; }
+
+    @keyframes eq-bar {
+      from { height: 4px; }
+      to   { height: 16px; }
+    }
+
+    /* ─── Wave visualizer ────────────────────────────────── */
+    .wave-vis {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 44px;
+      padding: 0.5rem 0;
+    }
+
+    .wave-vis span {
+      flex: 1;
+      background: linear-gradient(180deg, var(--teal-light), var(--pink));
+      border-radius: 2px;
+      min-height: 4px;
+      transition: height 0.3s ease;
+    }
+
+    /* ─── Section heading ────────────────────────────────── */
+    .section-head {
+      font-size: 0.72rem;
+      font-family: "IBM Plex Mono", monospace;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* ─── Welcome banner ──────────────────────────────────── */
+    .welcome-banner {
+      background: linear-gradient(135deg, rgba(15,142,147,0.18), rgba(91,156,246,0.14));
+      border: 1px solid rgba(15,142,147,0.28);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .welcome-banner h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-bright);
+      margin-bottom: 0.35rem;
+    }
+
+    .welcome-banner p { font-size: 0.9rem; color: var(--muted); max-width: 640px; }
+
+    /* ─── States ──────────────────────────────────────────── */
+    .state { display: none; }
+    .state.active { display: block; }
+
+    /* ─── Divider ─────────────────────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0;
+    }
+
+    /* ─── Spinner ─────────────────────────────────────────── */
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--border-mid);
+      border-top-color: var(--teal-light);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1.2rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    /* ─── Error ─────────────────────────────────────────── */
+    .error-banner {
+      background: rgba(216,75,106,0.12);
+      border: 1px solid rgba(216,75,106,0.3);
+      color: #f48a9e;
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    /* ─── Setup note ─────────────────────────────────────── */
+    .setup-note {
+      background: rgba(91,156,246,0.08);
+      border: 1px dashed rgba(91,156,246,0.28);
+      border-radius: var(--radius-sm);
+      padding: 0.9rem 1.1rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      font-family: "IBM Plex Mono", monospace;
+    }
+
+    .setup-note strong { color: var(--livekit); }
+
+    /* ─── Footer ─────────────────────────────────────────── */
+    .footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-family: "IBM Plex Mono", monospace;
+    }
+
+    .footer a { color: var(--teal); text-decoration: none; }
+    .footer a:hover { color: var(--teal-light); }
+
+    /* ─── Responsive ─────────────────────────────────────── */
+    @media (max-width: 520px) {
+      .topbar { flex-direction: column; gap: 0.65rem; }
+      .topbar__badges { flex-wrap: wrap; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Top bar ──────────────────────────────────────── -->
+  <nav class="topbar">
+    <div class="topbar__brand">
+      <div class="lk-logo">
+        <div class="lk-logo__mark">
+          <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M3 3h4v10H3zM9 7h4v6H9zM9 3h4v2H9z"/>
+          </svg>
+        </div>
+        LiveKit
+      </div>
+      <span style="color:var(--border-mid)">×</span>
+      <span class="topbar__wordmark">Wave<span>·</span>Defect</span>
+    </div>
+    <div class="topbar__badges">
+      <span class="badge badge--livekit">⚡ LiveKit Powered</span>
+      <span class="badge badge--live badge--dot" id="live-badge">Live</span>
+      <span class="badge badge--spotify" id="spotify-badge" style="display:none">
+        ♪ Spotify Connected
+      </span>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- STATE: landing (pre-auth)                         -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div id="state-landing" class="state active">
+
+    <div class="hero">
+      <p class="hero__eyebrow">LiveKit × Spotify Music Intelligence Demo</p>
+      <h1 class="hero__title">
+        Music meets<br><em>real‑time everything</em>
+      </h1>
+      <p class="hero__desc">
+        Authenticate with your Spotify account and instantly see your top tracks
+        alongside Jason's curated listening profile — delivered live over a
+        <strong style="color:var(--livekit)">LiveKit</strong> data channel.
+      </p>
+
+      <!-- Setup notice (shown when client id is placeholder) -->
+      <div class="setup-note" id="setup-note" style="display:none">
+        <strong>Demo Setup Required:</strong> Add your Spotify App Client ID to activate OAuth.
+        See instructions at the bottom of this page.
+      </div>
+
+      <div id="error-auth" class="error-banner"></div>
+
+      <button class="btn btn--spotify" id="btn-login" onclick="loginWithSpotify()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 0C5.374 0 0 5.373 0 12c0 6.628 5.374 12 12 12 6.629 0 12-5.372 12-12 0-6.627-5.371-12-12-12zm5.515 17.305c-.218.356-.681.468-1.037.254-2.842-1.735-6.42-2.127-10.634-1.166-.406.094-.813-.16-.907-.568-.093-.407.16-.812.568-.906 4.612-1.054 8.568-.6 11.756 1.348.358.218.47.68.254 1.038zm1.472-3.27c-.275.444-.856.582-1.3.31-3.252-2.001-8.211-2.58-12.054-1.411-.498.152-1.024-.133-1.175-.63-.15-.499.133-1.024.63-1.175 4.39-1.333 9.843-.687 13.593 1.607.445.274.582.856.306 1.299zm.126-3.403c-3.9-2.32-10.341-2.532-14.065-1.4-.598.18-1.231-.156-1.412-.754-.18-.597.156-1.23.754-1.41C8.45 5.647 15.544 5.895 19.966 8.56c.539.32.716 1.015.395 1.554-.32.538-1.015.715-1.553.394l.305-.876z"/>
+        </svg>
+        Connect Spotify
+      </button>
+
+      <p style="font-size:0.76rem;color:var(--muted);margin-top:0.9rem;font-family:'IBM Plex Mono',monospace">
+        Read-only access · No data stored · PKCE OAuth
+      </p>
+    </div>
+
+    <!-- Jason's pre-loaded profile (always visible) -->
+    <div class="section-head">
+      <span class="card__label-dot" style="background:var(--teal)"></span>
+      Jason's Pre-Loaded Profile — stored in Wave·Defect DB
+    </div>
+
+    <div class="grid grid--2" style="margin-bottom:1.5rem">
+
+      <div class="card card--teal">
+        <div class="card__label">
+          <span class="card__label-dot" style="background:var(--teal)"></span>
+          Host Profile
+        </div>
+        <div class="profile-row">
+          <div class="avatar">🥁</div>
+          <div>
+            <div class="profile-name">Jason Evans</div>
+            <div class="profile-sub">Drummer · Data Engineer · M.Sc. CS</div>
+          </div>
+        </div>
+        <div class="genre-pills" id="jason-genres"></div>
+      </div>
+
+      <div class="card card--teal">
+        <div class="card__label">
+          <span class="card__label-dot" style="background:var(--teal)"></span>
+          LiveKit Room
+        </div>
+        <div class="lk-panel" style="background:var(--surface-2);border:none;padding:0.6rem;box-shadow:none">
+          <div class="lk-participants" id="lk-participants-pre">
+            <!-- populated by JS -->
+          </div>
+          <div class="lk-channel" id="lk-channel-pre">
+            <div class="lk-channel-msg lk-channel-msg--sys">→ Room: wave-defect-lab</div>
+            <div class="lk-channel-msg lk-channel-msg--sys">→ Waiting for guest to join…</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="section-head">
+      <span class="card__label-dot" style="background:var(--teal)"></span>
+      Jason's Top Tracks — pre-loaded
+    </div>
+    <div class="card" style="margin-bottom:1.5rem">
+      <ul class="track-list" id="jason-tracks-pre"></ul>
+    </div>
+
+  </div><!-- /state-landing -->
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- STATE: loading                                    -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div id="state-loading" class="state">
+    <div class="loading-row">
+      <span class="spinner"></span>
+      Authenticating with Spotify and loading your music data…
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- STATE: connected (post-auth)                      -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div id="state-connected" class="state">
+
+    <!-- Welcome banner -->
+    <div class="welcome-banner" id="welcome-banner">
+      <h2 id="welcome-heading">Hey there! 👋</h2>
+      <p id="welcome-text">Thanks for authenticating your Spotify. Here's your profile alongside Jason's recommendations.</p>
+    </div>
+
+    <!-- Currently playing -->
+    <div id="now-playing-section" style="display:none;margin-bottom:1.25rem">
+      <div class="section-head">
+        <span class="badge badge--live badge--dot" style="margin:0">Now Playing</span>
+        Live from your Spotify
+      </div>
+      <div class="now-playing" id="now-playing-card">
+        <div class="now-playing__art" id="np-art">🎵</div>
+        <div class="now-playing__info">
+          <div class="now-playing__track" id="np-track">—</div>
+          <div class="now-playing__artist" id="np-artist">—</div>
+        </div>
+        <div class="now-playing__eq">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profiles: Jason + Guest side-by-side -->
+    <div class="section-head">
+      <span class="card__label-dot" style="background:var(--teal)"></span>
+      Profiles — Host &amp; Guest
+    </div>
+
+    <div class="grid grid--2" style="margin-bottom:1.25rem">
+
+      <!-- Jason's card -->
+      <div class="card card--teal">
+        <div class="card__label">
+          <span class="card__label-dot" style="background:var(--teal)"></span>
+          Jason's Profile — pre-loaded
+        </div>
+        <div class="profile-row">
+          <div class="avatar">🥁</div>
+          <div>
+            <div class="profile-name">Jason Evans</div>
+            <div class="profile-sub">Drummer · Data Engineer · M.Sc. CS</div>
+          </div>
+        </div>
+        <div class="genre-pills" id="jason-genres-2"></div>
+      </div>
+
+      <!-- Guest's card -->
+      <div class="card card--spot">
+        <div class="card__label">
+          <span class="card__label-dot" style="background:var(--spotify)"></span>
+          Your Spotify Profile
+        </div>
+        <div class="profile-row">
+          <div class="avatar" id="guest-avatar">🎧</div>
+          <div>
+            <div class="profile-name" id="guest-name">—</div>
+            <div class="profile-sub" id="guest-sub">—</div>
+          </div>
+        </div>
+        <div class="genre-pills" id="guest-genres"></div>
+      </div>
+
+    </div>
+
+    <!-- LiveKit room panel + wave visualizer -->
+    <div class="section-head">
+      <span class="card__label-dot" style="background:var(--livekit)"></span>
+      LiveKit Room — wave-defect-lab
+    </div>
+
+    <div class="lk-panel" style="margin-bottom:1.25rem">
+      <div class="lk-header">
+        <div class="lk-title">
+          <div class="lk-logo">
+            <div class="lk-logo__mark">
+              <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M3 3h4v10H3zM9 7h4v6H9zM9 3h4v2H9z"/>
+              </svg>
+            </div>
+            LiveKit
+          </div>
+          <span style="color:var(--muted)">·</span>
+          Data Channel Active
+        </div>
+        <div style="display:flex;gap:0.45rem;align-items:center">
+          <span class="badge badge--live badge--dot">Live</span>
+          <span class="badge badge--livekit" id="lk-latency">12 ms</span>
+        </div>
+      </div>
+
+      <!-- Wave visualizer -->
+      <div class="wave-vis" id="wave-vis">
+        <!-- bars generated by JS -->
+      </div>
+
+      <div class="lk-participants" id="lk-participants-post" style="margin-top:0.75rem"></div>
+
+      <div style="font-size:0.72rem;font-family:'IBM Plex Mono',monospace;color:var(--muted);margin-bottom:0.4rem;margin-top:0.6rem;text-transform:uppercase;letter-spacing:0.07em">
+        Data channel — music recommendations
+      </div>
+      <div class="lk-channel" id="lk-channel-post"></div>
+
+      <div class="lk-metrics">
+        <div class="lk-metric">
+          <span class="lk-metric__val" id="lk-tracks-sent">0</span>
+          <div class="lk-metric__key">Tracks Sent</div>
+        </div>
+        <div class="lk-metric">
+          <span class="lk-metric__val" id="lk-latency-val">12ms</span>
+          <div class="lk-metric__key">Latency</div>
+        </div>
+        <div class="lk-metric">
+          <span class="lk-metric__val" id="lk-uptime">0s</span>
+          <div class="lk-metric__key">Uptime</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Side-by-side top tracks -->
+    <div class="section-head">
+      <span class="card__label-dot" style="background:var(--teal)"></span>
+      Top Tracks — Jason vs You
+    </div>
+
+    <div class="grid grid--2" style="margin-bottom:1.5rem">
+      <div class="card card--teal">
+        <div class="card__label">
+          <span class="card__label-dot" style="background:var(--teal)"></span>
+          Jason's Top Tracks
+        </div>
+        <ul class="track-list" id="jason-tracks-post"></ul>
+      </div>
+      <div class="card card--spot">
+        <div class="card__label">
+          <span class="card__label-dot" style="background:var(--spotify)"></span>
+          Your Top Tracks
+        </div>
+        <div id="guest-tracks-loading" class="loading-row" style="padding:0.5rem 0">
+          <span class="spinner"></span> Loading your tracks…
+        </div>
+        <ul class="track-list" id="guest-tracks" style="display:none"></ul>
+      </div>
+    </div>
+
+    <button class="btn btn--outline btn--sm" onclick="logout()" style="margin-bottom:1rem">
+      Disconnect Spotify
+    </button>
+
+  </div><!-- /state-connected -->
+
+  <!-- ── Footer ──────────────────────────────────────── -->
+  <footer class="footer">
+    <p>
+      <a href="https://livekit.io" target="_blank" rel="noopener">LiveKit</a>
+      &nbsp;·&nbsp;
+      <a href="https://developer.spotify.com" target="_blank" rel="noopener">Spotify for Developers</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/jas-m-evans/wave2vector" target="_blank" rel="noopener">Wave·Defect on GitHub</a>
+      &nbsp;·&nbsp;
+      <a href="/">Jason Evans</a>
+    </p>
+    <p style="margin-top:0.5rem;font-size:0.72rem">
+      OAuth via Spotify PKCE · Read-only scopes · No data retained
+    </p>
+    <!-- SETUP INSTRUCTIONS (hidden from normal view, visible only if id is placeholder) -->
+    <div id="setup-instructions" style="display:none;margin-top:1.5rem;text-align:left;background:var(--surface);border:1px dashed var(--border-mid);border-radius:var(--radius-sm);padding:1rem;font-size:0.78rem;font-family:'IBM Plex Mono',monospace;color:var(--muted)">
+      <strong style="color:var(--livekit);display:block;margin-bottom:0.5rem">▸ Demo Setup — Spotify App Config</strong>
+      1. Go to <a href="https://developer.spotify.com/dashboard" target="_blank" style="color:var(--spotify)">developer.spotify.com/dashboard</a><br>
+      2. Create an app (or use an existing one)<br>
+      3. Add Redirect URI: <code style="color:var(--text)">https://jas-m-evans.github.io/wave-defect-demo/</code><br>
+      4. Copy the <strong style="color:var(--text)">Client ID</strong><br>
+      5. Replace <code style="color:var(--text)">YOUR_SPOTIFY_CLIENT_ID</code> in this file's JS section<br>
+      6. Commit &amp; push — the demo will be live on GitHub Pages
+    </div>
+  </footer>
+
+</div><!-- /app -->
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  Configuration
+// ═══════════════════════════════════════════════════════
+
+// IMPORTANT: This is a public placeholder. Replace with your Spotify App's
+// Client ID from https://developer.spotify.com/dashboard
+// PKCE OAuth does not use a client secret, so the Client ID is safe to
+// include in client-side code for public demo apps.
+// Redirect URI to register in your Spotify App settings:
+//   https://jas-m-evans.github.io/wave-defect-demo/
+const SPOTIFY_CLIENT_ID = 'YOUR_SPOTIFY_CLIENT_ID';
+const REDIRECT_URI = 'https://jas-m-evans.github.io/wave-defect-demo/';
+const SCOPES = [
+  'user-top-read',
+  'user-read-recently-played',
+  'user-read-currently-playing',
+  'user-read-playback-state',
+  'user-read-private',
+].join(' ');
+
+// ═══════════════════════════════════════════════════════
+//  Jason's pre-stored recommendations (Wave·Defect DB)
+// ═══════════════════════════════════════════════════════
+const JASON_PROFILE = {
+  name: 'Jason Evans',
+  role: 'Drummer · Data Engineer · M.Sc. CS',
+  genres: ['Progressive Metal', 'Jazz Fusion', 'Art Rock', 'Electronic', 'Post-Rock'],
+  topTracks: [
+    { name: 'Pneuma',              artist: 'TOOL',               emoji: '🔩', duration: '11:48' },
+    { name: 'Let It Happen',       artist: 'Tame Impala',        emoji: '🌀', duration: '7:47'  },
+    { name: '15 Step',             artist: 'Radiohead',          emoji: '📡', duration: '3:57'  },
+    { name: 'Bleed',               artist: 'Meshuggah',          emoji: '⚡', duration: '7:24'  },
+    { name: 'Roygbiv',             artist: 'Boards of Canada',   emoji: '🌿', duration: '2:32'  },
+    { name: 'White Walls',         artist: 'Between the Buried', emoji: '🌊', duration: '9:50'  },
+    { name: 'The National Anthem', artist: 'Radiohead',          emoji: '📻', duration: '5:51'  },
+  ],
+};
+
+// ═══════════════════════════════════════════════════════
+//  PKCE helpers
+// ═══════════════════════════════════════════════════════
+
+function generateRandomString(len) {
+  const arr = new Uint8Array(len);
+  crypto.getRandomValues(arr);
+  return Array.from(arr, b => b.toString(16).padStart(2, '0')).join('').slice(0, len);
+}
+
+async function generateCodeChallenge(verifier) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(verifier);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return btoa(String.fromCharCode(...new Uint8Array(digest)))
+    .replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+}
+
+// ═══════════════════════════════════════════════════════
+//  Auth flow
+// ═══════════════════════════════════════════════════════
+
+async function loginWithSpotify() {
+  if (SPOTIFY_CLIENT_ID === 'YOUR_SPOTIFY_CLIENT_ID') {
+    document.getElementById('error-auth').style.display = 'block';
+    document.getElementById('error-auth').textContent =
+      '⚠ Demo not yet configured — see setup instructions at the bottom of this page.';
+    return;
+  }
+  const verifier = generateRandomString(64);
+  const challenge = await generateCodeChallenge(verifier);
+  sessionStorage.setItem('pkce_verifier', verifier);
+  const state = generateRandomString(16);
+  sessionStorage.setItem('pkce_state', state);
+
+  const params = new URLSearchParams({
+    client_id:             SPOTIFY_CLIENT_ID,
+    response_type:         'code',
+    redirect_uri:          REDIRECT_URI,
+    code_challenge_method: 'S256',
+    code_challenge:        challenge,
+    state,
+    scope:                 SCOPES,
+  });
+
+  window.location.href = `https://accounts.spotify.com/authorize?${params}`;
+}
+
+async function exchangeCode(code) {
+  const verifier = sessionStorage.getItem('pkce_verifier');
+  if (!verifier) throw new Error('No PKCE verifier found. Please try logging in again.');
+
+  const resp = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type:    'authorization_code',
+      code,
+      redirect_uri:  REDIRECT_URI,
+      client_id:     SPOTIFY_CLIENT_ID,
+      code_verifier: verifier,
+    }),
+  });
+
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err.error_description || `Token exchange failed (${resp.status})`);
+  }
+
+  const data = await resp.json();
+  sessionStorage.setItem('spotify_token', data.access_token);
+  sessionStorage.setItem('spotify_token_expiry', Date.now() + data.expires_in * 1000);
+  sessionStorage.removeItem('pkce_verifier');
+  sessionStorage.removeItem('pkce_state');
+  return data.access_token;
+}
+
+function getToken() {
+  const token  = sessionStorage.getItem('spotify_token');
+  const expiry = sessionStorage.getItem('spotify_token_expiry');
+  if (!token || !expiry) return null;
+  if (Date.now() > Number(expiry) - 30_000) return null; // 30-second buffer
+  return token;
+}
+
+function logout() {
+  sessionStorage.removeItem('spotify_token');
+  sessionStorage.removeItem('spotify_token_expiry');
+  // Stop all background intervals
+  if (lkInterval)         { clearInterval(lkInterval);     lkInterval = null; }
+  if (npPollInterval)     { clearInterval(npPollInterval); npPollInterval = null; }
+  // Reset counters for next session
+  lkTracksSent = 0;
+  lkUptimeSeconds = 0;
+  showState('landing');
+  document.getElementById('spotify-badge').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════════════
+//  Spotify API helpers
+// ═══════════════════════════════════════════════════════
+
+async function spotifyGet(path, token) {
+  const resp = await fetch(`https://api.spotify.com/v1${path}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err.error?.message || `Spotify API error ${resp.status}`);
+  }
+  return resp.json();
+}
+
+function msToMin(ms) {
+  const total = Math.round(ms / 1000);
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  State management
+// ═══════════════════════════════════════════════════════
+
+function showState(name) {
+  document.querySelectorAll('.state').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById(`state-${name}`);
+  if (el) el.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════
+//  Render helpers
+// ═══════════════════════════════════════════════════════
+
+function renderJasonGenres(containerIds) {
+  containerIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = JASON_PROFILE.genres
+      .map(g => `<span class="pill">${g}</span>`)
+      .join('');
+  });
+}
+
+function renderJasonTracks(containerIds) {
+  containerIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = JASON_PROFILE.topTracks.map((t, i) => `
+      <li class="track-item">
+        <span class="track-num">${i + 1}</span>
+        <div class="track-art">${t.emoji}</div>
+        <div class="track-info">
+          <div class="track-name">${esc(t.name)}</div>
+          <div class="track-artist">${esc(t.artist)}</div>
+        </div>
+        <span class="track-duration">${t.duration}</span>
+      </li>
+    `).join('');
+  });
+}
+
+function renderGuestTracks(tracks) {
+  const el = document.getElementById('guest-tracks');
+  const loading = document.getElementById('guest-tracks-loading');
+  if (!el) return;
+  loading.style.display = 'none';
+  el.style.display = 'flex';
+  el.innerHTML = tracks.slice(0, 7).map((t, i) => {
+    const imgUrl = t.album?.images?.[2]?.url || t.album?.images?.[0]?.url || '';
+    const artEl = imgUrl
+      ? `<div class="track-art"><img src="${esc(imgUrl)}" alt="" loading="lazy"></div>`
+      : `<div class="track-art">🎵</div>`;
+    return `
+      <li class="track-item">
+        <span class="track-num">${i + 1}</span>
+        ${artEl}
+        <div class="track-info">
+          <div class="track-name">${esc(t.name)}</div>
+          <div class="track-artist">${esc(t.artists?.map(a => a.name).join(', ') || '—')}</div>
+        </div>
+        <span class="track-duration">${msToMin(t.duration_ms)}</span>
+      </li>
+    `;
+  }).join('');
+}
+
+function renderLKParticipants(containerId, guestName) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = `
+    <div class="lk-participant">
+      <div class="lk-participant__avatar">🥁</div>
+      <span class="lk-participant__name">Jason Evans</span>
+      <span class="lk-participant__role">Host</span>
+    </div>
+    <div class="lk-participant">
+      <div class="lk-participant__avatar">🎧</div>
+      <span class="lk-participant__name">${esc(guestName || 'Guest')}</span>
+      <span class="lk-participant__role">Guest</span>
+    </div>
+  `;
+}
+
+function renderNowPlaying(item) {
+  const section = document.getElementById('now-playing-section');
+  if (!item || !item.item) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  const track = item.item;
+  const imgUrl = track.album?.images?.[1]?.url || '';
+  document.getElementById('np-art').innerHTML = imgUrl
+    ? `<img src="${esc(imgUrl)}" alt="" loading="lazy">`
+    : '🎵';
+  document.getElementById('np-track').textContent   = track.name || '—';
+  document.getElementById('np-artist').textContent  =
+    track.artists?.map(a => a.name).join(', ') || '—';
+}
+
+function esc(str) {
+  return String(str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ═══════════════════════════════════════════════════════
+//  Wave visualizer (animated bars)
+// ═══════════════════════════════════════════════════════
+
+(function initWaveVis() {
+  const container = document.getElementById('wave-vis');
+  if (!container) return;
+  const BAR_COUNT = 32;
+  for (let i = 0; i < BAR_COUNT; i++) {
+    const span = document.createElement('span');
+    span.style.height = `${Math.random() * 80 + 8}%`;
+    container.appendChild(span);
+  }
+  setInterval(() => {
+    container.querySelectorAll('span').forEach(s => {
+      s.style.height = `${Math.random() * 80 + 8}%`;
+    });
+  }, 350);
+})();
+
+// ═══════════════════════════════════════════════════════
+//  LiveKit data-channel simulation
+// ═══════════════════════════════════════════════════════
+
+let lkTracksSent = 0;
+let lkUptimeSeconds = 0;
+let lkInterval = null;
+let npPollInterval = null;
+
+function startLKSimulation(guestName) {
+  const channel = document.getElementById('lk-channel-post');
+  if (!channel) return;
+
+  const messages = [
+    () => `→ [SYS]  Room "wave-defect-lab" joined by ${guestName}`,
+    () => `→ [SYS]  Data channel established`,
+    () => `→ [DATA] Broadcasting Jason's top track: "${JASON_PROFILE.topTracks[0].name}"`,
+    () => `→ [DATA] Broadcasting Jason's top track: "${JASON_PROFILE.topTracks[1].name}"`,
+    () => `→ [DATA] Receiving guest's profile data…`,
+    () => `→ [DATA] Publishing similarity score for genre overlap`,
+    () => `→ [SYS]  Heartbeat OK — 2 participants`,
+    () => `→ [DATA] Streaming: "${JASON_PROFILE.topTracks[Math.floor(Math.random()*JASON_PROFILE.topTracks.length)].name}"`,
+  ];
+
+  let idx = 0;
+  function appendMsg(text, cls) {
+    const div = document.createElement('div');
+    div.className = `lk-channel-msg${cls ? ` ${cls}` : ''}`;
+    div.textContent = text;
+    channel.appendChild(div);
+    channel.scrollTop = channel.scrollHeight;
+  }
+
+  // Seed with first few messages quickly
+  appendMsg(messages[0](), 'lk-channel-msg--sys');
+  setTimeout(() => appendMsg(messages[1](), 'lk-channel-msg--sys'), 600);
+  setTimeout(() => appendMsg(messages[2](), 'lk-channel-msg--data'), 1200);
+  idx = 3;
+
+  lkInterval = setInterval(() => {
+    lkUptimeSeconds++;
+    document.getElementById('lk-uptime').textContent =
+      lkUptimeSeconds < 60 ? `${lkUptimeSeconds}s`
+      : `${Math.floor(lkUptimeSeconds/60)}m${lkUptimeSeconds%60}s`;
+
+    // Simulate latency jitter (8–28 ms)
+    const lat = Math.floor(Math.random() * 20 + 8);
+    document.getElementById('lk-latency').textContent = `${lat} ms`;
+    document.getElementById('lk-latency-val').textContent = `${lat}ms`;
+
+    // Send a data channel message every ~3 s
+    if (lkUptimeSeconds % 3 === 0) {
+      const msg = messages[idx % messages.length]();
+      const cls = msg.includes('[SYS]') ? 'lk-channel-msg--sys'
+                : msg.includes('[DATA]') ? 'lk-channel-msg--data' : '';
+      appendMsg(msg, cls);
+      idx++;
+      lkTracksSent++;
+      document.getElementById('lk-tracks-sent').textContent = lkTracksSent;
+    }
+  }, 1000);
+}
+
+// ═══════════════════════════════════════════════════════
+//  Main: load connected view
+// ═══════════════════════════════════════════════════════
+
+async function loadConnectedView(token) {
+  showState('loading');
+
+  try {
+    const [me, topTracks, nowPlaying] = await Promise.all([
+      spotifyGet('/me', token),
+      spotifyGet('/me/top/tracks?limit=7&time_range=medium_term', token),
+      spotifyGet('/me/player/currently-playing', token).catch(() => null),
+    ]);
+
+    showState('connected');
+    document.getElementById('spotify-badge').style.display = 'inline-flex';
+
+    // Welcome message
+    const firstName = (me.display_name || 'there').split(' ')[0];
+    document.getElementById('welcome-heading').textContent =
+      `Hey ${firstName}! 👋 Thanks for connecting your Spotify.`;
+    document.getElementById('welcome-text').textContent =
+      `Here's Jason's listening profile alongside yours — delivered live over a LiveKit data channel. ` +
+      `You've got ${me.followers?.total?.toLocaleString() ?? 0} followers and ${
+        topTracks.items?.length ?? 0} top tracks loaded.`;
+
+    // Guest profile
+    document.getElementById('guest-name').textContent =
+      me.display_name || me.id || 'Spotify User';
+    document.getElementById('guest-sub').textContent =
+      `${me.product === 'premium' ? 'Spotify Premium' : 'Spotify Free'} · ${
+        me.country || ''} · ${(me.followers?.total ?? 0).toLocaleString()} followers`;
+
+    // Guest avatar
+    const avatarEl = document.getElementById('guest-avatar');
+    const imgUrl   = me.images?.[0]?.url || me.images?.[1]?.url || '';
+    if (imgUrl) {
+      avatarEl.innerHTML = `<img src="${esc(imgUrl)}" alt="Your Spotify profile photo" loading="lazy">`;
+    }
+
+    // Jason's data
+    renderJasonGenres(['jason-genres-2']);
+    renderJasonTracks(['jason-tracks-post']);
+
+    // Guest top tracks
+    renderGuestTracks(topTracks.items || []);
+
+    // Now playing
+    renderNowPlaying(nowPlaying);
+
+    // LiveKit room
+    renderLKParticipants('lk-participants-post', me.display_name || 'Guest');
+    startLKSimulation(firstName);
+
+    // Poll currently-playing every 30 s and store interval for cleanup
+    npPollInterval = setInterval(async () => {
+      const t = getToken();
+      if (!t) return;
+      const np = await spotifyGet('/me/player/currently-playing', t).catch(() => null);
+      renderNowPlaying(np);
+    }, 30_000);
+
+  } catch (err) {
+    console.error('Spotify load error:', err);
+    showState('landing');
+    document.getElementById('error-auth').style.display = 'block';
+    document.getElementById('error-auth').textContent   = `⚠ ${err.message}`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  Initialisation
+// ═══════════════════════════════════════════════════════
+
+(async function init() {
+  // Render Jason's static data on the landing page
+  renderJasonGenres(['jason-genres']);
+  renderJasonTracks(['jason-tracks-pre']);
+  renderLKParticipants('lk-participants-pre', null);
+
+  // Show setup notice if client ID is placeholder
+  if (SPOTIFY_CLIENT_ID === 'YOUR_SPOTIFY_CLIENT_ID') {
+    document.getElementById('setup-note').style.display = 'block';
+    document.getElementById('setup-instructions').style.display = 'block';
+    document.getElementById('btn-login').disabled = true;
+  }
+
+  // Check for OAuth callback
+  const params  = new URLSearchParams(window.location.search);
+  const code    = params.get('code');
+  const error   = params.get('error');
+  const state   = params.get('state');
+
+  if (error) {
+    document.getElementById('error-auth').style.display = 'block';
+    document.getElementById('error-auth').textContent   = `Spotify auth error: ${error}`;
+    // Clean URL
+    history.replaceState(null, '', window.location.pathname);
+    return;
+  }
+
+  if (code) {
+    // Validate state
+    const savedState = sessionStorage.getItem('pkce_state');
+    if (savedState && state !== savedState) {
+      document.getElementById('error-auth').style.display = 'block';
+      document.getElementById('error-auth').textContent   = '⚠ State mismatch — possible CSRF. Please try again.';
+      history.replaceState(null, '', window.location.pathname);
+      return;
+    }
+    // Clean URL before async work
+    history.replaceState(null, '', window.location.pathname);
+    try {
+      const token = await exchangeCode(code);
+      await loadConnectedView(token);
+    } catch (err) {
+      document.getElementById('error-auth').style.display = 'block';
+      document.getElementById('error-auth').textContent   = `⚠ ${err.message}`;
+    }
+    return;
+  }
+
+  // Already authenticated (e.g. page reload within token lifetime)
+  const token = getToken();
+  if (token) {
+    await loadConnectedView(token);
+  }
+})();
+</script>
+</body>
+</html>
