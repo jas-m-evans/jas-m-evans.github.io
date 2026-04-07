@@ -1044,8 +1044,10 @@ permalink: /wave-defect-demo/
 //  Configuration
 // ═══════════════════════════════════════════════════════
 
-// TODO: Replace with your Spotify App's Client ID from
-//       https://developer.spotify.com/dashboard
+// IMPORTANT: This is a public placeholder. Replace with your Spotify App's
+// Client ID from https://developer.spotify.com/dashboard
+// PKCE OAuth does not use a client secret, so the Client ID is safe to
+// include in client-side code for public demo apps.
 // Redirect URI to register in your Spotify App settings:
 //   https://jas-m-evans.github.io/wave-defect-demo/
 const SPOTIFY_CLIENT_ID = 'YOUR_SPOTIFY_CLIENT_ID';
@@ -1157,13 +1159,19 @@ function getToken() {
   const token  = sessionStorage.getItem('spotify_token');
   const expiry = sessionStorage.getItem('spotify_token_expiry');
   if (!token || !expiry) return null;
-  if (Date.now() > Number(expiry) - 30_000) return null; // 30 s buffer
+  if (Date.now() > Number(expiry) - 30_000) return null; // 30-second buffer
   return token;
 }
 
 function logout() {
   sessionStorage.removeItem('spotify_token');
   sessionStorage.removeItem('spotify_token_expiry');
+  // Stop all background intervals
+  if (lkInterval)         { clearInterval(lkInterval);     lkInterval = null; }
+  if (npPollInterval)     { clearInterval(npPollInterval); npPollInterval = null; }
+  // Reset counters for next session
+  lkTracksSent = 0;
+  lkUptimeSeconds = 0;
   showState('landing');
   document.getElementById('spotify-badge').style.display = 'none';
 }
@@ -1321,6 +1329,7 @@ function esc(str) {
 let lkTracksSent = 0;
 let lkUptimeSeconds = 0;
 let lkInterval = null;
+let npPollInterval = null;
 
 function startLKSimulation(guestName) {
   const channel = document.getElementById('lk-channel-post');
@@ -1430,8 +1439,8 @@ async function loadConnectedView(token) {
     renderLKParticipants('lk-participants-post', me.display_name || 'Guest');
     startLKSimulation(firstName);
 
-    // Poll currently-playing every 30 s
-    setInterval(async () => {
+    // Poll currently-playing every 30 s and store interval for cleanup
+    npPollInterval = setInterval(async () => {
       const t = getToken();
       if (!t) return;
       const np = await spotifyGet('/me/player/currently-playing', t).catch(() => null);

@@ -1,6 +1,6 @@
 ---
 title: "Wave·Defect: Live Music Intelligence with Spotify × LiveKit"
-description: "A public-facing demo combining Spotify OAuth, real-time music recommendations, and LiveKit data channels — connect your Spotify and see your taste alongside Jason's, live."
+description: "A public-facing demo combining Spotify OAuth, real-time music recommendations, and LiveKit data channels — connect your Spotify and see your taste alongside Jason's, live. (Formerly Wave2Vector Lab.)"
 layout: project
 image: "/assets/images/projects/wav2vec-audio-lab.svg"
 ---
@@ -16,7 +16,7 @@ Authenticate with your Spotify account and see your music profile alongside Jaso
 
 ## What This Is Now
 
-Wave·Defect started as an audio similarity lab (MFCC embeddings, nearest-neighbor retrieval). It has evolved into a shareable **music intelligence demo** that connects two ideas:
+Wave·Defect (formerly Wave2Vector Lab) started as an audio similarity lab (MFCC embeddings, nearest-neighbor retrieval). It has evolved into a shareable **music intelligence demo** that connects two ideas:
 
 1. **Personal music taste is data.** Spotify's API exposes rich listening history, top tracks, and genre signals that can be compared and visualized in real time.
 
