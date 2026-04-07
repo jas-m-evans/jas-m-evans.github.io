@@ -1023,17 +1023,20 @@ permalink: /wave-defect-demo/
       <a href="/">Jason Evans</a>
     </p>
     <p style="margin-top:0.5rem;font-size:0.72rem">
-      OAuth via Spotify PKCE · Read-only scopes · No data retained
+      OAuth via Spotify PKCE · Read-only scopes · No data retained · Client ID via /api/config on Vercel
     </p>
-    <!-- SETUP INSTRUCTIONS (hidden from normal view, visible only if id is placeholder) -->
+    <!-- SETUP INSTRUCTIONS (hidden from normal view, visible only if client ID was not loaded) -->
     <div id="setup-instructions" style="display:none;margin-top:1.5rem;text-align:left;background:var(--surface);border:1px dashed var(--border-mid);border-radius:var(--radius-sm);padding:1rem;font-size:0.78rem;font-family:'IBM Plex Mono',monospace;color:var(--muted)">
       <strong style="color:var(--livekit);display:block;margin-bottom:0.5rem">▸ Demo Setup — Spotify App Config</strong>
+      <strong style="color:var(--spotify)">Option A — Vercel deployment (recommended)</strong><br>
+      1. Deploy this repo to <a href="https://vercel.com" target="_blank" style="color:var(--spotify)">Vercel</a><br>
+      2. In Vercel &rarr; Settings &rarr; Environment Variables, set <code style="color:var(--text)">SPOTIFY_CLIENT_ID</code> (reuse the same value from wave2vector-spotify-live)<br>
+      3. In the Spotify Developer Dashboard, add Redirect URI: <code style="color:var(--text)">[your-vercel-url]/wave-defect-demo/</code><br>
+      <br>
+      <strong style="color:var(--livekit)">Option B — GitHub Pages only</strong><br>
       1. Go to <a href="https://developer.spotify.com/dashboard" target="_blank" style="color:var(--spotify)">developer.spotify.com/dashboard</a><br>
-      2. Create an app (or use an existing one)<br>
-      3. Add Redirect URI: <code style="color:var(--text)">https://jas-m-evans.github.io/wave-defect-demo/</code><br>
-      4. Copy the <strong style="color:var(--text)">Client ID</strong><br>
-      5. Replace <code style="color:var(--text)">YOUR_SPOTIFY_CLIENT_ID</code> in this file's JS section<br>
-      6. Commit &amp; push — the demo will be live on GitHub Pages
+      2. Add Redirect URI: <code style="color:var(--text)">https://jas-m-evans.github.io/wave-defect-demo/</code><br>
+      3. Copy the <strong style="color:var(--text)">Client ID</strong> and hard-code it in the JS config block of this file, then deploy
     </div>
   </footer>
 
@@ -1044,14 +1047,16 @@ permalink: /wave-defect-demo/
 //  Configuration
 // ═══════════════════════════════════════════════════════
 
-// IMPORTANT: This is a public placeholder. Replace with your Spotify App's
-// Client ID from https://developer.spotify.com/dashboard
-// PKCE OAuth does not use a client secret, so the Client ID is safe to
-// include in client-side code for public demo apps.
-// Redirect URI to register in your Spotify App settings:
+// Client ID is loaded at runtime from /api/config (Vercel deployment) or falls
+// back to empty string on GitHub Pages. PKCE OAuth does not use a client secret,
+// so the Client ID is safe to expose in client-side code for public demo apps.
+// On Vercel: set SPOTIFY_CLIENT_ID in Environment Variables (same app as
+// wave2vector-spotify-live). Register the Vercel deployment URL as a redirect URI:
+//   https://YOUR-VERCEL-URL/wave-defect-demo/
+// On GitHub Pages (without Vercel): register as redirect URI:
 //   https://jas-m-evans.github.io/wave-defect-demo/
-const SPOTIFY_CLIENT_ID = 'YOUR_SPOTIFY_CLIENT_ID';
-const REDIRECT_URI = 'https://jas-m-evans.github.io/wave-defect-demo/';
+let SPOTIFY_CLIENT_ID = '';
+const REDIRECT_URI = window.location.origin + '/wave-defect-demo/';
 const SCOPES = [
   'user-top-read',
   'user-read-recently-played',
@@ -1079,6 +1084,27 @@ const JASON_PROFILE = {
 };
 
 // ═══════════════════════════════════════════════════════
+//  Runtime config (Vercel API)
+// ═══════════════════════════════════════════════════════
+
+// Attempt to load the Spotify Client ID from the /api/config Vercel Function.
+// On GitHub Pages (no Vercel), the fetch will fail silently and SPOTIFY_CLIENT_ID
+// stays empty, showing the setup instructions to the visitor.
+async function fetchConfig() {
+  try {
+    const resp = await fetch('/api/config', { cache: 'no-store' });
+    if (resp.ok) {
+      const data = await resp.json();
+      if (data.spotifyClientId) {
+        SPOTIFY_CLIENT_ID = data.spotifyClientId;
+      }
+    }
+  } catch (_) {
+    // Not running on Vercel — Client ID remains empty
+  }
+}
+
+// ═══════════════════════════════════════════════════════
 //  PKCE helpers
 // ═══════════════════════════════════════════════════════
 
@@ -1101,7 +1127,7 @@ async function generateCodeChallenge(verifier) {
 // ═══════════════════════════════════════════════════════
 
 async function loginWithSpotify() {
-  if (SPOTIFY_CLIENT_ID === 'YOUR_SPOTIFY_CLIENT_ID') {
+  if (!SPOTIFY_CLIENT_ID) {
     document.getElementById('error-auth').style.display = 'block';
     document.getElementById('error-auth').textContent =
       '⚠ Demo not yet configured — see setup instructions at the bottom of this page.';
@@ -1460,13 +1486,16 @@ async function loadConnectedView(token) {
 // ═══════════════════════════════════════════════════════
 
 (async function init() {
+  // Load Spotify Client ID from /api/config (Vercel) before anything else
+  await fetchConfig();
+
   // Render Jason's static data on the landing page
   renderJasonGenres(['jason-genres']);
   renderJasonTracks(['jason-tracks-pre']);
   renderLKParticipants('lk-participants-pre', null);
 
-  // Show setup notice if client ID is placeholder
-  if (SPOTIFY_CLIENT_ID === 'YOUR_SPOTIFY_CLIENT_ID') {
+  // Show setup notice if client ID was not loaded
+  if (!SPOTIFY_CLIENT_ID) {
     document.getElementById('setup-note').style.display = 'block';
     document.getElementById('setup-instructions').style.display = 'block';
     document.getElementById('btn-login').disabled = true;
