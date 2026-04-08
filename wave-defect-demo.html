@@ -696,20 +696,6 @@ permalink: /wave-defect-demo/
       display: none;
     }
 
-    /* ─── Setup note ─────────────────────────────────────── */
-    .setup-note {
-      background: rgba(91,156,246,0.08);
-      border: 1px dashed rgba(91,156,246,0.28);
-      border-radius: var(--radius-sm);
-      padding: 0.9rem 1.1rem;
-      font-size: 0.82rem;
-      color: var(--muted);
-      margin-bottom: 1.5rem;
-      font-family: "IBM Plex Mono", monospace;
-    }
-
-    .setup-note strong { color: var(--livekit); }
-
     /* ─── Footer ─────────────────────────────────────────── */
     .footer {
       text-align: center;
@@ -772,12 +758,6 @@ permalink: /wave-defect-demo/
         alongside Jason's curated listening profile — delivered live over a
         <strong style="color:var(--livekit)">LiveKit</strong> data channel.
       </p>
-
-      <!-- Setup notice (shown when client id is placeholder) -->
-      <div class="setup-note" id="setup-note" style="display:none">
-        <strong>Demo Setup Required:</strong> Add your Spotify App Client ID to activate OAuth.
-        See instructions at the bottom of this page.
-      </div>
 
       <div id="error-auth" class="error-banner"></div>
 
@@ -1025,16 +1005,7 @@ permalink: /wave-defect-demo/
     <p style="margin-top:0.5rem;font-size:0.72rem">
       OAuth via Spotify PKCE · Read-only scopes · No data retained
     </p>
-    <!-- SETUP INSTRUCTIONS (hidden from normal view, visible only if id is placeholder) -->
-    <div id="setup-instructions" style="display:none;margin-top:1.5rem;text-align:left;background:var(--surface);border:1px dashed var(--border-mid);border-radius:var(--radius-sm);padding:1rem;font-size:0.78rem;font-family:'IBM Plex Mono',monospace;color:var(--muted)">
-      <strong style="color:var(--livekit);display:block;margin-bottom:0.5rem">▸ Demo Setup — Spotify App Config</strong>
-      1. Go to <a href="https://developer.spotify.com/dashboard" target="_blank" style="color:var(--spotify)">developer.spotify.com/dashboard</a><br>
-      2. Create an app (or use an existing one)<br>
-      3. Add Redirect URI: <code style="color:var(--text)">https://jas-m-evans.github.io/wave-defect-demo/</code><br>
-      4. Copy the <strong style="color:var(--text)">Client ID</strong><br>
-      5. Replace <code style="color:var(--text)">YOUR_SPOTIFY_CLIENT_ID</code> in this file's JS section<br>
-      6. Commit &amp; push — the demo will be live on GitHub Pages
-    </div>
+
   </footer>
 
 </div><!-- /app -->
@@ -1044,13 +1015,7 @@ permalink: /wave-defect-demo/
 //  Configuration
 // ═══════════════════════════════════════════════════════
 
-// IMPORTANT: This is a public placeholder. Replace with your Spotify App's
-// Client ID from https://developer.spotify.com/dashboard
-// PKCE OAuth does not use a client secret, so the Client ID is safe to
-// include in client-side code for public demo apps.
-// Redirect URI to register in your Spotify App settings:
-//   https://jas-m-evans.github.io/wave-defect-demo/
-const SPOTIFY_CLIENT_ID = 'YOUR_SPOTIFY_CLIENT_ID';
+const SPOTIFY_CLIENT_ID = '988c37ac07834febaddfcdbba88fdf6f';
 const REDIRECT_URI = 'https://jas-m-evans.github.io/wave-defect-demo/';
 const SCOPES = [
   'user-top-read',
@@ -1101,12 +1066,6 @@ async function generateCodeChallenge(verifier) {
 // ═══════════════════════════════════════════════════════
 
 async function loginWithSpotify() {
-  if (SPOTIFY_CLIENT_ID === 'YOUR_SPOTIFY_CLIENT_ID') {
-    document.getElementById('error-auth').style.display = 'block';
-    document.getElementById('error-auth').textContent =
-      '⚠ Demo not yet configured — see setup instructions at the bottom of this page.';
-    return;
-  }
   const verifier = generateRandomString(64);
   const challenge = await generateCodeChallenge(verifier);
   sessionStorage.setItem('pkce_verifier', verifier);
@@ -1464,13 +1423,6 @@ async function loadConnectedView(token) {
   renderJasonGenres(['jason-genres']);
   renderJasonTracks(['jason-tracks-pre']);
   renderLKParticipants('lk-participants-pre', null);
-
-  // Show setup notice if client ID is placeholder
-  if (SPOTIFY_CLIENT_ID === 'YOUR_SPOTIFY_CLIENT_ID') {
-    document.getElementById('setup-note').style.display = 'block';
-    document.getElementById('setup-instructions').style.display = 'block';
-    document.getElementById('btn-login').disabled = true;
-  }
 
   // Check for OAuth callback
   const params  = new URLSearchParams(window.location.search);
