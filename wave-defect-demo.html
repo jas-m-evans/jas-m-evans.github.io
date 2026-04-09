@@ -183,6 +183,19 @@ permalink: /wave-defect-demo/
 
     /* ─── Error banner ─────────────────────────────────────── */
     .error-banner { background: rgba(216,75,106,0.12); border: 1px solid rgba(216,75,106,0.3); color: #f48a9e; border-radius: var(--radius-sm); padding: 0.75rem 1rem; font-size: 0.85rem; margin-bottom: 1rem; display: none; }
+    .error-details { margin-top: 0.55rem; }
+    .error-details summary { font-size: 0.8rem; opacity: 0.85; cursor: pointer; user-select: none; list-style: none; }
+    .error-details summary::-webkit-details-marker { display: none; }
+    .error-details__body { margin-top: 0.45rem; font-family: "IBM Plex Mono", monospace; font-size: 0.76rem; line-height: 1.75; }
+    .error-details__body b { color: #f9c0cc; }
+    .error-details__suggestion { margin-top: 0.4rem; padding: 0.38rem 0.65rem; background: rgba(255,255,255,0.07); border-radius: 5px; }
+    .error-actions { margin-top: 0.65rem; display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+    .error-actions a { color: inherit; text-decoration: underline; font-size: 0.85rem; }
+
+    /* ─── Copy-diagnostics button ───────────────────────────── */
+    .copy-diag-btn { margin-left: auto; padding: 0.2rem 0.6rem; font-size: 0.67rem; font-family: "IBM Plex Mono", monospace; font-weight: 600; letter-spacing: 0.04em; cursor: pointer; background: var(--surface-2); color: var(--muted); border: 1px solid var(--border-mid); border-radius: 5px; transition: color 0.14s ease, border-color 0.14s ease; }
+    .copy-diag-btn:hover { color: var(--teal-light); border-color: var(--teal); }
+    .sys-console summary { display: flex; align-items: center; }
 
     /* ─── States ──────────────────────────────────────────── */
     .state { display: none; }
@@ -573,7 +586,7 @@ permalink: /wave-defect-demo/
     </div><!-- /room-layout -->
 
     <details class="sys-console" id="sys-console">
-      <summary>&#9656; System Console</summary>
+      <summary>&#9656; System Console <button class="copy-diag-btn" id="copy-diag-btn" role="button" aria-label="Copy diagnostics to clipboard" onclick="event.stopPropagation();_copyDiagnostics()" title="Copy last Spotify error + recent log lines">Copy diagnostics</button></summary>
       <pre id="sys-log" class="sys-log" aria-live="polite"></pre>
     </details>
 
@@ -609,6 +622,13 @@ const SCOPES = [
 ].join(' ');
 // Set to your deployed wave2vector backend URL to enable real LiveKit rooms.
 const BACKEND_URL = null;
+
+// ─── Diagnostics globals ─────────────────────────────────────────────────────
+let _lastSpotifyError = null;        // { endpoint, status, message, category, raw }
+const _syslogLines    = [];          // ring-buffer of recent syslog lines for copy-diagnostics
+const MAX_SYSLOG_LINES    = 100;     // how many syslog lines to retain
+const RETRY_DELAY_BASE_MS = 1500;    // base delay (ms) for network / server-error retries
+const RETRY_DELAY_RATELIM_MS = 2000; // base delay (ms) for 429 rate-limit retries when no Retry-After header
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  Jason's pre-loaded profile
@@ -985,14 +1005,148 @@ function _getToken() {
 }
 
 async function _spotifyGet(path, token) {
-  const resp = await fetch(`https://api.spotify.com/v1${path}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!resp.ok) {
-    const err = await resp.json().catch(() => ({}));
-    throw new Error(err.error?.message || `Spotify API ${resp.status}`);
+  const MAX_RETRIES = 2;
+  let lastErr;
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    let resp;
+    try {
+      resp = await fetch(`https://api.spotify.com/v1${path}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch (netErr) {
+      const info = { endpoint: path, status: 0, message: netErr.message, category: 'network' };
+      _lastSpotifyError = info;
+      syslog(`[Spotify network] ${path} — ${netErr.message}`);
+      lastErr = Object.assign(new Error(netErr.message), info);
+      if (attempt < MAX_RETRIES) { await _sleep((attempt + 1) * RETRY_DELAY_BASE_MS); continue; }
+      throw lastErr;
+    }
+    if (resp.ok) return resp.json();
+    const errBody  = await resp.json().catch(() => ({}));
+    const status   = resp.status;
+    const message  = errBody.error?.message || `Spotify API ${status}`;
+    const category = _classifySpotifyError(status);
+    const info = { endpoint: path, status, message, category, raw: errBody };
+    _lastSpotifyError = info;
+    syslog(`[Spotify ${category}] ${status} ${path} — ${message}`);
+    const isRetryable = (status === 429 || status >= 500);
+    if (isRetryable && attempt < MAX_RETRIES) {
+      const retryAfter = parseInt(resp.headers.get('Retry-After') || '0') * 1000;
+      const delay = retryAfter || (attempt + 1) * RETRY_DELAY_RATELIM_MS;
+      await _sleep(delay);
+      continue;
+    }
+    throw Object.assign(new Error(message), info);
   }
-  return resp.json();
+  throw lastErr;
+}
+
+function _sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function _classifySpotifyError(status) {
+  if (status === 401) return 'auth error';
+  if (status === 403) return 'forbidden';
+  if (status === 429) return 'rate-limited';
+  if (status >= 500) return 'server error';
+  if (!status)       return 'network';
+  return 'unknown';
+}
+
+function _spotifyErrorGuidance(category) {
+  switch (category) {
+    case 'auth error':   return 'Your session has expired or the token is invalid — click Re-authenticate.';
+    case 'forbidden':    return 'Insufficient Spotify permissions. Re-authenticate; the app requests the user-top-read scope.';
+    case 'rate-limited': return 'Spotify rate limit hit — wait ~60 s then click Retry loading audio features.';
+    case 'server error': return 'Spotify server error — click Retry loading audio features in a few seconds.';
+    case 'network':      return 'Network error — check your connection, then click Retry loading audio features.';
+    default:             return 'Click Retry loading audio features or Re-authenticate.';
+  }
+}
+
+async function _fetchTopTracksAnyRange(token) {
+  const ranges = ['medium_term', 'short_term', 'long_term'];
+  for (const range of ranges) {
+    const resp  = await _spotifyGet(`/me/top/tracks?limit=50&time_range=${range}`, token);
+    const items = resp.items || [];
+    if (items.length) {
+      syslog(`Top tracks: ${items.length} tracks (time_range=${range}).`);
+      return items;
+    }
+    syslog(`No top tracks for time_range=${range} — trying next range\u2026`);
+  }
+  syslog('No top tracks found in any time range.');
+  return [];
+}
+
+async function _fetchAudioFeatures(ids, token) {
+  const CHUNK   = 100; // Spotify audio-features endpoint accepts at most 100 IDs per request
+  const results = [];
+  for (let i = 0; i < ids.length; i += CHUNK) {
+    const chunk = ids.slice(i, i + CHUNK);
+    const data  = await _spotifyGet(`/audio-features?ids=${chunk.join(',')}`, token);
+    results.push(...(data.audio_features || []));
+  }
+  return results.filter(Boolean);
+}
+
+function _showFeatureError(overrideMsg) {
+  showState('landing');
+  const errEl = document.getElementById('error-features');
+  errEl.style.display = 'block';
+
+  const friendlyMsg = overrideMsg ||
+    '\u26A0 Spotify connected but audio features could not be loaded ' +
+    '(your top tracks may be private, or the Spotify API timed out).';
+
+  const err = _lastSpotifyError;
+  let detailsHtml = '';
+  if (err) {
+    const guidance = _spotifyErrorGuidance(err.category);
+    detailsHtml = `
+      <details class="error-details">
+        <summary>&#9656; Details</summary>
+        <div class="error-details__body">
+          <div><b>Endpoint:</b> ${_esc(err.endpoint)}</div>
+          <div><b>Status:</b> ${err.status || 'network error'}</div>
+          <div><b>Message:</b> ${_esc(err.message)}</div>
+          <div><b>Category:</b> ${_esc(err.category)}</div>
+          <div class="error-details__suggestion"><b>Suggestion:</b> ${_esc(guidance)}</div>
+        </div>
+      </details>`;
+    syslog(`[Diag] endpoint=${err.endpoint} status=${err.status} category=${err.category} msg=${err.message}`);
+  } else if (overrideMsg) {
+    syslog(`[Diag] ${overrideMsg}`);
+  }
+
+  errEl.innerHTML = `
+    <div>${_esc(friendlyMsg)}</div>
+    ${detailsHtml}
+    <div class="error-actions">
+      <a href="#" onclick="loadSpotifyUser(_getToken());return false;">Retry loading audio features</a>
+      <a href="#" onclick="loginWithSpotify();return false;">Re-authenticate</a>
+    </div>`;
+}
+
+function _copyDiagnostics() {
+  const lines = [];
+  if (_lastSpotifyError) {
+    lines.push('=== Last Spotify Error ===');
+    lines.push(`Endpoint: ${_lastSpotifyError.endpoint}`);
+    lines.push(`Status:   ${_lastSpotifyError.status}`);
+    lines.push(`Message:  ${_lastSpotifyError.message}`);
+    lines.push(`Category: ${_lastSpotifyError.category}`);
+    if (_lastSpotifyError.raw && Object.keys(_lastSpotifyError.raw).length) {
+      lines.push(`Raw:      ${JSON.stringify(_lastSpotifyError.raw)}`);
+    }
+    lines.push('');
+  }
+  lines.push(`=== System Console (last ${Math.min(_syslogLines.length, 50)} lines) ===`);
+  lines.push(..._syslogLines.slice(-50));
+  const text = lines.join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-diag-btn');
+    if (btn) { const orig = btn.textContent; btn.textContent = '\u2713 Copied!'; setTimeout(() => { btn.textContent = orig; }, 2000); }
+  }).catch(() => { prompt('Copy this diagnostics text:', text); });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1012,9 +1166,12 @@ function _esc(s) {
 }
 
 function syslog(msg) {
+  const line = `[${new Date().toISOString()}] ${msg}`;
+  _syslogLines.push(line);
+  if (_syslogLines.length > MAX_SYSLOG_LINES) _syslogLines.shift();
   const el = document.getElementById('sys-log');
   if (!el) return;
-  el.textContent += `[${new Date().toISOString()}] ${msg}\n`;
+  el.textContent += line + '\n';
   el.scrollTop = el.scrollHeight;
 }
 
@@ -1264,74 +1421,73 @@ function joinDemoMode() {
 
 async function loadSpotifyUser(token) {
   showState('loading');
+  // Clear previous feature error on retry
+  const featErrEl = document.getElementById('error-features');
+  featErrEl.style.display = 'none';
+  featErrEl.innerHTML = '';
+
   try {
-    const [me, topTracksResp, nowPlaying] = await Promise.all([
+    const [me, nowPlaying] = await Promise.all([
       _spotifyGet('/me', token),
-      _spotifyGet('/me/top/tracks?limit=20&time_range=medium_term', token),
       _spotifyGet('/me/player/currently-playing', token).catch(() => null),
     ]);
 
-    const topTracks = topTracksResp.items || [];
+    // Try all time ranges until we get tracks
+    const topTracks = await _fetchTopTracksAnyRange(token);
     const ids = topTracks.map(t => t.id).filter(Boolean);
-    syslog(`Loaded ${topTracks.length} top tracks from Spotify.`);
+
+    if (!ids.length) {
+      syslog('No top tracks found (all time ranges exhausted).');
+      _showFeatureError('\u26A0 No top tracks found for this account/time range. Your listening history may be too short, or your top tracks are private.');
+      return;
+    }
 
     let tasteProfile = null;
-    if (ids.length) {
-      const featResp = await fetch(
-        `https://api.spotify.com/v1/audio-features?ids=${ids.join(',')}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (featResp.ok) {
-        const { audio_features } = await featResp.json();
-        const features = (audio_features || []).filter(Boolean);
-        syslog(`Audio features: ${features.length} tracks.`);
+    try {
+      const features = await _fetchAudioFeatures(ids, token);
+      syslog(`Audio features: ${features.length} tracks.`);
 
-        if (features.length) {
-          tasteProfile = {};
-          const keys = ['energy','valence','danceability','acousticness','instrumentalness','speechiness'];
-          keys.forEach(k => {
-            const vals = features.map(f => f[k]).filter(v => v != null);
-            tasteProfile[k] = vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : 0.5;
+      if (features.length) {
+        tasteProfile = {};
+        const keys = ['energy','valence','danceability','acousticness','instrumentalness','speechiness'];
+        keys.forEach(k => {
+          const vals = features.map(f => f[k]).filter(v => v != null);
+          tasteProfile[k] = vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : 0.5;
+        });
+        const tempos = features.map(f => f.tempo).filter(Boolean);
+        tasteProfile.tempo_norm = _normTempo(
+          tempos.length ? tempos.reduce((s, v) => s + v, 0) / tempos.length : 120
+        );
+
+        // Enrich candidate pool with user's real tracks
+        const featureMap    = Object.fromEntries(features.map(f => [f.id, f]));
+        const realCandidates = topTracks
+          .filter(t => featureMap[t.id])
+          .map(t => {
+            const f = featureMap[t.id];
+            return {
+              track_id: t.id, track_name: t.name,
+              artist: t.artists?.map(a => a.name).join(', ') || '',
+              album: t.album?.name || '',
+              album_art: t.album?.images?.[1]?.url || null,
+              energy: f.energy, valence: f.valence, danceability: f.danceability,
+              acousticness: f.acousticness, instrumentalness: f.instrumentalness,
+              speechiness: f.speechiness, tempo_norm: _normTempo(f.tempo || 120),
+            };
           });
-          const tempos = features.map(f => f.tempo).filter(Boolean);
-          tasteProfile.tempo_norm = _normTempo(
-            tempos.length ? tempos.reduce((s, v) => s + v, 0) / tempos.length : 120
-          );
-
-          // Enrich candidate pool with user's real tracks
-          const featureMap = Object.fromEntries(features.map(f => [f.id, f]));
-          const realCandidates = topTracks
-            .filter(t => featureMap[t.id])
-            .map(t => {
-              const f = featureMap[t.id];
-              return {
-                track_id: t.id, track_name: t.name,
-                artist: t.artists?.map(a => a.name).join(', ') || '',
-                album: t.album?.name || '',
-                album_art: t.album?.images?.[1]?.url || null,
-                energy: f.energy, valence: f.valence, danceability: f.danceability,
-                acousticness: f.acousticness, instrumentalness: f.instrumentalness,
-                speechiness: f.speechiness, tempo_norm: _normTempo(f.tempo || 120),
-              };
-            });
-          const existing = new Set(realCandidates.map(t => t.track_id));
-          S.candidates = [...realCandidates, ...MOCK_CANDIDATES.filter(c => !existing.has(c.track_id))];
-          syslog(`Candidate pool: ${S.candidates.length} tracks (${realCandidates.length} real, ${S.candidates.length - realCandidates.length} mock).`);
-        }
+        const existing = new Set(realCandidates.map(t => t.track_id));
+        S.candidates = [...realCandidates, ...MOCK_CANDIDATES.filter(c => !existing.has(c.track_id))];
+        syslog(`Candidate pool: ${S.candidates.length} tracks (${realCandidates.length} real, ${S.candidates.length - realCandidates.length} mock).`);
       }
+    } catch (featErr) {
+      // Audio features fetch failed — show diagnostics, do NOT silently fall back
+      syslog(`Audio features error: ${featErr.message}`);
     }
 
     if (!tasteProfile) {
       // Audio features could not be loaded — do NOT silently fall back to demo profile.
       syslog('Audio features unavailable — Spotify flow blocked. User must retry or re-authenticate.');
-      showState('landing');
-      const errEl = document.getElementById('error-features');
-      errEl.style.display = 'block';
-      errEl.innerHTML =
-        '\u26A0 Spotify connected but audio features could not be loaded (your top tracks may be private, or the Spotify API timed out). ' +
-        '<a href="#" onclick="loadSpotifyUser(_getToken());return false;" style="color:inherit;text-decoration:underline;margin-left:0.25rem">Retry loading audio features</a>' +
-        ' &nbsp;|&nbsp; ' +
-        '<a href="#" onclick="loginWithSpotify();return false;" style="color:inherit;text-decoration:underline">Re-authenticate</a>';
+      _showFeatureError(null);
       return;
     }
 
@@ -1357,7 +1513,7 @@ async function loadSpotifyUser(token) {
 
   } catch (err) {
     console.error('Spotify error:', err);
-    syslog(`Spotify error: ${err.message}`);
+    syslog(`Spotify error: ${err.status ? `[${err.status}] ` : ''}${err.message}`);
     showState('landing');
     const errEl = document.getElementById('error-auth');
     errEl.style.display = 'block';
