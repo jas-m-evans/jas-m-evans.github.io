@@ -7,34 +7,36 @@ permalink: /wave-defect-demo/
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wave·Defect × LiveKit — Spotify Demo</title>
+  <title>Taste Bridge &#8212; Wave&#183;Defect &#215; LiveKit</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     /* ─── Design tokens ─────────────────────────────────── */
     :root {
-      --ink: #0e1117;
-      --surface: #161b22;
-      --surface-2: #1e252e;
-      --surface-3: #252d38;
-      --border: rgba(255,255,255,0.08);
-      --border-mid: rgba(255,255,255,0.14);
-      --teal: #0f8e93;
-      --teal-light: #17b3ba;
-      --teal-glow: rgba(15,142,147,0.22);
-      --pink: #d84b6a;
-      --pink-glow: rgba(216,75,106,0.22);
-      --spotify: #1db954;
+      --ink:         #0e1117;
+      --surface:     #161b22;
+      --surface-2:   #1e252e;
+      --surface-3:   #252d38;
+      --border:      rgba(255,255,255,0.08);
+      --border-mid:  rgba(255,255,255,0.14);
+      --teal:        #0f8e93;
+      --teal-light:  #17b3ba;
+      --teal-glow:   rgba(15,142,147,0.22);
+      --pink:        #d84b6a;
+      --pink-glow:   rgba(216,75,106,0.22);
+      --spotify:     #1db954;
       --spotify-dim: rgba(29,185,84,0.14);
-      --livekit: #5b9cf6;
+      --livekit:     #5b9cf6;
       --livekit-dim: rgba(91,156,246,0.14);
-      --muted: #6b7c93;
-      --text: #dce4ef;
+      --muted:       #6b7c93;
+      --text:        #dce4ef;
       --text-bright: #f0f5fc;
-      --radius: 14px;
-      --radius-sm: 8px;
-      --shadow: 0 16px 40px rgba(0,0,0,0.45);
+      --green:       #4ade80;
+      --amber:       #fbbf24;
+      --radius:      14px;
+      --radius-sm:   8px;
+      --shadow:      0 16px 40px rgba(0,0,0,0.45);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -49,664 +51,284 @@ permalink: /wave-defect-demo/
 
     body {
       background:
-        radial-gradient(circle at 12% 8%,  rgba(15,142,147,0.18),  transparent 38%),
-        radial-gradient(circle at 92% 12%, rgba(216,75,106,0.16),  transparent 32%),
-        radial-gradient(circle at 50% 80%, rgba(91,156,246,0.12),  transparent 44%),
+        radial-gradient(circle at 12% 8%,  rgba(15,142,147,0.18), transparent 38%),
+        radial-gradient(circle at 92% 12%, rgba(216,75,106,0.16), transparent 32%),
+        radial-gradient(circle at 50% 80%, rgba(91,156,246,0.12), transparent 44%),
         #0e1117;
     }
 
-    /* ─── Layout ────────────────────────────────────────── */
-    .app { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+    /* ─── Layout ─────────────────────────────────────────── */
+    .app { max-width: 1200px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
 
     /* ─── Topbar ─────────────────────────────────────────── */
     .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between;
       padding: 0.9rem 1.4rem;
-      background: rgba(22,27,34,0.82);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow);
+      background: rgba(22,27,34,0.82); backdrop-filter: blur(16px);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      margin-bottom: 2rem; box-shadow: var(--shadow);
     }
-
-    .topbar__brand {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .topbar__wordmark {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--text-bright);
-      letter-spacing: -0.01em;
-    }
-
+    .topbar__brand  { display: flex; align-items: center; gap: 0.75rem; }
+    .topbar__wordmark { font-size: 1.05rem; font-weight: 700; color: var(--text-bright); letter-spacing: -0.01em; }
     .topbar__wordmark span { color: var(--teal-light); }
-
-    .topbar__badges {
-      display: flex;
-      align-items: center;
-      gap: 0.55rem;
-    }
+    .topbar__badges { display: flex; align-items: center; gap: 0.55rem; }
 
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      font-size: 0.72rem;
-      font-family: "IBM Plex Mono", monospace;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      padding: 0.28rem 0.65rem;
-      border-radius: 99px;
-      border: 1px solid transparent;
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-size: 0.72rem; font-family: "IBM Plex Mono", monospace;
+      font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+      padding: 0.28rem 0.65rem; border-radius: 99px; border: 1px solid transparent;
     }
+    .badge--livekit { color: var(--livekit); background: var(--livekit-dim); border-color: rgba(91,156,246,0.28); }
+    .badge--live    { color: var(--green);   background: rgba(74,222,128,0.12); border-color: rgba(74,222,128,0.28); animation: pulse-badge 2.2s ease-in-out infinite; }
+    .badge--spotify { color: var(--spotify); background: var(--spotify-dim); border-color: rgba(29,185,84,0.28); }
+    .badge--dot::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    @keyframes pulse-badge { 0%,100% { opacity:1; } 50% { opacity:0.62; } }
 
-    .badge--livekit {
-      color: var(--livekit);
-      background: var(--livekit-dim);
-      border-color: rgba(91,156,246,0.28);
-    }
-
-    .badge--live {
-      color: #4ade80;
-      background: rgba(74,222,128,0.12);
-      border-color: rgba(74,222,128,0.28);
-      animation: pulse-badge 2.2s ease-in-out infinite;
-    }
-
-    .badge--spotify {
-      color: var(--spotify);
-      background: var(--spotify-dim);
-      border-color: rgba(29,185,84,0.28);
-    }
-
-    .badge--dot::before {
-      content: "";
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: currentColor;
-    }
-
-    @keyframes pulse-badge {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0.62; }
-    }
-
-    /* ─── Grid layout ─────────────────────────────────────── */
-    .grid { display: grid; gap: 1.25rem; }
-    .grid--2 { grid-template-columns: 1fr 1fr; }
-    .grid--3 { grid-template-columns: 1fr 1fr 1fr; }
-
-    @media (max-width: 760px) {
-      .grid--2, .grid--3 { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 1000px) {
-      .grid--3 { grid-template-columns: 1fr 1fr; }
-    }
+    /* ─── LK logo ─────────────────────────────────────────── */
+    .lk-logo      { display: inline-flex; align-items: center; gap: 0.3rem; font-weight: 800; font-size: 0.96rem; color: var(--livekit); letter-spacing: -0.01em; }
+    .lk-logo__mark { width: 20px; height: 20px; background: var(--livekit); border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; }
+    .lk-logo__mark svg { width: 12px; height: 12px; fill: #fff; }
 
     /* ─── Cards ──────────────────────────────────────────── */
     .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.4rem;
-      box-shadow: var(--shadow);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.4rem; box-shadow: var(--shadow);
       transition: border-color 0.18s ease;
     }
-
     .card:hover { border-color: var(--border-mid); }
-
-    .card--teal  { border-top: 2px solid var(--teal); }
-    .card--pink  { border-top: 2px solid var(--pink); }
-    .card--lk    { border-top: 2px solid var(--livekit); }
-    .card--spot  { border-top: 2px solid var(--spotify); }
-
+    .card--teal { border-top: 2px solid var(--teal); }
+    .card--lk   { border-top: 2px solid var(--livekit); }
     .card__label {
-      font-size: 0.68rem;
-      font-family: "IBM Plex Mono", monospace;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      color: var(--muted);
-      margin-bottom: 0.55rem;
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
+      font-size: 0.68rem; font-family: "IBM Plex Mono", monospace;
+      font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em;
+      color: var(--muted); margin-bottom: 0.55rem;
+      display: flex; align-items: center; gap: 0.45rem;
     }
+    .card__label-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
 
-    .card__label-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      display: inline-block;
-      flex-shrink: 0;
-    }
+    /* ─── Grid ───────────────────────────────────────────── */
+    .grid     { display: grid; gap: 1.25rem; }
+    .grid--2  { grid-template-columns: 1fr 1fr; }
+    @media (max-width: 760px) { .grid--2 { grid-template-columns: 1fr; } }
 
-    .card__title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--text-bright);
-      margin-bottom: 0.3rem;
-    }
-
-    .card__sub {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 1rem;
-    }
-
-    /* ─── Hero / landing ──────────────────────────────────── */
-    .hero {
-      text-align: center;
-      padding: 2.5rem 1rem 3rem;
-      max-width: 640px;
-      margin: 0 auto 2.5rem;
-    }
-
-    .hero__eyebrow {
-      font-size: 0.72rem;
-      font-family: "IBM Plex Mono", monospace;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--teal-light);
-      margin-bottom: 0.8rem;
-    }
-
-    .hero__title {
-      font-size: clamp(2rem, 5vw, 3.1rem);
-      font-weight: 700;
-      line-height: 1.12;
-      letter-spacing: -0.025em;
-      color: var(--text-bright);
-      margin-bottom: 1rem;
-    }
-
-    .hero__title em {
-      font-style: normal;
-      background: linear-gradient(90deg, var(--teal-light), var(--livekit));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero__desc {
-      font-size: 1.05rem;
-      color: var(--muted);
-      max-width: 520px;
-      margin: 0 auto 1.6rem;
-    }
-
-    /* ─── Buttons ─────────────────────────────────────────── */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.7rem 1.5rem;
-      border-radius: 10px;
-      font-size: 0.9rem;
-      font-family: "IBM Plex Mono", monospace;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      cursor: pointer;
-      border: 1px solid transparent;
-      text-decoration: none;
-      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
-    }
-
-    .btn:hover { transform: translateY(-1px); }
-    .btn:active { transform: translateY(0); }
-
-    .btn--spotify {
-      background: var(--spotify);
-      color: #000;
-      box-shadow: 0 8px 24px rgba(29,185,84,0.35);
-    }
-
-    .btn--spotify:hover { box-shadow: 0 12px 28px rgba(29,185,84,0.42); }
-
-    .btn--outline {
-      background: transparent;
-      color: var(--text);
-      border-color: var(--border-mid);
-    }
-
-    .btn--outline:hover { border-color: var(--teal); color: var(--teal-light); }
-
-    .btn--sm { padding: 0.42rem 0.9rem; font-size: 0.78rem; }
-
-    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
-
-    /* ─── Profile avatar ──────────────────────────────────── */
-    .avatar {
-      width: 52px;
-      height: 52px;
-      border-radius: 12px;
-      object-fit: cover;
-      background: var(--surface-3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      flex-shrink: 0;
-      overflow: hidden;
-    }
-
+    /* ─── Profile ────────────────────────────────────────── */
+    .avatar { width: 52px; height: 52px; border-radius: 12px; background: var(--surface-3); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; overflow: hidden; }
     .avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
-
-    .profile-row {
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-      margin-bottom: 1rem;
-    }
-
+    .profile-row { display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1rem; }
     .profile-name { font-weight: 700; color: var(--text-bright); font-size: 1.05rem; }
     .profile-sub  { font-size: 0.82rem; color: var(--muted); }
 
-    /* ─── Track list ─────────────────────────────────────── */
-    .track-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
-
-    .track-item {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.6rem 0.75rem;
-      border-radius: var(--radius-sm);
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      transition: background 0.15s ease, border-color 0.15s ease;
-    }
-
-    .track-item:hover { background: var(--surface-3); border-color: var(--border-mid); }
-
-    .track-num {
-      font-size: 0.72rem;
-      font-family: "IBM Plex Mono", monospace;
-      color: var(--muted);
-      width: 18px;
-      text-align: right;
-      flex-shrink: 0;
-    }
-
-    .track-art {
-      width: 36px;
-      height: 36px;
-      border-radius: 6px;
-      object-fit: cover;
-      background: var(--surface-3);
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      overflow: hidden;
-    }
-
-    .track-art img { width: 100%; height: 100%; object-fit: cover; }
-
-    .track-info { flex: 1; min-width: 0; }
-
-    .track-name {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--text-bright);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .track-artist {
-      font-size: 0.76rem;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .track-duration {
-      font-size: 0.72rem;
-      font-family: "IBM Plex Mono", monospace;
-      color: var(--muted);
-      flex-shrink: 0;
-    }
-
     /* ─── Genre pills ─────────────────────────────────────── */
-    .genre-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-top: 0.6rem;
+    .genre-pills { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.6rem; }
+    .pill { font-size: 0.72rem; font-family: "IBM Plex Mono", monospace; padding: 0.22rem 0.6rem; border-radius: 99px; border: 1px solid var(--border-mid); color: var(--muted); background: var(--surface-2); }
+
+    /* ─── Track list ─────────────────────────────────────── */
+    .track-list   { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .track-item   { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--border); transition: background 0.15s ease, border-color 0.15s ease; }
+    .track-item:hover { background: var(--surface-3); border-color: var(--border-mid); }
+    .track-num    { font-size: 0.72rem; font-family: "IBM Plex Mono", monospace; color: var(--muted); width: 18px; text-align: right; flex-shrink: 0; }
+    .track-art    { width: 36px; height: 36px; border-radius: 6px; background: var(--surface-3); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1rem; overflow: hidden; }
+    .track-art img { width: 100%; height: 100%; object-fit: cover; }
+    .track-info   { flex: 1; min-width: 0; }
+    .track-name-li  { font-size: 0.88rem; font-weight: 600; color: var(--text-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .track-artist-li { font-size: 0.76rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .track-duration  { font-size: 0.72rem; font-family: "IBM Plex Mono", monospace; color: var(--muted); flex-shrink: 0; }
+
+    /* ─── Buttons ─────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.7rem 1.5rem; border-radius: 10px;
+      font-size: 0.9rem; font-family: "IBM Plex Mono", monospace;
+      font-weight: 600; letter-spacing: 0.02em; cursor: pointer;
+      border: 1px solid transparent; text-decoration: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-
-    .pill {
-      font-size: 0.72rem;
-      font-family: "IBM Plex Mono", monospace;
-      padding: 0.22rem 0.6rem;
-      border-radius: 99px;
-      border: 1px solid var(--border-mid);
-      color: var(--muted);
-      background: var(--surface-2);
-    }
-
-    /* ─── LiveKit room panel ─────────────────────────────── */
-    .lk-panel {
-      background: var(--surface);
-      border: 1px solid rgba(91,156,246,0.22);
-      border-radius: var(--radius);
-      padding: 1.2rem;
-      box-shadow: 0 0 0 1px rgba(91,156,246,0.08), var(--shadow);
-    }
-
-    .lk-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-    }
-
-    .lk-title {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--livekit);
-      font-family: "IBM Plex Mono", monospace;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 0.45rem;
-    }
-
-    .lk-logo {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      font-weight: 800;
-      font-size: 0.96rem;
-      color: var(--livekit);
-      letter-spacing: -0.01em;
-    }
-
-    .lk-logo__mark {
-      width: 20px;
-      height: 20px;
-      background: var(--livekit);
-      border-radius: 5px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .lk-logo__mark svg { width: 12px; height: 12px; fill: #fff; }
-
-    .lk-participants {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .lk-participant {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.5rem 0.7rem;
-      border-radius: var(--radius-sm);
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-    }
-
-    .lk-participant__avatar {
-      width: 28px;
-      height: 28px;
-      border-radius: 7px;
-      background: var(--teal-glow);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
-      flex-shrink: 0;
-      overflow: hidden;
-    }
-
-    .lk-participant__avatar img { width: 100%; height: 100%; object-fit: cover; }
-
-    .lk-participant__name { font-size: 0.82rem; font-weight: 600; color: var(--text-bright); flex: 1; }
-
-    .lk-participant__role {
-      font-size: 0.68rem;
-      font-family: "IBM Plex Mono", monospace;
-      text-transform: uppercase;
-      color: var(--muted);
-      letter-spacing: 0.06em;
-    }
-
-    .lk-channel {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 0.7rem;
-      font-size: 0.78rem;
-      font-family: "IBM Plex Mono", monospace;
-      height: 96px;
-      overflow-y: auto;
-      color: var(--muted);
-    }
-
-    .lk-channel-msg { padding: 0.15rem 0; color: var(--text); }
-    .lk-channel-msg--sys { color: var(--teal); }
-    .lk-channel-msg--data { color: var(--livekit); }
-
-    .lk-metrics {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.5rem;
-      margin-top: 0.75rem;
-    }
-
-    .lk-metric {
-      text-align: center;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 0.5rem 0.3rem;
-    }
-
-    .lk-metric__val {
-      display: block;
-      font-size: 1rem;
-      font-weight: 700;
-      font-family: "IBM Plex Mono", monospace;
-      color: var(--livekit);
-    }
-
-    .lk-metric__key {
-      font-size: 0.64rem;
-      font-family: "IBM Plex Mono", monospace;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--muted);
-      margin-top: 0.1rem;
-    }
-
-    /* ─── Currently playing ───────────────────────────────── */
-    .now-playing {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.8rem 1rem;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      margin-bottom: 1rem;
-    }
-
-    .now-playing__art {
-      width: 44px;
-      height: 44px;
-      border-radius: 8px;
-      background: var(--surface-3);
-      flex-shrink: 0;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
-    }
-
-    .now-playing__art img { width: 100%; height: 100%; object-fit: cover; }
-
-    .now-playing__info { flex: 1; min-width: 0; }
-
-    .now-playing__track {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--text-bright);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .now-playing__artist { font-size: 0.78rem; color: var(--muted); }
-
-    .now-playing__eq {
-      display: flex;
-      align-items: flex-end;
-      gap: 2px;
-      height: 18px;
-    }
-
-    .now-playing__eq span {
-      width: 3px;
-      background: var(--spotify);
-      border-radius: 1px;
-      animation: eq-bar 0.8s ease-in-out infinite alternate;
-    }
-
-    .now-playing__eq span:nth-child(2) { animation-delay: 0.15s; }
-    .now-playing__eq span:nth-child(3) { animation-delay: 0.3s; }
-    .now-playing__eq span:nth-child(4) { animation-delay: 0.45s; }
-
-    @keyframes eq-bar {
-      from { height: 4px; }
-      to   { height: 16px; }
-    }
-
-    /* ─── Wave visualizer ────────────────────────────────── */
-    .wave-vis {
-      display: flex;
-      align-items: flex-end;
-      gap: 3px;
-      height: 44px;
-      padding: 0.5rem 0;
-    }
-
-    .wave-vis span {
-      flex: 1;
-      background: linear-gradient(180deg, var(--teal-light), var(--pink));
-      border-radius: 2px;
-      min-height: 4px;
-      transition: height 0.3s ease;
-    }
+    .btn:hover  { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn--spotify { background: var(--spotify); color: #000; box-shadow: 0 8px 24px rgba(29,185,84,0.35); }
+    .btn--spotify:hover { box-shadow: 0 12px 28px rgba(29,185,84,0.42); }
+    .btn--teal  { background: var(--teal); color: #fff; box-shadow: 0 8px 24px rgba(15,142,147,0.30); }
+    .btn--teal:hover  { background: var(--teal-light); }
+    .btn--sm    { padding: 0.42rem 0.9rem; font-size: 0.78rem; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
 
     /* ─── Section heading ────────────────────────────────── */
     .section-head {
-      font-size: 0.72rem;
-      font-family: "IBM Plex Mono", monospace;
-      font-weight: 600;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+      font-size: 0.72rem; font-family: "IBM Plex Mono", monospace;
+      font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 1rem; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem;
     }
 
-    /* ─── Welcome banner ──────────────────────────────────── */
-    .welcome-banner {
-      background: linear-gradient(135deg, rgba(15,142,147,0.18), rgba(91,156,246,0.14));
-      border: 1px solid rgba(15,142,147,0.28);
-      border-radius: var(--radius);
-      padding: 1.2rem 1.5rem;
-      margin-bottom: 1.5rem;
-    }
+    /* ─── Hero ───────────────────────────────────────────── */
+    .hero       { text-align: center; padding: 1.8rem 1rem 2rem; max-width: 640px; margin: 0 auto 2rem; }
+    .hero__eyebrow { font-size: 0.72rem; font-family: "IBM Plex Mono", monospace; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--teal-light); margin-bottom: 0.8rem; }
+    .hero__title   { font-size: clamp(1.9rem, 5vw, 3rem); font-weight: 700; line-height: 1.12; letter-spacing: -0.025em; color: var(--text-bright); margin-bottom: 1rem; }
+    .hero__title em { font-style: normal; background: linear-gradient(90deg, var(--teal-light), var(--livekit)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero__desc { font-size: 1rem; color: var(--muted); max-width: 500px; margin: 0 auto; }
 
-    .welcome-banner h2 {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--text-bright);
-      margin-bottom: 0.35rem;
+    /* ─── Join row ────────────────────────────────────────── */
+    .join-row { display: flex; gap: 0.65rem; align-items: stretch; margin-top: 0.9rem; }
+    .join-row input {
+      flex: 1; padding: 0.62rem 1rem; border-radius: 10px;
+      border: 1px solid var(--border-mid); background: var(--surface-2);
+      color: var(--text-bright); font-size: 0.92rem; font-family: "Space Grotesk", sans-serif;
+      outline: none; transition: border-color 0.18s ease;
     }
+    .join-row input:focus { border-color: var(--teal); }
+    .join-row input::placeholder { color: var(--muted); }
+    .join-divider { text-align: center; color: var(--muted); font-size: 0.78rem; margin: 0.8rem 0 0; font-family: "IBM Plex Mono", monospace; letter-spacing: 0.06em; }
 
-    .welcome-banner p { font-size: 0.9rem; color: var(--muted); max-width: 640px; }
+    /* ─── Error banner ─────────────────────────────────────── */
+    .error-banner { background: rgba(216,75,106,0.12); border: 1px solid rgba(216,75,106,0.3); color: #f48a9e; border-radius: var(--radius-sm); padding: 0.75rem 1rem; font-size: 0.85rem; margin-bottom: 1rem; display: none; }
 
     /* ─── States ──────────────────────────────────────────── */
     .state { display: none; }
     .state.active { display: block; }
-
-    /* ─── Divider ─────────────────────────────────────────── */
-    .divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 1.5rem 0;
-    }
+    .hidden { display: none !important; }
 
     /* ─── Spinner ─────────────────────────────────────────── */
-    .spinner {
-      width: 22px;
-      height: 22px;
-      border: 2px solid var(--border-mid);
-      border-top-color: var(--teal-light);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      display: inline-block;
-    }
-
+    .spinner { width: 22px; height: 22px; border: 2px solid var(--border-mid); border-top-color: var(--teal-light); border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-row { display: flex; align-items: center; gap: 0.75rem; padding: 1.2rem; color: var(--muted); font-size: 0.9rem; }
 
-    .loading-row {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 1.2rem;
-      color: var(--muted);
-      font-size: 0.9rem;
+    /* ─── Welcome banner ───────────────────────────────────── */
+    .welcome-banner { background: linear-gradient(135deg, rgba(15,142,147,0.18), rgba(91,156,246,0.14)); border: 1px solid rgba(15,142,147,0.28); border-radius: var(--radius); padding: 1.1rem 1.4rem; margin-bottom: 1.25rem; }
+    .welcome-banner h2 { font-size: 1.15rem; font-weight: 700; color: var(--text-bright); margin-bottom: 0.3rem; }
+    .welcome-banner p  { font-size: 0.88rem; color: var(--muted); }
+
+    /* ─── Now playing ───────────────────────────────────────── */
+    .now-playing { display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 1.1rem; }
+    .now-playing__art { width: 44px; height: 44px; border-radius: 8px; background: var(--surface-3); flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+    .now-playing__art img { width: 100%; height: 100%; object-fit: cover; }
+    .now-playing__info   { flex: 1; min-width: 0; }
+    .now-playing__track  { font-size: 0.9rem; font-weight: 700; color: var(--text-bright); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .now-playing__artist { font-size: 0.78rem; color: var(--muted); }
+    .now-playing__eq { display: flex; align-items: flex-end; gap: 2px; height: 18px; }
+    .now-playing__eq span { width: 3px; background: var(--spotify); border-radius: 1px; animation: eq-bar 0.8s ease-in-out infinite alternate; }
+    .now-playing__eq span:nth-child(2) { animation-delay: 0.15s; }
+    .now-playing__eq span:nth-child(3) { animation-delay: 0.30s; }
+    .now-playing__eq span:nth-child(4) { animation-delay: 0.45s; }
+    @keyframes eq-bar { from { height: 4px; } to { height: 16px; } }
+
+    /* ─── Participant + compatibility strip ─────────────────── */
+    .participant-bar { display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .participant-chip { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.38rem 0.85rem; border-radius: 99px; font-size: 0.84rem; font-weight: 600; }
+    .chip--host  { background: rgba(15,142,147,0.18); color: var(--teal-light); border: 1px solid rgba(15,142,147,0.3); }
+    .chip--guest { background: rgba(91,156,246,0.18); color: var(--livekit);    border: 1px solid rgba(91,156,246,0.3); }
+    .vs-dot { color: var(--muted); font-size: 1rem; }
+
+    .compat-strip { display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 1.1rem; margin-bottom: 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+    .compat-label { font-size: 0.68rem; font-family: "IBM Plex Mono", monospace; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); white-space: nowrap; }
+    .compat-bar-track { flex: 1; height: 7px; border-radius: 99px; background: var(--surface-2); border: 1px solid var(--border); overflow: hidden; }
+    .compat-bar-fill  { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--teal), var(--livekit)); transition: width 600ms ease; }
+    .compat-pct { font-weight: 700; font-size: 0.85rem; min-width: 36px; text-align: right; color: var(--teal-light); font-family: "IBM Plex Mono", monospace; }
+
+    /* ─── Room two-column layout ────────────────────────────── */
+    .room-layout { display: grid; grid-template-columns: 1fr 350px; gap: 1.25rem; align-items: start; }
+    @media (max-width: 920px) { .room-layout { grid-template-columns: 1fr; } }
+
+    /* ─── Main panel ──────────────────────────────────────── */
+    .main-panel { display: flex; flex-direction: column; gap: 0.85rem; }
+    .reco-loading { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 3rem 0; color: var(--muted); }
+    .reco-card    { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    /* ─── Insight cards ─────────────────────────────────────── */
+    .insight-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+    @media (max-width: 580px) { .insight-cards { grid-template-columns: 1fr; } }
+    .insight-card { padding: 0.95rem 1.05rem; border-radius: var(--radius-sm); background: rgba(15,142,147,0.10); border: 1px solid rgba(15,142,147,0.22); }
+    .insight-card.insight-contrast { background: rgba(216,75,106,0.10); border-color: rgba(216,75,106,0.22); }
+    .insight-label { font-size: 0.64rem; font-family: "IBM Plex Mono", monospace; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.35rem; }
+    .insight-text  { font-size: 0.87rem; line-height: 1.5; color: var(--text); margin: 0; }
+
+    /* ─── Bridge track card ─────────────────────────────────── */
+    .bridge-track-card { display: flex; align-items: center; gap: 1rem; padding: 1.15rem 1.35rem; border-radius: var(--radius); background: linear-gradient(145deg, var(--surface-2), var(--surface-3)); border: 1px solid var(--border-mid); box-shadow: var(--shadow); }
+    .bridge-track-art  { flex-shrink: 0; width: 68px; height: 68px; border-radius: 10px; overflow: hidden; background: var(--surface-3); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; }
+    .bridge-track-art img { width: 100%; height: 100%; object-fit: cover; }
+    .bridge-track-info { flex: 1; min-width: 0; }
+    .bridge-eyebrow    { font-size: 0.63rem; font-family: "IBM Plex Mono", monospace; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal-light); margin-bottom: 0.3rem; }
+    .bridge-track-name   { font-size: 1.1rem; font-weight: 700; color: var(--text-bright); margin-bottom: 0.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bridge-track-artist { font-size: 0.88rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bridge-track-album  { font-size: 0.76rem; color: var(--muted); opacity: 0.65; margin-top: 0.12rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ─── Why card ──────────────────────────────────────────── */
+    .why-card { padding: 0.85rem 1rem; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--border); }
+
+    /* ─── Confidence ────────────────────────────────────────── */
+    .confidence-row { display: flex; align-items: center; gap: 0.7rem; }
+    .confidence-label-text { font-size: 0.67rem; font-family: "IBM Plex Mono", monospace; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); white-space: nowrap; }
+    .confidence-bar-track  { flex: 1; height: 5px; border-radius: 99px; background: var(--surface-3); overflow: hidden; }
+    .confidence-bar-fill   { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--teal), var(--spotify)); transition: width 600ms ease; }
+    .confidence-text       { font-size: 0.78rem; font-family: "IBM Plex Mono", monospace; color: var(--teal-light); min-width: 90px; text-align: right; }
+
+    /* ─── Score grid ─────────────────────────────────────────── */
+    .score-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.45rem; padding-top: 0.5rem; }
+    @media (max-width: 580px) { .score-grid { grid-template-columns: repeat(3, 1fr); } }
+    .score-cell { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 0.45rem 0.35rem; text-align: center; }
+    .score-cell-label { font-size: 0.58rem; font-family: "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); display: block; margin-bottom: 0.25rem; }
+    .score-bar-track  { height: 4px; border-radius: 99px; background: var(--surface-3); margin-bottom: 0.25rem; overflow: hidden; }
+    .score-bar-fill   { height: 100%; border-radius: 99px; background: var(--teal); }
+    .score-cell-val   { font-size: 0.7rem; font-family: "IBM Plex Mono", monospace; color: var(--text); }
+
+    /* ─── Action bar ────────────────────────────────────────── */
+    .action-bar { display: flex; flex-wrap: wrap; gap: 0.45rem; padding: 0.7rem 0; border-top: 1px solid var(--border); }
+    .action-btn {
+      padding: 0.38rem 0.75rem; border-radius: 7px;
+      font-size: 0.76rem; font-family: "IBM Plex Mono", monospace; font-weight: 600;
+      cursor: pointer; background: var(--surface-2); color: var(--text);
+      border: 1px solid var(--border-mid);
+      transition: background 0.14s ease, border-color 0.14s ease, transform 0.12s ease;
     }
+    .action-btn:hover  { background: var(--surface-3); border-color: var(--teal); color: var(--teal-light); transform: translateY(-1px); }
+    .action-btn:active { transform: translateY(0); }
 
-    /* ─── Error ─────────────────────────────────────────── */
-    .error-banner {
-      background: rgba(216,75,106,0.12);
-      border: 1px solid rgba(216,75,106,0.3);
-      color: #f48a9e;
-      border-radius: var(--radius-sm);
-      padding: 0.75rem 1rem;
-      font-size: 0.85rem;
-      margin-bottom: 1rem;
-      display: none;
+    /* ─── Chat panel ─────────────────────────────────────────── */
+    .chat-panel { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); position: sticky; top: 1rem; }
+    .chat-header { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); background: var(--surface-2); }
+    .chat-title  { font-size: 0.8rem; font-weight: 700; color: var(--text-bright); font-family: "IBM Plex Mono", monospace; text-transform: uppercase; letter-spacing: 0.06em; }
+    .lk-status   { font-size: 0.67rem; font-family: "IBM Plex Mono", monospace; }
+    .lk-online   { color: var(--green); }
+    .lk-offline  { color: var(--muted); }
+
+    .chat-list  { flex: 1; list-style: none; overflow-y: auto; padding: 0.7rem; display: flex; flex-direction: column; gap: 0.45rem; min-height: 300px; max-height: 440px; }
+    .chat-msg   { display: flex; flex-direction: column; gap: 0.12rem; }
+    .msg-sender  { font-size: 0.66rem; font-family: "IBM Plex Mono", monospace; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .msg-content { font-size: 0.86rem; color: var(--text); line-height: 1.45; background: var(--surface-2); border-radius: 8px; padding: 0.45rem 0.65rem; border: 1px solid var(--border); }
+    .msg-content code   { font-family: "IBM Plex Mono", monospace; font-size: 0.82em; background: var(--surface-3); padding: 0.1em 0.35em; border-radius: 3px; }
+    .msg-content strong { color: var(--text-bright); }
+    .system-msg .msg-sender  { color: var(--teal); }
+    .system-msg .msg-content { background: rgba(15,142,147,0.08); border-color: rgba(15,142,147,0.2); }
+    .user-msg .msg-sender    { color: var(--livekit); }
+
+    .chat-input-row { display: flex; gap: 0.45rem; padding: 0.7rem; border-top: 1px solid var(--border); background: var(--surface-2); }
+    .chat-input-row input {
+      flex: 1; padding: 0.58rem 0.85rem; border-radius: 7px;
+      border: 1px solid var(--border-mid); background: var(--surface);
+      color: var(--text-bright); font-size: 0.86rem; font-family: "Space Grotesk", sans-serif;
+      outline: none; transition: border-color 0.18s ease;
     }
-
-    /* ─── Footer ─────────────────────────────────────────── */
-    .footer {
-      text-align: center;
-      margin-top: 3rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
-      font-size: 0.8rem;
-      color: var(--muted);
-      font-family: "IBM Plex Mono", monospace;
+    .chat-input-row input:focus { border-color: var(--teal); }
+    .chat-input-row input::placeholder { color: var(--muted); }
+    .chat-send-btn {
+      padding: 0.58rem 0.95rem; border-radius: 7px;
+      background: var(--teal); color: #fff;
+      font-size: 0.8rem; font-family: "IBM Plex Mono", monospace; font-weight: 600;
+      border: none; cursor: pointer; transition: background 0.14s ease, transform 0.12s ease;
     }
+    .chat-send-btn:hover  { background: var(--teal-light); transform: translateY(-1px); }
+    .chat-send-btn:active { transform: translateY(0); }
 
+    /* ─── System console ─────────────────────────────────────── */
+    .sys-console { margin-top: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+    .sys-console summary { padding: 0.55rem 1rem; font-size: 0.7rem; font-family: "IBM Plex Mono", monospace; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); cursor: pointer; user-select: none; list-style: none; }
+    .sys-console summary::-webkit-details-marker { display: none; }
+    .sys-console summary:hover { color: var(--text); }
+    .sys-console[open] summary { border-bottom: 1px solid var(--border); color: var(--text); }
+    .sys-log { padding: 0.65rem 1rem; font-size: 0.7rem; font-family: "IBM Plex Mono", monospace; color: var(--muted); white-space: pre-wrap; max-height: 200px; overflow-y: auto; line-height: 1.65; }
+
+    /* ─── Footer ──────────────────────────────────────────── */
+    .footer { text-align: center; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--muted); font-family: "IBM Plex Mono", monospace; }
     .footer a { color: var(--teal); text-decoration: none; }
     .footer a:hover { color: var(--teal-light); }
 
@@ -731,52 +353,26 @@ permalink: /wave-defect-demo/
         </div>
         LiveKit
       </div>
-      <span style="color:var(--border-mid)">×</span>
-      <span class="topbar__wordmark">Wave<span>·</span>Defect</span>
+      <span style="color:var(--border-mid)">&#215;</span>
+      <span class="topbar__wordmark">Wave<span>&#183;</span>Defect</span>
     </div>
     <div class="topbar__badges">
-      <span class="badge badge--livekit">⚡ LiveKit Powered</span>
-      <span class="badge badge--live badge--dot" id="live-badge">Live</span>
-      <span class="badge badge--spotify" id="spotify-badge" style="display:none">
-        ♪ Spotify Connected
-      </span>
+      <span class="badge badge--livekit">&#9889; LiveKit Powered</span>
+      <span class="badge badge--live badge--dot">Live</span>
+      <span class="badge badge--spotify" id="spotify-badge" style="display:none">&#9834; Spotify Connected</span>
     </div>
   </nav>
 
-  <!-- ══════════════════════════════════════════════════ -->
-  <!-- STATE: landing (pre-auth)                         -->
-  <!-- ══════════════════════════════════════════════════ -->
+  <!-- ═══ STATE: landing ═══ -->
   <div id="state-landing" class="state active">
 
     <div class="hero">
-      <p class="hero__eyebrow">LiveKit × Spotify Music Intelligence Demo</p>
-      <h1 class="hero__title">
-        Music meets<br><em>real‑time everything</em>
-      </h1>
+      <p class="hero__eyebrow">Taste Bridge &#183; LiveKit &#215; Spotify</p>
+      <h1 class="hero__title">Find the track<br><em>both of you need</em></h1>
       <p class="hero__desc">
-        Authenticate with your Spotify account and instantly see your top tracks
-        alongside Jason's curated listening profile — delivered live over a
-        <strong style="color:var(--livekit)">LiveKit</strong> data channel.
+        Two listeners. One bridge recommendation. Jason&#8217;s taste is pre-loaded &#8212;
+        connect yours to discover where your music worlds collide.
       </p>
-
-      <div id="error-auth" class="error-banner"></div>
-
-      <button class="btn btn--spotify" id="btn-login" onclick="loginWithSpotify()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 0C5.374 0 0 5.373 0 12c0 6.628 5.374 12 12 12 6.629 0 12-5.372 12-12 0-6.627-5.371-12-12-12zm5.515 17.305c-.218.356-.681.468-1.037.254-2.842-1.735-6.42-2.127-10.634-1.166-.406.094-.813-.16-.907-.568-.093-.407.16-.812.568-.906 4.612-1.054 8.568-.6 11.756 1.348.358.218.47.68.254 1.038zm1.472-3.27c-.275.444-.856.582-1.3.31-3.252-2.001-8.211-2.58-12.054-1.411-.498.152-1.024-.133-1.175-.63-.15-.499.133-1.024.63-1.175 4.39-1.333 9.843-.687 13.593 1.607.445.274.582.856.306 1.299zm.126-3.403c-3.9-2.32-10.341-2.532-14.065-1.4-.598.18-1.231-.156-1.412-.754-.18-.597.156-1.23.754-1.41C8.45 5.647 15.544 5.895 19.966 8.56c.539.32.716 1.015.395 1.554-.32.538-1.015.715-1.553.394l.305-.876z"/>
-        </svg>
-        Connect Spotify
-      </button>
-
-      <p style="font-size:0.76rem;color:var(--muted);margin-top:0.9rem;font-family:'IBM Plex Mono',monospace">
-        Read-only access · No data stored · PKCE OAuth
-      </p>
-    </div>
-
-    <!-- Jason's pre-loaded profile (always visible) -->
-    <div class="section-head">
-      <span class="card__label-dot" style="background:var(--teal)"></span>
-      Jason's Pre-Loaded Profile — stored in Wave·Defect DB
     </div>
 
     <div class="grid grid--2" style="margin-bottom:1.5rem">
@@ -784,39 +380,52 @@ permalink: /wave-defect-demo/
       <div class="card card--teal">
         <div class="card__label">
           <span class="card__label-dot" style="background:var(--teal)"></span>
-          Host Profile
+          Host Profile &#8212; pre-loaded
         </div>
         <div class="profile-row">
-          <div class="avatar">🥁</div>
+          <div class="avatar">&#x1F941;</div>
           <div>
             <div class="profile-name">Jason Evans</div>
-            <div class="profile-sub">Drummer · Data Engineer · M.Sc. CS</div>
+            <div class="profile-sub">Drummer &#183; Data Engineer &#183; M.Sc. CS</div>
           </div>
         </div>
         <div class="genre-pills" id="jason-genres"></div>
       </div>
 
-      <div class="card card--teal">
+      <div class="card card--lk">
         <div class="card__label">
-          <span class="card__label-dot" style="background:var(--teal)"></span>
-          LiveKit Room
+          <span class="card__label-dot" style="background:var(--livekit)"></span>
+          Join the Room
         </div>
-        <div class="lk-panel" style="background:var(--surface-2);border:none;padding:0.6rem;box-shadow:none">
-          <div class="lk-participants" id="lk-participants-pre">
-            <!-- populated by JS -->
-          </div>
-          <div class="lk-channel" id="lk-channel-pre">
-            <div class="lk-channel-msg lk-channel-msg--sys">→ Room: wave-defect-lab</div>
-            <div class="lk-channel-msg lk-channel-msg--sys">→ Waiting for guest to join…</div>
-          </div>
+        <p style="font-size:0.87rem;color:var(--muted);margin-bottom:0.9rem">
+          Connect Spotify for a bridge recommendation built from your real taste profile,
+          or enter a name to try with a curated demo pool.
+        </p>
+        <div id="error-auth" class="error-banner"></div>
+        <button class="btn btn--spotify" id="btn-login" onclick="loginWithSpotify()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 0C5.374 0 0 5.373 0 12c0 6.628 5.374 12 12 12 6.629 0 12-5.372 12-12 0-6.627-5.371-12-12-12zm5.515 17.305c-.218.356-.681.468-1.037.254-2.842-1.735-6.42-2.127-10.634-1.166-.406.094-.813-.16-.907-.568-.093-.407.16-.812.568-.906 4.612-1.054 8.568-.6 11.756 1.348.358.218.47.68.254 1.038zm1.472-3.27c-.275.444-.856.582-1.3.31-3.252-2.001-8.211-2.58-12.054-1.411-.498.152-1.024-.133-1.175-.63-.15-.499.133-1.024.63-1.175 4.39-1.333 9.843-.687 13.593 1.607.445.274.582.856.306 1.299zm.126-3.403c-3.9-2.32-10.341-2.532-14.065-1.4-.598.18-1.231-.156-1.412-.754-.18-.597.156-1.23.754-1.41C8.45 5.647 15.544 5.895 19.966 8.56c.539.32.716 1.015.395 1.554-.32.538-1.015.715-1.553.394l.305-.876z"/>
+          </svg>
+          Connect Spotify
+        </button>
+        <p style="font-size:0.72rem;color:var(--muted);margin-top:0.55rem;font-family:'IBM Plex Mono',monospace">
+          Read-only &#183; No data stored &#183; PKCE OAuth
+        </p>
+        <p class="join-divider">&#8212;&#8212; or try demo mode &#8212;&#8212;</p>
+        <div class="join-row">
+          <input type="text" id="demo-name" placeholder="Your name&#8230;" maxlength="40" autocomplete="off">
+          <button class="btn btn--teal btn--sm" onclick="joinDemoMode()">Join Demo</button>
         </div>
+        <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;font-family:'IBM Plex Mono',monospace">
+          12 curated tracks &#183; deterministic engine &#183; no Spotify needed
+        </p>
       </div>
 
     </div>
 
     <div class="section-head">
       <span class="card__label-dot" style="background:var(--teal)"></span>
-      Jason's Top Tracks — pre-loaded
+      Jason&#8217;s Top Tracks &#8212; pre-loaded
     </div>
     <div class="card" style="margin-bottom:1.5rem">
       <ul class="track-list" id="jason-tracks-pre"></ul>
@@ -824,288 +433,525 @@ permalink: /wave-defect-demo/
 
   </div><!-- /state-landing -->
 
-  <!-- ══════════════════════════════════════════════════ -->
-  <!-- STATE: loading                                    -->
-  <!-- ══════════════════════════════════════════════════ -->
+  <!-- ═══ STATE: loading ═══ -->
   <div id="state-loading" class="state">
     <div class="loading-row">
       <span class="spinner"></span>
-      Authenticating with Spotify and loading your music data…
+      Authenticating with Spotify and computing your taste profile&#8230;
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════════ -->
-  <!-- STATE: connected (post-auth)                      -->
-  <!-- ══════════════════════════════════════════════════ -->
-  <div id="state-connected" class="state">
+  <!-- ═══ STATE: room (Taste Bridge Chat) ═══ -->
+  <div id="state-room" class="state">
 
-    <!-- Welcome banner -->
-    <div class="welcome-banner" id="welcome-banner">
-      <h2 id="welcome-heading">Hey there! 👋</h2>
-      <p id="welcome-text">Thanks for authenticating your Spotify. Here's your profile alongside Jason's recommendations.</p>
+    <div class="welcome-banner" id="welcome-banner" style="display:none">
+      <h2 id="welcome-heading">Hey! &#128075;</h2>
+      <p id="welcome-text"></p>
     </div>
 
-    <!-- Currently playing -->
-    <div id="now-playing-section" style="display:none;margin-bottom:1.25rem">
+    <div id="now-playing-section" style="display:none;margin-bottom:1.1rem">
       <div class="section-head">
         <span class="badge badge--live badge--dot" style="margin:0">Now Playing</span>
         Live from your Spotify
       </div>
-      <div class="now-playing" id="now-playing-card">
-        <div class="now-playing__art" id="np-art">🎵</div>
+      <div class="now-playing">
+        <div class="now-playing__art" id="np-art">&#127925;</div>
         <div class="now-playing__info">
-          <div class="now-playing__track" id="np-track">—</div>
-          <div class="now-playing__artist" id="np-artist">—</div>
+          <div class="now-playing__track"  id="np-track">&#8212;</div>
+          <div class="now-playing__artist" id="np-artist">&#8212;</div>
         </div>
-        <div class="now-playing__eq">
-          <span></span><span></span><span></span><span></span>
-        </div>
+        <div class="now-playing__eq"><span></span><span></span><span></span><span></span></div>
       </div>
     </div>
 
-    <!-- Profiles: Jason + Guest side-by-side -->
-    <div class="section-head">
-      <span class="card__label-dot" style="background:var(--teal)"></span>
-      Profiles — Host &amp; Guest
+    <div class="participant-bar">
+      <span class="participant-chip chip--host">&#x1F941; Jason Evans</span>
+      <span class="vs-dot">&#8621;</span>
+      <span class="participant-chip chip--guest" id="guest-chip">&#x1F3A7; You</span>
     </div>
 
-    <div class="grid grid--2" style="margin-bottom:1.25rem">
-
-      <!-- Jason's card -->
-      <div class="card card--teal">
-        <div class="card__label">
-          <span class="card__label-dot" style="background:var(--teal)"></span>
-          Jason's Profile — pre-loaded
-        </div>
-        <div class="profile-row">
-          <div class="avatar">🥁</div>
-          <div>
-            <div class="profile-name">Jason Evans</div>
-            <div class="profile-sub">Drummer · Data Engineer · M.Sc. CS</div>
-          </div>
-        </div>
-        <div class="genre-pills" id="jason-genres-2"></div>
+    <div class="compat-strip">
+      <span class="compat-label">Compatibility</span>
+      <div class="compat-bar-track">
+        <div class="compat-bar-fill" id="compat-bar" style="width:0%"></div>
       </div>
-
-      <!-- Guest's card -->
-      <div class="card card--spot">
-        <div class="card__label">
-          <span class="card__label-dot" style="background:var(--spotify)"></span>
-          Your Spotify Profile
-        </div>
-        <div class="profile-row">
-          <div class="avatar" id="guest-avatar">🎧</div>
-          <div>
-            <div class="profile-name" id="guest-name">—</div>
-            <div class="profile-sub" id="guest-sub">—</div>
-          </div>
-        </div>
-        <div class="genre-pills" id="guest-genres"></div>
-      </div>
-
+      <span class="compat-pct" id="compat-pct">&#8212;</span>
     </div>
 
-    <!-- LiveKit room panel + wave visualizer -->
-    <div class="section-head">
-      <span class="card__label-dot" style="background:var(--livekit)"></span>
-      LiveKit Room — wave-defect-lab
-    </div>
+    <div class="room-layout">
 
-    <div class="lk-panel" style="margin-bottom:1.25rem">
-      <div class="lk-header">
-        <div class="lk-title">
-          <div class="lk-logo">
-            <div class="lk-logo__mark">
-              <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path d="M3 3h4v10H3zM9 7h4v6H9zM9 3h4v2H9z"/>
-              </svg>
+      <!-- ── Left: recommendation panel ── -->
+      <section class="main-panel" aria-label="Bridge recommendation">
+
+        <div id="reco-loading" class="reco-loading hidden">
+          <div class="spinner" style="width:34px;height:34px;border-width:3px"></div>
+          <p style="color:var(--muted);font-size:0.9rem">Computing your taste bridge&#8230;</p>
+        </div>
+
+        <div id="reco-card" class="reco-card hidden">
+
+          <div class="insight-cards">
+            <div class="insight-card">
+              <p class="insight-label">Shared Vibe</p>
+              <p id="shared-vibe" class="insight-text">&#8212;</p>
             </div>
-            LiveKit
+            <div class="insight-card insight-contrast">
+              <p class="insight-label">Biggest Contrast</p>
+              <p id="biggest-contrast" class="insight-text">&#8212;</p>
+            </div>
           </div>
-          <span style="color:var(--muted)">·</span>
-          Data Channel Active
+
+          <div class="bridge-track-card">
+            <div class="bridge-track-art" id="bridge-art">&#127925;</div>
+            <div class="bridge-track-info">
+              <p class="bridge-eyebrow">Bridge Recommendation</p>
+              <h2 class="bridge-track-name"   id="bridge-track-name">&#8212;</h2>
+              <p  class="bridge-track-artist" id="bridge-track-artist">&#8212;</p>
+              <p  class="bridge-track-album"  id="bridge-track-album"></p>
+            </div>
+          </div>
+
+          <div class="why-card">
+            <p class="insight-label">Why This Track</p>
+            <p id="bridge-reason" class="insight-text">&#8212;</p>
+          </div>
+
+          <div class="confidence-row">
+            <span class="confidence-label-text">Confidence</span>
+            <div class="confidence-bar-track">
+              <div class="confidence-bar-fill" id="confidence-bar" style="width:0%"></div>
+            </div>
+            <span class="confidence-text" id="confidence-text">&#8212;</span>
+          </div>
+
+          <div class="score-grid" id="score-grid" aria-label="Fit scores"></div>
+
+        </div><!-- /reco-card -->
+
+        <div id="action-bar" class="action-bar hidden">
+          <button class="action-btn" data-cmd="/next"        title="Find a different track">&#x1F500; Next</button>
+          <button class="action-btn" data-cmd="/balanced"    title="Equal weight to both tastes">&#x2696;&#xFE0F; Balanced</button>
+          <button class="action-btn" data-cmd="/more-me"     title="Lean toward Jason's taste">&#x1F3AF; More me</button>
+          <button class="action-btn" data-cmd="/more-them"   title="Lean toward your taste">&#x1F501; More them</button>
+          <button class="action-btn" data-cmd="/weirder"     title="More adventurous picks">&#x1F300; Weirder</button>
+          <button class="action-btn" data-cmd="/safer"       title="More mainstream picks">&#x1F6DF; Safer</button>
+          <button class="action-btn" data-cmd="/moodier"     title="Darker, more emotional">&#x1F319; Moodier</button>
+          <button class="action-btn" data-cmd="/more-energy" title="Higher energy">&#x26A1; More energy</button>
+          <button class="action-btn" data-cmd="/why"         title="Explain this pick">&#x2753; Why?</button>
         </div>
-        <div style="display:flex;gap:0.45rem;align-items:center">
-          <span class="badge badge--live badge--dot">Live</span>
-          <span class="badge badge--livekit" id="lk-latency">12 ms</span>
+
+      </section><!-- /main-panel -->
+
+      <!-- ── Right: chat panel ── -->
+      <section class="chat-panel" aria-label="Live chat">
+        <div class="chat-header">
+          <span class="chat-title">&#x1F4AC; Taste Bridge Chat</span>
+          <span class="lk-status lk-online" id="lk-status">&#9679; Live</span>
         </div>
-      </div>
 
-      <!-- Wave visualizer -->
-      <div class="wave-vis" id="wave-vis">
-        <!-- bars generated by JS -->
-      </div>
+        <ul id="chat-list" class="chat-list" role="log" aria-live="polite" aria-label="Chat messages">
+          <li class="chat-msg system-msg">
+            <span class="msg-sender">System</span>
+            <span class="msg-content">Welcome! Jason&#8217;s profile is in the room. Use slash commands like <code>/balanced</code>, <code>/weirder</code>, <code>/next</code> &#8212; or just type naturally.</span>
+          </li>
+        </ul>
 
-      <div class="lk-participants" id="lk-participants-post" style="margin-top:0.75rem"></div>
-
-      <div style="font-size:0.72rem;font-family:'IBM Plex Mono',monospace;color:var(--muted);margin-bottom:0.4rem;margin-top:0.6rem;text-transform:uppercase;letter-spacing:0.07em">
-        Data channel — music recommendations
-      </div>
-      <div class="lk-channel" id="lk-channel-post"></div>
-
-      <div class="lk-metrics">
-        <div class="lk-metric">
-          <span class="lk-metric__val" id="lk-tracks-sent">0</span>
-          <div class="lk-metric__key">Tracks Sent</div>
+        <div class="chat-input-row">
+          <input id="chat-input" type="text" placeholder="Type a message or /command&#8230;" autocomplete="off" maxlength="280">
+          <button class="chat-send-btn" id="chat-send-btn" type="button">Send</button>
         </div>
-        <div class="lk-metric">
-          <span class="lk-metric__val" id="lk-latency-val">12ms</span>
-          <div class="lk-metric__key">Latency</div>
-        </div>
-        <div class="lk-metric">
-          <span class="lk-metric__val" id="lk-uptime">0s</span>
-          <div class="lk-metric__key">Uptime</div>
-        </div>
-      </div>
-    </div>
+      </section>
 
-    <!-- Side-by-side top tracks -->
-    <div class="section-head">
-      <span class="card__label-dot" style="background:var(--teal)"></span>
-      Top Tracks — Jason vs You
-    </div>
+    </div><!-- /room-layout -->
 
-    <div class="grid grid--2" style="margin-bottom:1.5rem">
-      <div class="card card--teal">
-        <div class="card__label">
-          <span class="card__label-dot" style="background:var(--teal)"></span>
-          Jason's Top Tracks
-        </div>
-        <ul class="track-list" id="jason-tracks-post"></ul>
-      </div>
-      <div class="card card--spot">
-        <div class="card__label">
-          <span class="card__label-dot" style="background:var(--spotify)"></span>
-          Your Top Tracks
-        </div>
-        <div id="guest-tracks-loading" class="loading-row" style="padding:0.5rem 0">
-          <span class="spinner"></span> Loading your tracks…
-        </div>
-        <ul class="track-list" id="guest-tracks" style="display:none"></ul>
-      </div>
-    </div>
+    <details class="sys-console" id="sys-console">
+      <summary>&#9656; System Console</summary>
+      <pre id="sys-log" class="sys-log" aria-live="polite"></pre>
+    </details>
 
-    <button class="btn btn--outline btn--sm" onclick="logout()" style="margin-bottom:1rem">
-      Disconnect Spotify
-    </button>
+  </div><!-- /state-room -->
 
-  </div><!-- /state-connected -->
-
-  <!-- ── Footer ──────────────────────────────────────── -->
   <footer class="footer">
     <p>
       <a href="https://livekit.io" target="_blank" rel="noopener">LiveKit</a>
-      &nbsp;·&nbsp;
+      &nbsp;&#183;&nbsp;
       <a href="https://developer.spotify.com" target="_blank" rel="noopener">Spotify for Developers</a>
-      &nbsp;·&nbsp;
-      <a href="https://github.com/jas-m-evans/wave2vector" target="_blank" rel="noopener">Wave·Defect on GitHub</a>
-      &nbsp;·&nbsp;
+      &nbsp;&#183;&nbsp;
+      <a href="https://github.com/jas-m-evans/wave2vector" target="_blank" rel="noopener">Wave&#183;Defect on GitHub</a>
+      &nbsp;&#183;&nbsp;
       <a href="/">Jason Evans</a>
     </p>
     <p style="margin-top:0.5rem;font-size:0.72rem">
-      OAuth via Spotify PKCE · Read-only scopes · No data retained
+      OAuth via Spotify PKCE &#183; Read-only scopes &#183; No data retained
     </p>
-
   </footer>
 
 </div><!-- /app -->
 
 <script>
-// ═══════════════════════════════════════════════════════
-//  Configuration
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
+//  Config
+// ═══════════════════════════════════════════════════════════════════════════
 
 const SPOTIFY_CLIENT_ID = '988c37ac07834febaddfcdbba88fdf6f';
-const REDIRECT_URI = 'https://jas-m-evans.github.io/wave-defect-demo/';
+const REDIRECT_URI      = 'https://jas-m-evans.github.io/wave-defect-demo/';
 const SCOPES = [
-  'user-top-read',
-  'user-read-recently-played',
-  'user-read-currently-playing',
-  'user-read-playback-state',
-  'user-read-private',
+  'user-top-read', 'user-read-recently-played',
+  'user-read-currently-playing', 'user-read-playback-state', 'user-read-private',
 ].join(' ');
+// Set to your deployed wave2vector backend URL to enable real LiveKit rooms.
+const BACKEND_URL = null;
 
-// ═══════════════════════════════════════════════════════
-//  Jason's pre-stored recommendations (Wave·Defect DB)
-// ═══════════════════════════════════════════════════════
-const JASON_PROFILE = {
+// ═══════════════════════════════════════════════════════════════════════════
+//  Jason's pre-loaded profile
+//  Audio features averaged from real Spotify data for his top 7 tracks.
+// ═══════════════════════════════════════════════════════════════════════════
+
+const JASON = {
   name: 'Jason Evans',
   role: 'Drummer · Data Engineer · M.Sc. CS',
   genres: ['Progressive Metal', 'Jazz Fusion', 'Art Rock', 'Electronic', 'Post-Rock'],
   topTracks: [
-    { name: 'Pneuma',              artist: 'TOOL',               emoji: '🔩', duration: '11:48' },
-    { name: 'Let It Happen',       artist: 'Tame Impala',        emoji: '🌀', duration: '7:47'  },
-    { name: '15 Step',             artist: 'Radiohead',          emoji: '📡', duration: '3:57'  },
-    { name: 'Bleed',               artist: 'Meshuggah',          emoji: '⚡', duration: '7:24'  },
-    { name: 'Roygbiv',             artist: 'Boards of Canada',   emoji: '🌿', duration: '2:32'  },
-    { name: 'White Walls',         artist: 'Between the Buried', emoji: '🌊', duration: '9:50'  },
-    { name: 'The National Anthem', artist: 'Radiohead',          emoji: '📻', duration: '5:51'  },
+    { name: 'Pneuma',              artist: 'TOOL',                      emoji: '🔩', duration: '11:48' },
+    { name: 'Let It Happen',       artist: 'Tame Impala',               emoji: '🌀', duration: '7:47'  },
+    { name: '15 Step',             artist: 'Radiohead',                 emoji: '📡', duration: '3:57'  },
+    { name: 'Bleed',               artist: 'Meshuggah',                 emoji: '⚡', duration: '7:24'  },
+    { name: 'Roygbiv',             artist: 'Boards of Canada',          emoji: '🌿', duration: '2:32'  },
+    { name: 'White Walls',         artist: 'Between the Buried and Me', emoji: '🌊', duration: '9:50'  },
+    { name: 'The National Anthem', artist: 'Radiohead',                 emoji: '📻', duration: '5:51'  },
   ],
+  // Mean Spotify audio features across top tracks
+  tasteProfile: {
+    energy: 0.70, valence: 0.29, danceability: 0.43,
+    acousticness: 0.02, instrumentalness: 0.50, speechiness: 0.08, tempo_norm: 0.58,
+  },
 };
 
-// ═══════════════════════════════════════════════════════
-//  PKCE helpers
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
+//  Curated mock candidate pool (mirrors app/spotify.py MOCK_CANDIDATES)
+// ═══════════════════════════════════════════════════════════════════════════
 
-function generateRandomString(len) {
-  const arr = new Uint8Array(len);
-  crypto.getRandomValues(arr);
-  return Array.from(arr, b => b.toString(16).padStart(2, '0')).join('').slice(0, len);
+// Spotify tempo range for normalization (BPM → 0–1)
+const TEMPO_MIN = 40;
+const TEMPO_MAX = 220;
+function _normTempo(bpm) { return Math.max(0, Math.min(1, (bpm - TEMPO_MIN) / (TEMPO_MAX - TEMPO_MIN))); }
+
+const MOCK_CANDIDATES = [
+  { track_id:'mock_midnight_city',   track_name:'Midnight City',               artist:'M83',             album:"Hurry Up, We're Dreaming", energy:0.821, valence:0.543, danceability:0.578, acousticness:0.003, instrumentalness:0.614, speechiness:0.044, tempo_norm:_normTempo(105) },
+  { track_id:'mock_retrograde',      track_name:'Retrograde',                  artist:'James Blake',      album:'Overgrown',                energy:0.374, valence:0.291, danceability:0.579, acousticness:0.302, instrumentalness:0.001, speechiness:0.035, tempo_norm:_normTempo(80)  },
+  { track_id:'mock_feels_summer',    track_name:'Feels Like Summer',           artist:'Childish Gambino', album:'Summer Pack',              energy:0.434, valence:0.702, danceability:0.719, acousticness:0.169, instrumentalness:0.000, speechiness:0.089, tempo_norm:_normTempo(86)  },
+  { track_id:'mock_let_it_happen',   track_name:'Let It Happen',               artist:'Tame Impala',      album:'Currents',                 energy:0.582, valence:0.454, danceability:0.612, acousticness:0.003, instrumentalness:0.202, speechiness:0.028, tempo_norm:_normTempo(116) },
+  { track_id:'mock_electric_feel',   track_name:'Electric Feel',               artist:'MGMT',             album:'Oracular Spectacular',    energy:0.623, valence:0.773, danceability:0.721, acousticness:0.098, instrumentalness:0.032, speechiness:0.046, tempo_norm:_normTempo(107) },
+  { track_id:'mock_bad_guy',         track_name:'bad guy',                     artist:'Billie Eilish',    album:'When We All Fall Asleep',  energy:0.427, valence:0.559, danceability:0.702, acousticness:0.337, instrumentalness:0.000, speechiness:0.365, tempo_norm:_normTempo(135) },
+  { track_id:'mock_redbone',         track_name:'Redbone',                     artist:'Childish Gambino', album:"Awaken, My Love!",         energy:0.452, valence:0.444, danceability:0.739, acousticness:0.196, instrumentalness:0.001, speechiness:0.043, tempo_norm:_normTempo(95)  },
+  { track_id:'mock_the_less_i_know', track_name:'The Less I Know the Better',  artist:'Tame Impala',      album:'Currents',                 energy:0.756, valence:0.709, danceability:0.758, acousticness:0.006, instrumentalness:0.049, speechiness:0.034, tempo_norm:_normTempo(116) },
+  { track_id:'mock_breathe',         track_name:'Breathe (2AM)',               artist:'Anna Nalick',      album:'Wreck of the Day',        energy:0.348, valence:0.315, danceability:0.446, acousticness:0.738, instrumentalness:0.000, speechiness:0.026, tempo_norm:_normTempo(74)  },
+  { track_id:'mock_starboy',         track_name:'Starboy',                     artist:'The Weeknd',       album:'Starboy',                  energy:0.589, valence:0.482, danceability:0.679, acousticness:0.129, instrumentalness:0.000, speechiness:0.234, tempo_norm:_normTempo(186) },
+  { track_id:'mock_mykonos',         track_name:'Mykonos',                     artist:'Fleet Foxes',      album:'Sun Giant',               energy:0.421, valence:0.571, danceability:0.427, acousticness:0.912, instrumentalness:0.028, speechiness:0.038, tempo_norm:_normTempo(150) },
+  { track_id:'mock_ribs',            track_name:'Ribs',                        artist:'Lorde',            album:'Pure Heroine',             energy:0.385, valence:0.179, danceability:0.493, acousticness:0.017, instrumentalness:0.001, speechiness:0.031, tempo_norm:_normTempo(92)  },
+];
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Feature schema  (mirrors recommender.py FEATURE_KEYS / BASE_WEIGHTS)
+// ═══════════════════════════════════════════════════════════════════════════
+
+const FEATURE_KEYS = ['energy','valence','danceability','acousticness','instrumentalness','speechiness','tempo_norm'];
+const BASE_WEIGHTS = [0.22, 0.22, 0.14, 0.12, 0.10, 0.08, 0.12];
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  App state
+// ═══════════════════════════════════════════════════════════════════════════
+
+const S = {
+  guest:       null,             // { name, tasteProfile }
+  knobs:       { balanceBias: 0.5, noveltyBias: 0.3, energyBias: 0.5, moodBias: 0.5 },
+  prevTrackId: null,
+  candidates:  [...MOCK_CANDIDATES],
+  bridgeReady: false,
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Pure recommender engine  (ported from app/recommender.py)
+// ═══════════════════════════════════════════════════════════════════════════
+
+function _clamp(v, lo = 0, hi = 1) { return Math.max(lo, Math.min(hi, v)); }
+function _lerp(a, b, t) { return a + (b - a) * _clamp(t); }
+
+function _weightedSim(candidate, target) {
+  let score = 0;
+  FEATURE_KEYS.forEach((k, i) => {
+    score += BASE_WEIGHTS[i] * (1 - Math.abs((candidate[k] ?? 0.5) - (target[k] ?? 0.5)));
+  });
+  return _clamp(score);  // BASE_WEIGHTS sum to 1.0
 }
 
-async function generateCodeChallenge(verifier) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(verifier);
-  const digest = await crypto.subtle.digest('SHA-256', data);
+function _computeTargetProfile(pA, pB, knobs) {
+  const t = {};
+  FEATURE_KEYS.forEach(k => {
+    t[k] = _lerp(pA[k] ?? 0.5, pB[k] ?? 0.5, knobs.balanceBias);
+  });
+  t.energy  = _lerp(t.energy,  knobs.energyBias, 0.4);
+  t.valence = _lerp(t.valence, knobs.moodBias,   0.4);
+  if (knobs.noveltyBias > 0.5) {
+    const push = (knobs.noveltyBias - 0.5) * 0.5;
+    FEATURE_KEYS.forEach(k => {
+      const avg   = ((pA[k] ?? 0.5) + (pB[k] ?? 0.5)) / 2;
+      const delta = t[k] - avg;
+      t[k] = _clamp(t[k] + delta * push);
+    });
+  }
+  return Object.fromEntries(FEATURE_KEYS.map(k => [k, _clamp(t[k] ?? 0.5)]));
+}
+
+function _scoreCandidate(candidate, pA, pB, target, noveltyBias) {
+  const sim_target     = _weightedSim(candidate, target);
+  const sim_a          = _weightedSim(candidate, pA);
+  const sim_b          = _weightedSim(candidate, pB);
+  const bridge_quality = (sim_a + sim_b) / 2;
+  const fairness       = 1 - Math.abs(sim_a - sim_b);
+  const novelty        = 1 - Math.max(sim_a, sim_b);
+  const total = (
+    0.35 * sim_target +
+    0.25 * bridge_quality +
+    0.20 * fairness +
+    0.20 * _lerp(0, novelty, noveltyBias)
+  );
+  return { sim_a, sim_b, sim_target, bridge_quality, fairness, novelty, total };
+}
+
+function recommendBridge(pA, pB, candidates, knobs, prevId) {
+  if (!candidates.length) return null;
+  const target = _computeTargetProfile(pA, pB, knobs);
+  const scored = candidates.map(c => {
+    const scores   = _scoreCandidate(c, pA, pB, target, knobs.noveltyBias);
+    const adjTotal = scores.total * (c.track_id === prevId ? 0.65 : 1.0);
+    return { c, scores, adjTotal };
+  });
+  // Tie-break by track_id for deterministic ordering when scores are equal
+  scored.sort((a, b) => b.adjTotal - a.adjTotal || a.c.track_id.localeCompare(b.c.track_id));
+  const { c, scores } = scored[0];
+  return { ...c, scores, target_profile: target };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Pure commentary engine  (ported from app/commentary.py)
+// ═══════════════════════════════════════════════════════════════════════════
+
+const FEAT_HIGH = {
+  energy:           ['high-energy','intense','driving'],
+  valence:          ['upbeat','feel-good','joyful'],
+  danceability:     ['danceable','groove-heavy','body-moving'],
+  acousticness:     ['acoustic','organic','raw'],
+  instrumentalness: ['instrumental','wordless','texture-first'],
+  speechiness:      ['lyric-dense','wordy','verse-heavy'],
+  tempo_norm:       ['fast-paced','high-tempo','racing'],
+};
+const FEAT_LOW = {
+  energy:           ['mellow','calm','introspective'],
+  valence:          ['melancholic','brooding','dark'],
+  danceability:     ['non-dance','complex','listening-first'],
+  acousticness:     ['produced','electronic','polished'],
+  instrumentalness: ['vocal-forward','lyric-led','singer-centric'],
+  speechiness:      ['instrumental-leaning','sparse-vocal','vibe-driven'],
+  tempo_norm:       ['slow-burning','laid-back','patient'],
+};
+const FEAT_DISPLAY = {
+  energy:'energy', valence:'mood', danceability:'danceability',
+  acousticness:'acoustic texture', instrumentalness:'instrumentation',
+  speechiness:'vocal density', tempo_norm:'tempo',
+};
+
+function _describe(feat, value, seed = 0) {
+  const vocab = value >= 0.5 ? FEAT_HIGH[feat] : FEAT_LOW[feat];
+  return vocab[seed % vocab.length];
+}
+
+function _topShared(pA, pB, n = 2) {
+  return FEATURE_KEYS
+    .map(k => ({ k, vA: pA[k] ?? 0.5, vB: pB[k] ?? 0.5, diff: Math.abs((pA[k] ?? 0.5) - (pB[k] ?? 0.5)) }))
+    .sort((a, b) => a.diff - b.diff)
+    .slice(0, n);
+}
+
+function _topContrast(pA, pB) {
+  return FEATURE_KEYS
+    .map(k => ({ k, vA: pA[k] ?? 0.5, vB: pB[k] ?? 0.5, diff: Math.abs((pA[k] ?? 0.5) - (pB[k] ?? 0.5)) }))
+    .sort((a, b) => b.diff - a.diff)[0];
+}
+
+function generateCommentary(pA, pB, nameA, nameB, result) {
+  const shared      = _topShared(pA, pB, 2);
+  const sharedParts = shared.map(({ k, vA, vB }, i) =>
+    `${_describe(k, (vA + vB) / 2, i)} ${FEAT_DISPLAY[k]}`
+  );
+  const shared_vibe = sharedParts.length === 2
+    ? `Both of you gravitate toward ${sharedParts[0]} and ${sharedParts[1]}.`
+    : sharedParts.length === 1
+      ? `Both of you share a taste for ${sharedParts[0]}.`
+      : 'You share more in common than you might think.';
+
+  const ct = _topContrast(pA, pB);
+  const biggest_contrast = ct.vA > ct.vB
+    ? `${nameA} leans toward ${_describe(ct.k, ct.vA, 0)} ${FEAT_DISPLAY[ct.k]}, while ${nameB} prefers ${_describe(ct.k, ct.vB, 1)} sounds.`
+    : `${nameB} leans toward ${_describe(ct.k, ct.vB, 0)} ${FEAT_DISPLAY[ct.k]}, while ${nameA} prefers ${_describe(ct.k, ct.vA, 1)} sounds.`;
+
+  const tp       = result.target_profile;
+  const midpoints = Object.fromEntries(FEATURE_KEYS.map(k => [k, ((pA[k] ?? 0.5) + (pB[k] ?? 0.5)) / 2]));
+  const bridgeFeat = FEATURE_KEYS.reduce((best, k) =>
+    Math.abs((tp[k] ?? midpoints[k]) - midpoints[k]) < Math.abs((tp[best] ?? midpoints[best]) - midpoints[best]) ? k : best
+  , FEATURE_KEYS[0]);
+  const bridge_reason = `"${result.track_name}" lands right in the sweet spot — its ${_describe(bridgeFeat, tp[bridgeFeat] ?? 0.5, 2)} ${FEAT_DISPLAY[bridgeFeat]} sits between both of your profiles.`;
+
+  const confidence = result.scores.bridge_quality;
+  const confidence_label = confidence >= 0.75 ? 'Strong'
+    : confidence >= 0.60 ? 'Good'
+    : confidence >= 0.45 ? 'Moderate' : 'Low';
+
+  return { shared_vibe, biggest_contrast, bridge_reason, confidence, confidence_label };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Slash commands  (mirrors app/recommender.py apply_slash_command)
+// ═══════════════════════════════════════════════════════════════════════════
+
+const SLASH_COMMANDS = [
+  '/balanced','/more-me','/more-them','/weirder',
+  '/safer','/moodier','/more-energy','/why','/next',
+];
+
+function applySlashCommand(knobs, cmd) {
+  const k = { ...knobs };
+  switch (cmd) {
+    case '/balanced':    k.balanceBias = 0.5; k.noveltyBias = 0.3; break;
+    case '/more-me':     k.balanceBias = _clamp(k.balanceBias - 0.2); break;
+    case '/more-them':   k.balanceBias = _clamp(k.balanceBias + 0.2); break;
+    case '/weirder':     k.noveltyBias = _clamp(k.noveltyBias + 0.25); break;
+    case '/safer':       k.noveltyBias = _clamp(k.noveltyBias - 0.25); break;
+    case '/moodier':     k.moodBias    = _clamp(k.moodBias    - 0.2);  break;
+    case '/more-energy': k.energyBias  = _clamp(k.energyBias  + 0.25); break;
+  }
+  return k;
+}
+
+const CMD_RESPONSES = {
+  '/balanced':    ()  => 'Resetting to a balanced bridge between both profiles.',
+  '/more-me':     ()  => "Leaning more toward Jason's taste.",
+  '/more-them':   (n) => `Leaning more toward ${n}'s taste.`,
+  '/weirder':     ()  => 'Going more adventurous and eclectic.',
+  '/safer':       ()  => 'Pulling back toward familiar territory.',
+  '/moodier':     ()  => 'Shifting toward darker, more emotional sounds.',
+  '/more-energy': ()  => 'Cranking up the energy.',
+  '/next':        ()  => 'Finding a different bridge track.',
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  NLP nudge parser  (mirrors app/recommender.py parse_natural_language_nudge)
+// ═══════════════════════════════════════════════════════════════════════════
+
+function parseNudge(text) {
+  const t = text.toLowerCase();
+  const adj = {};
+  if (/more energy|energetic|upbeat|pumped|intense|bangers/.test(t))      adj.energyBias  = 0.75;
+  else if (/chill|calm|mellow|relax|quiet|laid[.-]?back/.test(t))             adj.energyBias  = 0.25;
+  if (/happier|brighter|feel.good|uplifting|joyful/.test(t))              adj.moodBias    = 0.75;
+  else if (/darker|melancholic|sad|moody|emotional|brooding/.test(t))     adj.moodBias    = 0.25;
+  if (/weirder|unexpected|left turn|adventurous|eclectic|obscure/.test(t)) adj.noveltyBias = 0.75;
+  else if (/safer|familiar|mainstream|easy|comfortable/.test(t))          adj.noveltyBias = 0.10;
+  if (/both.*balanced|balanced.*both|middle|together/.test(t))            adj.balanceBias = 0.5;
+  return adj;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Demo profile from name  (mirrors app/spotify.py demo_profile_from_name)
+//  Deterministic xorshift32 seeded from name string.
+// ═══════════════════════════════════════════════════════════════════════════
+
+function demoProfileFromName(name) {
+  let state = 0;
+  for (const ch of (name + 'taste-bridge-demo').toLowerCase()) {
+    state = (Math.imul(state, 31) + ch.charCodeAt(0)) | 0;
+  }
+  state = (state >>> 0) || 1;
+
+  function nextFloat() {
+    state ^= state << 13; state >>>= 0;
+    state ^= state >> 17;
+    state ^= state << 5;  state >>>= 0;
+    return (state & 0xFFFF) / 0xFFFF;
+  }
+  function ranged(lo, hi) {
+    return Math.round((lo + nextFloat() * (hi - lo)) * 1000) / 1000;
+  }
+  return {
+    energy:           ranged(0.20, 0.92),
+    valence:          ranged(0.18, 0.90),
+    danceability:     ranged(0.28, 0.92),
+    acousticness:     ranged(0.05, 0.85),
+    instrumentalness: ranged(0.00, 0.65),
+    speechiness:      ranged(0.02, 0.28),
+    tempo_norm:       ranged(0.25, 0.82),
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Compatibility (cosine similarity between taste profiles)
+// ═══════════════════════════════════════════════════════════════════════════
+
+function computeCompatibility(pA, pB) {
+  const a = FEATURE_KEYS.map(k => pA[k] ?? 0.5);
+  const b = FEATURE_KEYS.map(k => pB[k] ?? 0.5);
+  const dot   = a.reduce((s, v, i) => s + v * b[i], 0);
+  const normA = Math.sqrt(a.reduce((s, v) => s + v * v, 0));
+  const normB = Math.sqrt(b.reduce((s, v) => s + v * v, 0));
+  return normA && normB ? _clamp(dot / (normA * normB)) : 0.5;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Spotify PKCE helpers
+// ═══════════════════════════════════════════════════════════════════════════
+
+function _randomString(len) {
+  const a = new Uint8Array(len);
+  crypto.getRandomValues(a);
+  return Array.from(a, b => b.toString(16).padStart(2, '0')).join('').slice(0, len);
+}
+
+async function _codeChallenge(verifier) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
   return btoa(String.fromCharCode(...new Uint8Array(digest)))
     .replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
 }
 
-// ═══════════════════════════════════════════════════════
-//  Auth flow
-// ═══════════════════════════════════════════════════════
-
 async function loginWithSpotify() {
-  const verifier = generateRandomString(64);
-  const challenge = await generateCodeChallenge(verifier);
+  const verifier  = _randomString(64);
+  const challenge = await _codeChallenge(verifier);
+  const state     = _randomString(16);
   sessionStorage.setItem('pkce_verifier', verifier);
-  const state = generateRandomString(16);
   sessionStorage.setItem('pkce_state', state);
-
   const params = new URLSearchParams({
-    client_id:             SPOTIFY_CLIENT_ID,
-    response_type:         'code',
-    redirect_uri:          REDIRECT_URI,
-    code_challenge_method: 'S256',
-    code_challenge:        challenge,
-    state,
-    scope:                 SCOPES,
+    client_id: SPOTIFY_CLIENT_ID, response_type: 'code',
+    redirect_uri: REDIRECT_URI, code_challenge_method: 'S256',
+    code_challenge: challenge, state, scope: SCOPES,
   });
-
   window.location.href = `https://accounts.spotify.com/authorize?${params}`;
 }
 
-async function exchangeCode(code) {
+async function _exchangeCode(code) {
   const verifier = sessionStorage.getItem('pkce_verifier');
-  if (!verifier) throw new Error('No PKCE verifier found. Please try logging in again.');
-
+  if (!verifier) throw new Error('No PKCE verifier. Please try again.');
   const resp = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
-      grant_type:    'authorization_code',
-      code,
-      redirect_uri:  REDIRECT_URI,
-      client_id:     SPOTIFY_CLIENT_ID,
+      grant_type: 'authorization_code', code,
+      redirect_uri: REDIRECT_URI, client_id: SPOTIFY_CLIENT_ID,
       code_verifier: verifier,
     }),
   });
-
   if (!resp.ok) {
     const err = await resp.json().catch(() => ({}));
     throw new Error(err.error_description || `Token exchange failed (${resp.status})`);
   }
-
   const data = await resp.json();
   sessionStorage.setItem('spotify_token', data.access_token);
   sessionStorage.setItem('spotify_token_expiry', Date.now() + data.expires_in * 1000);
@@ -1114,52 +960,27 @@ async function exchangeCode(code) {
   return data.access_token;
 }
 
-function getToken() {
+function _getToken() {
   const token  = sessionStorage.getItem('spotify_token');
   const expiry = sessionStorage.getItem('spotify_token_expiry');
   if (!token || !expiry) return null;
-  if (Date.now() > Number(expiry) - 30_000) return null; // 30-second buffer
-  return token;
+  return Date.now() > Number(expiry) - 30_000 ? null : token;
 }
 
-function logout() {
-  sessionStorage.removeItem('spotify_token');
-  sessionStorage.removeItem('spotify_token_expiry');
-  // Stop all background intervals
-  if (lkInterval)         { clearInterval(lkInterval);     lkInterval = null; }
-  if (npPollInterval)     { clearInterval(npPollInterval); npPollInterval = null; }
-  // Reset counters for next session
-  lkTracksSent = 0;
-  lkUptimeSeconds = 0;
-  showState('landing');
-  document.getElementById('spotify-badge').style.display = 'none';
-}
-
-// ═══════════════════════════════════════════════════════
-//  Spotify API helpers
-// ═══════════════════════════════════════════════════════
-
-async function spotifyGet(path, token) {
+async function _spotifyGet(path, token) {
   const resp = await fetch(`https://api.spotify.com/v1${path}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!resp.ok) {
     const err = await resp.json().catch(() => ({}));
-    throw new Error(err.error?.message || `Spotify API error ${resp.status}`);
+    throw new Error(err.error?.message || `Spotify API ${resp.status}`);
   }
   return resp.json();
 }
 
-function msToMin(ms) {
-  const total = Math.round(ms / 1000);
-  const m = Math.floor(total / 60);
-  const s = total % 60;
-  return `${m}:${s.toString().padStart(2, '0')}`;
-}
-
-// ═══════════════════════════════════════════════════════
-//  State management
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
+//  UI helpers
+// ═══════════════════════════════════════════════════════════════════════════
 
 function showState(name) {
   document.querySelectorAll('.state').forEach(el => el.classList.remove('active'));
@@ -1167,303 +988,420 @@ function showState(name) {
   if (el) el.classList.add('active');
 }
 
-// ═══════════════════════════════════════════════════════
-//  Render helpers
-// ═══════════════════════════════════════════════════════
-
-function renderJasonGenres(containerIds) {
-  containerIds.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.innerHTML = JASON_PROFILE.genres
-      .map(g => `<span class="pill">${g}</span>`)
-      .join('');
-  });
+function _esc(s) {
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-function renderJasonTracks(containerIds) {
-  containerIds.forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.innerHTML = JASON_PROFILE.topTracks.map((t, i) => `
-      <li class="track-item">
-        <span class="track-num">${i + 1}</span>
-        <div class="track-art">${t.emoji}</div>
-        <div class="track-info">
-          <div class="track-name">${esc(t.name)}</div>
-          <div class="track-artist">${esc(t.artist)}</div>
-        </div>
-        <span class="track-duration">${t.duration}</span>
-      </li>
-    `).join('');
-  });
-}
-
-function renderGuestTracks(tracks) {
-  const el = document.getElementById('guest-tracks');
-  const loading = document.getElementById('guest-tracks-loading');
+function syslog(msg) {
+  const el = document.getElementById('sys-log');
   if (!el) return;
-  loading.style.display = 'none';
-  el.style.display = 'flex';
-  el.innerHTML = tracks.slice(0, 7).map((t, i) => {
-    const imgUrl = t.album?.images?.[2]?.url || t.album?.images?.[0]?.url || '';
-    const artEl = imgUrl
-      ? `<div class="track-art"><img src="${esc(imgUrl)}" alt="" loading="lazy"></div>`
-      : `<div class="track-art">🎵</div>`;
-    return `
-      <li class="track-item">
-        <span class="track-num">${i + 1}</span>
-        ${artEl}
-        <div class="track-info">
-          <div class="track-name">${esc(t.name)}</div>
-          <div class="track-artist">${esc(t.artists?.map(a => a.name).join(', ') || '—')}</div>
-        </div>
-        <span class="track-duration">${msToMin(t.duration_ms)}</span>
-      </li>
-    `;
-  }).join('');
+  el.textContent += `[${new Date().toISOString()}] ${msg}\n`;
+  el.scrollTop = el.scrollHeight;
 }
 
-function renderLKParticipants(containerId, guestName) {
+function _renderMarkdown(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/`(.+?)`/g,       '<code>$1</code>');
+}
+
+function appendChatMsg({ sender, content, isSystem = false }) {
+  const list = document.getElementById('chat-list');
+  if (!list) return;
+  const li = document.createElement('li');
+  li.className = `chat-msg ${isSystem ? 'system-msg' : 'user-msg'}`;
+  li.innerHTML = `
+    <span class="msg-sender">${_esc(sender)}</span>
+    <span class="msg-content">${_renderMarkdown(_esc(content))}</span>`;
+  list.appendChild(li);
+  list.scrollTop = list.scrollHeight;
+}
+
+function renderJasonGenres(containerId) {
+  const el = document.getElementById(containerId);
+  if (el) el.innerHTML = JASON.genres.map(g => `<span class="pill">${_esc(g)}</span>`).join('');
+}
+
+function renderJasonTracks(containerId) {
   const el = document.getElementById(containerId);
   if (!el) return;
-  el.innerHTML = `
-    <div class="lk-participant">
-      <div class="lk-participant__avatar">🥁</div>
-      <span class="lk-participant__name">Jason Evans</span>
-      <span class="lk-participant__role">Host</span>
-    </div>
-    <div class="lk-participant">
-      <div class="lk-participant__avatar">🎧</div>
-      <span class="lk-participant__name">${esc(guestName || 'Guest')}</span>
-      <span class="lk-participant__role">Guest</span>
-    </div>
-  `;
+  el.innerHTML = JASON.topTracks.map((t, i) => `
+    <li class="track-item">
+      <span class="track-num">${i + 1}</span>
+      <div class="track-art">${t.emoji}</div>
+      <div class="track-info">
+        <div class="track-name-li">${_esc(t.name)}</div>
+        <div class="track-artist-li">${_esc(t.artist)}</div>
+      </div>
+      <span class="track-duration">${t.duration}</span>
+    </li>`).join('');
 }
 
 function renderNowPlaying(item) {
   const section = document.getElementById('now-playing-section');
   if (!item || !item.item) { section.style.display = 'none'; return; }
   section.style.display = 'block';
-  const track = item.item;
+  const track  = item.item;
   const imgUrl = track.album?.images?.[1]?.url || '';
-  document.getElementById('np-art').innerHTML = imgUrl
-    ? `<img src="${esc(imgUrl)}" alt="" loading="lazy">`
-    : '🎵';
-  document.getElementById('np-track').textContent   = track.name || '—';
-  document.getElementById('np-artist').textContent  =
-    track.artists?.map(a => a.name).join(', ') || '—';
+  document.getElementById('np-art').innerHTML    = imgUrl ? `<img src="${_esc(imgUrl)}" alt="" loading="lazy">` : '🎵';
+  document.getElementById('np-track').textContent  = track.name || '—';
+  document.getElementById('np-artist').textContent = track.artists?.map(a => a.name).join(', ') || '—';
 }
 
-function esc(str) {
-  return String(str)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+// ═══════════════════════════════════════════════════════════════════════════
+//  Recommendation rendering
+// ═══════════════════════════════════════════════════════════════════════════
+
+function renderRecommendation(result, commentary) {
+  if (!result) return;
+
+  document.getElementById('bridge-track-name').textContent   = result.track_name;
+  document.getElementById('bridge-track-artist').textContent = result.artist;
+  document.getElementById('bridge-track-album').textContent  = result.album || '';
+
+  const artEl = document.getElementById('bridge-art');
+  artEl.innerHTML = result.album_art
+    ? `<img src="${_esc(result.album_art)}" alt="" loading="lazy">` : '🎵';
+
+  if (commentary) {
+    document.getElementById('shared-vibe').textContent      = commentary.shared_vibe;
+    document.getElementById('biggest-contrast').textContent = commentary.biggest_contrast;
+    document.getElementById('bridge-reason').textContent    = commentary.bridge_reason;
+    const pct = Math.round(commentary.confidence * 100);
+    document.getElementById('confidence-bar').style.width   = `${pct}%`;
+    document.getElementById('confidence-text').textContent  = `${commentary.confidence_label} (${pct}%)`;
+  }
+
+  // Per-dimension score mini-grid
+  const grid   = document.getElementById('score-grid');
+  const scores = result.scores || {};
+  const labels = {
+    sim_a:'Fits host', sim_b:'Fits you', bridge_quality:'Bridge',
+    fairness:'Fairness', novelty:'Novelty',
+  };
+  grid.innerHTML = Object.entries(labels).map(([k, label]) => {
+    const v = scores[k] != null ? Math.round(scores[k] * 100) : 0;
+    return `<div class="score-cell">
+      <span class="score-cell-label">${label}</span>
+      <div class="score-bar-track"><div class="score-bar-fill" style="width:${v}%"></div></div>
+      <span class="score-cell-val">${v}%</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('reco-loading').classList.add('hidden');
+  document.getElementById('reco-card').classList.remove('hidden');
+  document.getElementById('action-bar').classList.remove('hidden');
+
+  S.prevTrackId = result.track_id;
+  S.bridgeReady = true;
+  syslog(`Bridge: "${result.track_name}" by ${result.artist} | score=${result.scores.total?.toFixed(3)} knobs=${JSON.stringify(S.knobs)}`);
 }
 
-// ═══════════════════════════════════════════════════════
-//  Wave visualizer (animated bars)
-// ═══════════════════════════════════════════════════════
+function updateCompatibility(pA, pB) {
+  const pct = Math.round(computeCompatibility(pA, pB) * 100);
+  document.getElementById('compat-bar').style.width = `${pct}%`;
+  document.getElementById('compat-pct').textContent = `${pct}%`;
+}
 
-(function initWaveVis() {
-  const container = document.getElementById('wave-vis');
-  if (!container) return;
-  const BAR_COUNT = 32;
-  for (let i = 0; i < BAR_COUNT; i++) {
-    const span = document.createElement('span');
-    span.style.height = `${Math.random() * 80 + 8}%`;
-    container.appendChild(span);
-  }
-  setInterval(() => {
-    container.querySelectorAll('span').forEach(s => {
-      s.style.height = `${Math.random() * 80 + 8}%`;
-    });
-  }, 350);
-})();
+// ═══════════════════════════════════════════════════════════════════════════
+//  Recompute bridge recommendation
+// ═══════════════════════════════════════════════════════════════════════════
 
-// ═══════════════════════════════════════════════════════
-//  LiveKit data-channel simulation
-// ═══════════════════════════════════════════════════════
+function recompute({ emitChat = true } = {}) {
+  if (!S.guest) return;
+  const pA = JASON.tasteProfile;
+  const pB = S.guest.tasteProfile;
 
-let lkTracksSent = 0;
-let lkUptimeSeconds = 0;
-let lkInterval = null;
-let npPollInterval = null;
+  document.getElementById('reco-loading').classList.remove('hidden');
+  document.getElementById('reco-card').classList.add('hidden');
 
-function startLKSimulation(guestName) {
-  const channel = document.getElementById('lk-channel-post');
-  if (!channel) return;
-
-  const messages = [
-    () => `→ [SYS]  Room "wave-defect-lab" joined by ${guestName}`,
-    () => `→ [SYS]  Data channel established`,
-    () => `→ [DATA] Broadcasting Jason's top track: "${JASON_PROFILE.topTracks[0].name}"`,
-    () => `→ [DATA] Broadcasting Jason's top track: "${JASON_PROFILE.topTracks[1].name}"`,
-    () => `→ [DATA] Receiving guest's profile data…`,
-    () => `→ [DATA] Publishing similarity score for genre overlap`,
-    () => `→ [SYS]  Heartbeat OK — 2 participants`,
-    () => `→ [DATA] Streaming: "${JASON_PROFILE.topTracks[Math.floor(Math.random()*JASON_PROFILE.topTracks.length)].name}"`,
-  ];
-
-  let idx = 0;
-  function appendMsg(text, cls) {
-    const div = document.createElement('div');
-    div.className = `lk-channel-msg${cls ? ` ${cls}` : ''}`;
-    div.textContent = text;
-    channel.appendChild(div);
-    channel.scrollTop = channel.scrollHeight;
-  }
-
-  // Seed with first few messages quickly
-  appendMsg(messages[0](), 'lk-channel-msg--sys');
-  setTimeout(() => appendMsg(messages[1](), 'lk-channel-msg--sys'), 600);
-  setTimeout(() => appendMsg(messages[2](), 'lk-channel-msg--data'), 1200);
-  idx = 3;
-
-  lkInterval = setInterval(() => {
-    lkUptimeSeconds++;
-    document.getElementById('lk-uptime').textContent =
-      lkUptimeSeconds < 60 ? `${lkUptimeSeconds}s`
-      : `${Math.floor(lkUptimeSeconds/60)}m${lkUptimeSeconds%60}s`;
-
-    // Simulate latency jitter (8–28 ms)
-    const lat = Math.floor(Math.random() * 20 + 8);
-    document.getElementById('lk-latency').textContent = `${lat} ms`;
-    document.getElementById('lk-latency-val').textContent = `${lat}ms`;
-
-    // Send a data channel message every ~3 s
-    if (lkUptimeSeconds % 3 === 0) {
-      const msg = messages[idx % messages.length]();
-      const cls = msg.includes('[SYS]') ? 'lk-channel-msg--sys'
-                : msg.includes('[DATA]') ? 'lk-channel-msg--data' : '';
-      appendMsg(msg, cls);
-      idx++;
-      lkTracksSent++;
-      document.getElementById('lk-tracks-sent').textContent = lkTracksSent;
+  setTimeout(() => {
+    const result = recommendBridge(pA, pB, S.candidates, S.knobs, S.prevTrackId);
+    if (!result) { syslog('No candidates available.'); return; }
+    const commentary = generateCommentary(pA, pB, JASON.name, S.guest.name, result);
+    renderRecommendation(result, commentary);
+    updateCompatibility(pA, pB);
+    if (emitChat) {
+      appendChatMsg({
+        sender: 'System',
+        content: `**${result.track_name}** by ${result.artist} — ${commentary.bridge_reason}`,
+        isSystem: true,
+      });
     }
-  }, 1000);
+  }, 60);
 }
 
-// ═══════════════════════════════════════════════════════
-//  Main: load connected view
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
+//  Chat handling
+// ═══════════════════════════════════════════════════════════════════════════
 
-async function loadConnectedView(token) {
+function handleUserMessage(text) {
+  text = text.trim();
+  if (!text) return;
+
+  const guestName = S.guest?.name || 'You';
+  appendChatMsg({ sender: guestName, content: text });
+  syslog(`Chat: ${guestName}: ${text}`);
+
+  if (!S.guest) {
+    appendChatMsg({ sender: 'System', content: 'Please join the room first.', isSystem: true });
+    return;
+  }
+
+  const cmd = SLASH_COMMANDS.find(c => text.toLowerCase().startsWith(c));
+  if (cmd) {
+    if (cmd === '/why') {
+      const trackName = document.getElementById('bridge-track-name')?.textContent || '—';
+      const reason    = document.getElementById('bridge-reason')?.textContent     || '';
+      const confText  = document.getElementById('confidence-text')?.textContent   || '';
+      const reply = S.bridgeReady
+        ? `**Why "${trackName}"?** ${reason} (${confText})`
+        : 'No recommendation yet — computing now…';
+      appendChatMsg({ sender: 'System', content: reply, isSystem: true });
+      if (!S.bridgeReady) recompute({ emitChat: false });
+      return;
+    }
+    S.knobs = applySlashCommand(S.knobs, cmd);
+    const respFn = CMD_RESPONSES[cmd];
+    appendChatMsg({ sender: 'System', content: respFn ? respFn(guestName) : `Applied ${cmd}.`, isSystem: true });
+    syslog(`Slash: ${cmd} → knobs=${JSON.stringify(S.knobs)}`);
+    recompute({ emitChat: false });
+  } else {
+    const adj = parseNudge(text);
+    if (Object.keys(adj).length > 0) {
+      S.knobs = { ...S.knobs, ...adj };
+      const parts = Object.entries(adj).map(([k, v]) => `${k}→${v.toFixed(2)}`).join(', ');
+      appendChatMsg({
+        sender: 'System',
+        content: `Got it — tuning the recommendation (${parts}). Finding your bridge…`,
+        isSystem: true,
+      });
+      syslog(`NLP nudge: ${parts}`);
+      recompute({ emitChat: false });
+    } else {
+      appendChatMsg({
+        sender: 'System',
+        content: `Heard you! Try a command like \`/weirder\`, \`/moodier\`, \`/next\` — or describe what you're after, e.g. "something darker" or "more energy".`,
+        isSystem: true,
+      });
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Enter room
+// ═══════════════════════════════════════════════════════════════════════════
+
+function enterRoom({ name, tasteProfile, mode = 'demo', welcomeMsg = null }) {
+  S.guest       = { name, tasteProfile };
+  S.prevTrackId = null;
+  S.bridgeReady = false;
+
+  document.getElementById('guest-chip').textContent = `\uD83C\uDFA7 ${name}`;
+  syslog(`Room joined: guest="${name}" mode=${mode}`);
+  syslog(`Guest profile: ${JSON.stringify(tasteProfile)}`);
+
+  if (welcomeMsg) {
+    const wb = document.getElementById('welcome-banner');
+    wb.style.display = 'block';
+    document.getElementById('welcome-heading').textContent = welcomeMsg.heading;
+    document.getElementById('welcome-text').textContent    = welcomeMsg.body;
+  }
+
+  showState('room');
+  document.getElementById('reco-card').classList.add('hidden');
+  document.getElementById('action-bar').classList.add('hidden');
+  document.getElementById('reco-loading').classList.remove('hidden');
+
+  appendChatMsg({
+    sender: 'System',
+    content: `**${name}** joined the room. ${mode === 'spotify'
+      ? 'Real Spotify taste profile loaded — computing your bridge recommendation\u2026'
+      : 'Demo profile generated — computing your bridge recommendation\u2026'}`,
+    isSystem: true,
+  });
+  recompute({ emitChat: true });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Demo mode join
+// ═══════════════════════════════════════════════════════════════════════════
+
+function joinDemoMode() {
+  const input = document.getElementById('demo-name');
+  const name  = (input?.value || '').trim() || 'Guest';
+  enterRoom({ name, tasteProfile: demoProfileFromName(name), mode: 'demo' });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Spotify connected flow
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function loadSpotifyUser(token) {
   showState('loading');
-
   try {
-    const [me, topTracks, nowPlaying] = await Promise.all([
-      spotifyGet('/me', token),
-      spotifyGet('/me/top/tracks?limit=7&time_range=medium_term', token),
-      spotifyGet('/me/player/currently-playing', token).catch(() => null),
+    const [me, topTracksResp, nowPlaying] = await Promise.all([
+      _spotifyGet('/me', token),
+      _spotifyGet('/me/top/tracks?limit=20&time_range=medium_term', token),
+      _spotifyGet('/me/player/currently-playing', token).catch(() => null),
     ]);
 
-    showState('connected');
     document.getElementById('spotify-badge').style.display = 'inline-flex';
+    const topTracks = topTracksResp.items || [];
+    const ids = topTracks.map(t => t.id).filter(Boolean);
+    syslog(`Loaded ${topTracks.length} top tracks from Spotify.`);
 
-    // Welcome message
-    const firstName = (me.display_name || 'there').split(' ')[0];
-    document.getElementById('welcome-heading').textContent =
-      `Hey ${firstName}! 👋 Thanks for connecting your Spotify.`;
-    document.getElementById('welcome-text').textContent =
-      `Here's Jason's listening profile alongside yours — delivered live over a LiveKit data channel. ` +
-      `You've got ${me.followers?.total?.toLocaleString() ?? 0} followers and ${
-        topTracks.items?.length ?? 0} top tracks loaded.`;
+    let tasteProfile = null;
+    if (ids.length) {
+      const featResp = await fetch(
+        `https://api.spotify.com/v1/audio-features?ids=${ids.join(',')}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (featResp.ok) {
+        const { audio_features } = await featResp.json();
+        const features = (audio_features || []).filter(Boolean);
+        syslog(`Audio features: ${features.length} tracks.`);
 
-    // Guest profile
-    document.getElementById('guest-name').textContent =
-      me.display_name || me.id || 'Spotify User';
-    document.getElementById('guest-sub').textContent =
-      `${me.product === 'premium' ? 'Spotify Premium' : 'Spotify Free'} · ${
-        me.country || ''} · ${(me.followers?.total ?? 0).toLocaleString()} followers`;
+        if (features.length) {
+          tasteProfile = {};
+          const keys = ['energy','valence','danceability','acousticness','instrumentalness','speechiness'];
+          keys.forEach(k => {
+            const vals = features.map(f => f[k]).filter(v => v != null);
+            tasteProfile[k] = vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : 0.5;
+          });
+          const tempos = features.map(f => f.tempo).filter(Boolean);
+          tasteProfile.tempo_norm = _normTempo(
+            tempos.length ? tempos.reduce((s, v) => s + v, 0) / tempos.length : 120
+          );
 
-    // Guest avatar
-    const avatarEl = document.getElementById('guest-avatar');
-    const imgUrl   = me.images?.[0]?.url || me.images?.[1]?.url || '';
-    if (imgUrl) {
-      avatarEl.innerHTML = `<img src="${esc(imgUrl)}" alt="Your Spotify profile photo" loading="lazy">`;
+          // Enrich candidate pool with user's real tracks
+          const featureMap = Object.fromEntries(features.map(f => [f.id, f]));
+          const realCandidates = topTracks
+            .filter(t => featureMap[t.id])
+            .map(t => {
+              const f = featureMap[t.id];
+              return {
+                track_id: t.id, track_name: t.name,
+                artist: t.artists?.map(a => a.name).join(', ') || '',
+                album: t.album?.name || '',
+                album_art: t.album?.images?.[1]?.url || null,
+                energy: f.energy, valence: f.valence, danceability: f.danceability,
+                acousticness: f.acousticness, instrumentalness: f.instrumentalness,
+                speechiness: f.speechiness, tempo_norm: _normTempo(f.tempo || 120),
+              };
+            });
+          const existing = new Set(realCandidates.map(t => t.track_id));
+          S.candidates = [...realCandidates, ...MOCK_CANDIDATES.filter(c => !existing.has(c.track_id))];
+          syslog(`Candidate pool: ${S.candidates.length} tracks (${realCandidates.length} real, ${S.candidates.length - realCandidates.length} mock).`);
+        }
+      }
     }
 
-    // Jason's data
-    renderJasonGenres(['jason-genres-2']);
-    renderJasonTracks(['jason-tracks-post']);
+    if (!tasteProfile) {
+      syslog('Audio features unavailable — falling back to deterministic demo profile.');
+      tasteProfile = demoProfileFromName(me.display_name || me.id || 'Spotify User');
+    }
 
-    // Guest top tracks
-    renderGuestTracks(topTracks.items || []);
-
-    // Now playing
     renderNowPlaying(nowPlaying);
 
-    // LiveKit room
-    renderLKParticipants('lk-participants-post', me.display_name || 'Guest');
-    startLKSimulation(firstName);
+    const firstName = (me.display_name || 'there').split(' ')[0];
+    enterRoom({
+      name: me.display_name || me.id || 'Spotify User',
+      tasteProfile,
+      mode: 'spotify',
+      welcomeMsg: {
+        heading: `Hey ${firstName}! \uD83D\uDC4B Taste Bridge is live.`,
+        body: `${topTracks.length} top tracks loaded from Spotify — your real taste profile is powering the bridge recommendation.`,
+      },
+    });
 
-    // Poll currently-playing every 30 s and store interval for cleanup
-    npPollInterval = setInterval(async () => {
-      const t = getToken();
+    setInterval(async () => {
+      const t = _getToken();
       if (!t) return;
-      const np = await spotifyGet('/me/player/currently-playing', t).catch(() => null);
+      const np = await _spotifyGet('/me/player/currently-playing', t).catch(() => null);
       renderNowPlaying(np);
     }, 30_000);
 
   } catch (err) {
-    console.error('Spotify load error:', err);
+    console.error('Spotify error:', err);
+    syslog(`Spotify error: ${err.message}`);
     showState('landing');
-    document.getElementById('error-auth').style.display = 'block';
-    document.getElementById('error-auth').textContent   = `⚠ ${err.message}`;
+    const errEl = document.getElementById('error-auth');
+    errEl.style.display = 'block';
+    errEl.textContent   = `\u26A0 ${err.message}`;
   }
 }
 
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
+//  Event listeners
+// ═══════════════════════════════════════════════════════════════════════════
+
+document.getElementById('chat-send-btn').addEventListener('click', () => {
+  const input = document.getElementById('chat-input');
+  handleUserMessage(input.value);
+  input.value = '';
+});
+
+document.getElementById('chat-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const input = document.getElementById('chat-input');
+    handleUserMessage(input.value);
+    input.value = '';
+  }
+});
+
+document.getElementById('demo-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter') joinDemoMode();
+});
+
+document.querySelectorAll('.action-btn').forEach(btn => {
+  btn.addEventListener('click', () => handleUserMessage(btn.dataset.cmd));
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
 //  Initialisation
-// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════════════
 
 (async function init() {
-  // Render Jason's static data on the landing page
-  renderJasonGenres(['jason-genres']);
-  renderJasonTracks(['jason-tracks-pre']);
-  renderLKParticipants('lk-participants-pre', null);
+  renderJasonGenres('jason-genres');
+  renderJasonTracks('jason-tracks-pre');
 
-  // Check for OAuth callback
-  const params  = new URLSearchParams(window.location.search);
-  const code    = params.get('code');
-  const error   = params.get('error');
-  const state   = params.get('state');
+  const params = new URLSearchParams(window.location.search);
+  const code   = params.get('code');
+  const error  = params.get('error');
+  const state  = params.get('state');
+  const errEl  = document.getElementById('error-auth');
 
   if (error) {
-    document.getElementById('error-auth').style.display = 'block';
-    document.getElementById('error-auth').textContent   = `Spotify auth error: ${error}`;
-    // Clean URL
+    errEl.style.display = 'block';
+    errEl.textContent   = `Spotify auth error: ${error}`;
     history.replaceState(null, '', window.location.pathname);
     return;
   }
 
   if (code) {
-    // Validate state
     const savedState = sessionStorage.getItem('pkce_state');
     if (savedState && state !== savedState) {
-      document.getElementById('error-auth').style.display = 'block';
-      document.getElementById('error-auth').textContent   = '⚠ State mismatch — possible CSRF. Please try again.';
+      errEl.style.display = 'block';
+      errEl.textContent   = '\u26A0 State mismatch — possible CSRF. Please try again.';
       history.replaceState(null, '', window.location.pathname);
       return;
     }
-    // Clean URL before async work
     history.replaceState(null, '', window.location.pathname);
     try {
-      const token = await exchangeCode(code);
-      await loadConnectedView(token);
+      const token = await _exchangeCode(code);
+      await loadSpotifyUser(token);
     } catch (err) {
-      document.getElementById('error-auth').style.display = 'block';
-      document.getElementById('error-auth').textContent   = `⚠ ${err.message}`;
+      errEl.style.display = 'block';
+      errEl.textContent   = `\u26A0 ${err.message}`;
     }
     return;
   }
 
-  // Already authenticated (e.g. page reload within token lifetime)
-  const token = getToken();
-  if (token) {
-    await loadConnectedView(token);
-  }
+  const token = _getToken();
+  if (token) await loadSpotifyUser(token);
 })();
 </script>
 </body>
