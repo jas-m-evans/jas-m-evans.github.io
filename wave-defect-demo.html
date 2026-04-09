@@ -599,6 +599,8 @@ const SCOPES = [
   'user-top-read', 'user-read-recently-played',
   'user-read-currently-playing', 'user-read-playback-state', 'user-read-private',
 ].join(' ');
+// Set to your deployed wave2vector backend URL to enable real LiveKit rooms.
+const BACKEND_URL = null;
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  Jason's pre-loaded profile
@@ -629,7 +631,10 @@ const JASON = {
 //  Curated mock candidate pool (mirrors app/spotify.py MOCK_CANDIDATES)
 // ═══════════════════════════════════════════════════════════════════════════
 
-function _normTempo(bpm) { return Math.max(0, Math.min(1, (bpm - 40) / 180)); }
+// Spotify tempo range for normalization (BPM → 0–1)
+const TEMPO_MIN = 40;
+const TEMPO_MAX = 220;
+function _normTempo(bpm) { return Math.max(0, Math.min(1, (bpm - TEMPO_MIN) / (TEMPO_MAX - TEMPO_MIN))); }
 
 const MOCK_CANDIDATES = [
   { track_id:'mock_midnight_city',   track_name:'Midnight City',               artist:'M83',             album:"Hurry Up, We're Dreaming", energy:0.821, valence:0.543, danceability:0.578, acousticness:0.003, instrumentalness:0.614, speechiness:0.044, tempo_norm:_normTempo(105) },
@@ -722,6 +727,7 @@ function recommendBridge(pA, pB, candidates, knobs, prevId) {
     const adjTotal = scores.total * (c.track_id === prevId ? 0.65 : 1.0);
     return { c, scores, adjTotal };
   });
+  // Tie-break by track_id for deterministic ordering when scores are equal
   scored.sort((a, b) => b.adjTotal - a.adjTotal || a.c.track_id.localeCompare(b.c.track_id));
   const { c, scores } = scored[0];
   return { ...c, scores, target_profile: target };
@@ -846,7 +852,7 @@ function parseNudge(text) {
   const t = text.toLowerCase();
   const adj = {};
   if (/more energy|energetic|upbeat|pumped|intense|bangers/.test(t))      adj.energyBias  = 0.75;
-  else if (/chill|calm|mellow|relax|quiet|laid.back/.test(t))             adj.energyBias  = 0.25;
+  else if (/chill|calm|mellow|relax|quiet|laid[.-]?back/.test(t))             adj.energyBias  = 0.25;
   if (/happier|brighter|feel.good|uplifting|joyful/.test(t))              adj.moodBias    = 0.75;
   else if (/darker|melancholic|sad|moody|emotional|brooding/.test(t))     adj.moodBias    = 0.25;
   if (/weirder|unexpected|left turn|adventurous|eclectic|obscure/.test(t)) adj.noveltyBias = 0.75;
