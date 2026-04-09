@@ -65,9 +65,18 @@ Natural language nudges are also parsed — e.g. *"something darker"*, *"more en
 - **Collapsible System Console** — raw event log moved out of the main UX.
 - **Compatibility strip** — cosine similarity between both taste profiles, shown as a progress bar.
 
+### Two explicit modes
+
+| Mode | How to enter | Taste profile source |
+|---|---|---|
+| **Spotify** (primary) | Click **Connect Spotify** | Real Spotify audio-features API — if this fails, an error is shown and you cannot proceed until resolved |
+| **Demo** (secondary) | Click **Try Demo** and enter a name | Deterministic profile derived from your name (xorshift32) — clearly labelled in the UI |
+
+There is **no silent fallback**: if Spotify is chosen but audio features cannot be fetched, the app shows an error banner with a **Retry** and **Re-authenticate** link instead of quietly generating a demo profile.
+
 ### Demo mode
 
-Anyone can try the experience without connecting Spotify. Entering a name generates a deterministic taste profile from that name string (xorshift32 seeded from the name hash), then runs the full recommender against Jason's real profile.
+Anyone can try the experience without connecting Spotify. Clicking **Try Demo** and entering a name generates a deterministic taste profile from that name string (xorshift32 seeded from the name hash), then runs the full recommender against Jason's real profile. Demo mode is clearly labelled with a **Demo Mode** badge in the top bar and a notice banner in the room — it never shows the Spotify Connected badge.
 
 ### Backend integration
 
