@@ -452,8 +452,8 @@ permalink: /wave-defect-demo/
       <p id="welcome-text"></p>
     </div>
 
-    <div id="demo-notice" style="display:none;background:rgba(251,191,36,0.10);border:1px solid rgba(251,191,36,0.30);border-radius:var(--radius-sm);padding:0.65rem 1rem;margin-bottom:1rem;font-size:0.84rem;color:#fbbf24;font-family:'IBM Plex Mono',monospace">
-      &#127918; <strong>Demo Mode</strong> &mdash; Taste profile is generated from your name, not real Spotify data.
+    <div id="demo-notice" role="status" aria-label="Demo Mode active" style="display:none;background:rgba(251,191,36,0.10);border:1px solid rgba(251,191,36,0.30);border-radius:var(--radius-sm);padding:0.65rem 1rem;margin-bottom:1rem;font-size:0.84rem;color:#fbbf24;font-family:'IBM Plex Mono',monospace">
+      <span aria-hidden="true">&#127918;</span> <strong>Demo Mode</strong> &mdash; Taste profile is generated from your name, not real Spotify data.
       <a href="#" onclick="loginWithSpotify();return false;" style="color:var(--spotify);margin-left:0.5rem;text-decoration:underline">Connect Spotify instead</a>
     </div>
 
@@ -730,12 +730,17 @@ function _scoreCandidate(candidate, pA, pB, target, noveltyBias) {
 function recommendBridge(pA, pB, candidates, knobs, recentIds) {
   if (!candidates.length) return null;
   const target = _computeTargetProfile(pA, pB, knobs);
-  // Graduated diversity penalties: most-recent = 0.55, second = 0.72, third = 0.86
-  const RECENT_PENALTIES = [0.55, 0.72, 0.86];
+  // Graduated diversity penalties (most-recent → least-recent).
+  // Values chosen so that even the top-scoring track is pushed well below
+  // the 2nd-place track after each /next, preventing two-track alternation.
+  const MOST_RECENT_PENALTY  = 0.55;
+  const SECOND_RECENT_PENALTY = 0.72;
+  const THIRD_RECENT_PENALTY  = 0.86;
+  const RECENT_PENALTIES = [MOST_RECENT_PENALTY, SECOND_RECENT_PENALTY, THIRD_RECENT_PENALTY];
   const scored = candidates.map(c => {
     const scores   = _scoreCandidate(c, pA, pB, target, knobs.noveltyBias);
     const ri       = recentIds.indexOf(c.track_id);
-    const penalty  = ri >= 0 ? (RECENT_PENALTIES[ri] ?? 0.86) : 1.0;
+    const penalty  = ri >= 0 ? (RECENT_PENALTIES[ri] ?? THIRD_RECENT_PENALTY) : 1.0;
     const adjTotal = scores.total * penalty;
     return { c, scores, adjTotal };
   });
