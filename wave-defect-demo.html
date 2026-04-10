@@ -705,6 +705,13 @@ const HOROSCOPE_STRONG     = 0.58; // similarity ≥ this → "strong alignment"
 const HOROSCOPE_OVERLAP    = 0.40; // similarity ≥ this → "interesting overlap"
 const SIGNIFICANT_FEAT_DIFF = 0.20; // audio-feature delta considered meaningful
 
+// ─── Derived profile display limits ────────────────────────────────────────────
+const MAX_TOP_GENRES        = 12;  // genres retained in derived profile
+const MAX_FAVORITE_ARTISTS  = 20;  // artists retained in derived profile
+const MAX_BRIDGE_TRACKS     = 5;   // bridge-track recommendations shown
+const MAX_DISPLAY_GENRES    = 4;   // genre pills shown in profile card on landing
+const NOW_PLAYING_POLL_MS   = 30_000; // now-playing polling interval (ms)
+
 // ─── Diagnostics globals ─────────────────────────────────────────────────────
 let _lastSpotifyError = null;        // { endpoint, status, message, category, raw }
 const _syslogLines    = [];          // ring-buffer of recent syslog lines for copy-diagnostics
@@ -1654,7 +1661,7 @@ async function loadSpotifyUser(token) {
       if (!t) return;
       const np = await _spotifyGet('/me/player/currently-playing', t).catch(() => null);
       renderNowPlaying(np);
-    }, 30_000);
+    }, NOW_PLAYING_POLL_MS);
 
   } catch (err) {
     console.error('Spotify error:', err);
@@ -1922,7 +1929,7 @@ function buildDerivedProfile(syncData) {
     const w = Math.max(GENRE_MIN_WEIGHT, 1 - idx * GENRE_RANK_DECAY);
     (a.genres || []).forEach(g => { genreCounts[g] = (genreCounts[g] || 0) + w; });
   });
-  const topGenres = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]).slice(0, 12).map(([g]) => g);
+  const topGenres = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]).slice(0, MAX_TOP_GENRES).map(([g]) => g);
 
   // Audio feature taste profile — averaged across all top tracks, rounded to 3 dp
   const features = (syncData.audio_features || []).filter(Boolean);
@@ -1953,7 +1960,7 @@ function buildDerivedProfile(syncData) {
       artistScores[a.id].score += rw * Math.max(ARTIST_MIN_WEIGHT, 1 - idx * ARTIST_RANK_DECAY);
     });
   });
-  const favoriteArtists = Object.values(artistScores).sort((a, b) => b.score - a.score).slice(0, 20);
+  const favoriteArtists = Object.values(artistScores).sort((a, b) => b.score - a.score).slice(0, MAX_FAVORITE_ARTISTS);
 
   // Decade distribution from unique top tracks
   const decadeCounts = {};
@@ -2153,7 +2160,7 @@ function _findBridgeTracks(profA, profB) {
   if (!candidates.length) return [];
   const scored = candidates.map(c => ({ ...c, score: _weightedSim(c, midpoint) }));
   scored.sort((a, b) => b.score - a.score);
-  return scored.slice(0, 5);
+  return scored.slice(0, MAX_BRIDGE_TRACKS);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -2173,7 +2180,7 @@ function renderSyncedProfiles() {
     const p = loadUserProfile(id);
     if (!p) return '';
     const synced   = p.last_synced_at ? new Date(p.last_synced_at).toLocaleString() : 'unknown';
-    const genres   = (p.derived?.top_genres || []).slice(0, 4)
+    const genres   = (p.derived?.top_genres || []).slice(0, MAX_DISPLAY_GENRES)
       .map(g => `<span class="pill">${_esc(g)}</span>`).join('');
     const nTracks  = (p.top_tracks?.medium_term || []).length;
     const nArtists = (p.top_artists?.medium_term || []).length;
