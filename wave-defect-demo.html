@@ -351,6 +351,33 @@ permalink: /wave-defect-demo/
       .topbar { flex-direction: column; gap: 0.65rem; }
       .topbar__badges { flex-wrap: wrap; justify-content: center; }
     }
+
+    /* ─── Sync progress (loading state) ──────────────── */
+    .sync-progress { padding: 1.5rem 1.4rem; }
+    .sync-header   { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.9rem; color: var(--text); font-size: 0.95rem; }
+    .sync-status   { font-size: 0.88rem; color: var(--teal-light); font-family: "IBM Plex Mono", monospace; margin-bottom: 1rem; min-height: 1.4em; }
+    .sync-steps    { max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.28rem; }
+    .sync-step     { font-size: 0.74rem; font-family: "IBM Plex Mono", monospace; color: var(--muted); padding: 0.22rem 0.55rem; border-left: 2px solid var(--border-mid); }
+    .sync-step--done { color: var(--green); border-left-color: var(--green); }
+
+    /* ─── Synced profiles (landing page) ─────────────── */
+    .synced-profile-card { display: flex; align-items: flex-start; gap: 1rem; padding: 0.9rem 1.1rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 0.55rem; transition: border-color 0.15s ease; }
+    .synced-profile-card:hover { border-color: var(--border-mid); }
+    .synced-profile-body { flex: 1; min-width: 0; }
+    .synced-profile-name { font-weight: 700; color: var(--text-bright); font-size: 0.92rem; margin-bottom: 0.18rem; }
+    .synced-profile-meta { font-size: 0.7rem; font-family: "IBM Plex Mono", monospace; color: var(--muted); margin-bottom: 0.28rem; }
+    .synced-profile-summary { font-size: 0.77rem; color: var(--muted); margin-top: 0.4rem; font-style: italic; line-height: 1.5; }
+
+    /* ─── Comparison section (room) ───────────────────── */
+    .comparison-block  { margin-bottom: 0.85rem; }
+    .comparison-label  { font-size: 0.63rem; font-family: "IBM Plex Mono", monospace; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); margin-bottom: 0.4rem; }
+    .comparison-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.85rem; }
+    @media (max-width: 520px) { .comparison-grid { grid-template-columns: 1fr; } }
+
+    /* ─── Pill colour variants ────────────────────────── */
+    .pill--green { color: var(--green);      border-color: rgba(74,222,128,0.3);  background: rgba(74,222,128,0.08); }
+    .pill--teal  { color: var(--teal-light); border-color: rgba(15,142,147,0.3);  background: rgba(15,142,147,0.08); }
+    .pill--lk    { color: var(--livekit);    border-color: rgba(91,156,246,0.3);  background: rgba(91,156,246,0.08); }
   </style>
 </head>
 <body>
@@ -425,7 +452,7 @@ permalink: /wave-defect-demo/
           Connect Spotify
         </button>
         <p style="font-size:0.72rem;color:var(--muted);margin-top:0.55rem;font-family:'IBM Plex Mono',monospace">
-          Read-only &#183; No data stored &#183; PKCE OAuth
+          Read-only &#183; Profile stored locally in your browser &#183; PKCE OAuth
         </p>
         <p class="join-divider">&#8212;&#8212; or try demo mode &#8212;&#8212;</p>
         <div class="join-row">
@@ -447,13 +474,33 @@ permalink: /wave-defect-demo/
       <ul class="track-list" id="jason-tracks-pre"></ul>
     </div>
 
+    <!-- Synced real-user profiles (populated from localStorage by renderSyncedProfiles()) -->
+    <div id="synced-profiles-section" style="display:none;margin-bottom:1.5rem">
+      <div class="section-head">
+        <span class="card__label-dot" style="background:var(--livekit)"></span>
+        Synced Profiles &mdash; stored locally
+        <button class="btn btn--sm" style="margin-left:auto;color:var(--muted);border:1px solid var(--border);background:transparent;font-size:0.67rem" onclick="clearAllProfiles()">Clear All</button>
+      </div>
+      <div id="synced-profiles-list"></div>
+      <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;font-family:'IBM Plex Mono',monospace">
+        &#128274; Stored in your browser&rsquo;s localStorage &mdash; never sent anywhere &middot;
+        <a href="#" onclick="clearAllProfiles();return false;" style="color:var(--muted)">Reset all</a>
+      </p>
+    </div>
+
   </div><!-- /state-landing -->
 
-  <!-- ═══ STATE: loading ═══ -->
+  <!-- ═══ STATE: loading / syncing ═══ -->
   <div id="state-loading" class="state">
-    <div class="loading-row">
-      <span class="spinner"></span>
-      Authenticating with Spotify and computing your taste profile&#8230;
+    <div class="card" style="max-width:600px;margin:0 auto">
+      <div class="sync-progress">
+        <div class="sync-header">
+          <span class="spinner"></span>
+          <strong>Building your music profile&hellip;</strong>
+        </div>
+        <div class="sync-status" id="sync-status">Connecting to Spotify&hellip;</div>
+        <div class="sync-steps"  id="sync-steps"></div>
+      </div>
     </div>
   </div>
 
@@ -585,6 +632,9 @@ permalink: /wave-defect-demo/
 
     </div><!-- /room-layout -->
 
+    <!-- Two-user comparison section — populated by renderComparison() when two synced profiles exist -->
+    <div id="comparison-section" style="display:none"></div>
+
     <details class="sys-console" id="sys-console">
       <summary>&#9656; System Console <button class="copy-diag-btn" id="copy-diag-btn" role="button" aria-label="Copy diagnostics to clipboard" onclick="event.stopPropagation();_copyDiagnostics()" title="Copy last Spotify error + recent log lines">Copy diagnostics</button></summary>
       <pre id="sys-log" class="sys-log" aria-live="polite"></pre>
@@ -603,7 +653,7 @@ permalink: /wave-defect-demo/
       <a href="/">Jason Evans</a>
     </p>
     <p style="margin-top:0.5rem;font-size:0.72rem">
-      OAuth via Spotify PKCE &#183; Read-only scopes &#183; No data retained
+      OAuth via Spotify PKCE &#183; Read-only scopes &#183; Taste profiles stored locally in your browser only
     </p>
   </footer>
 
@@ -619,9 +669,19 @@ const REDIRECT_URI      = 'https://jas-m-evans.github.io/wave-defect-demo/';
 const SCOPES = [
   'user-top-read', 'user-read-recently-played',
   'user-read-currently-playing', 'user-read-playback-state', 'user-read-private',
+  'user-library-read', 'user-follow-read',
 ].join(' ');
 // Set to your deployed wave2vector backend URL to enable real LiveKit rooms.
 const BACKEND_URL = null;
+
+// ─── Sync caps (one-time initial sync per user) ───────────────────────────────
+const MAX_TOP_ITEMS       = 50;   // tracks / artists per time range
+const MAX_PLAYLISTS       = 20;   // playlists to fetch
+const MAX_PLAYLIST_TRACKS = 100;  // tracks per playlist (first N owned playlists)
+const MAX_SAVED_TRACKS    = 200;  // saved-library tracks (paginated)
+const MAX_RECENTLY_PLAYED = 50;   // recently-played events
+const STORAGE_PREFIX      = 'tb_'; // localStorage key namespace
+const SYNC_TTL_MS         = 60 * 60 * 1000; // re-use cached profile for 1 hour
 
 // ─── Diagnostics globals ─────────────────────────────────────────────────────
 let _lastSpotifyError = null;        // { endpoint, status, message, category, raw }
@@ -1446,97 +1506,96 @@ async function loadSpotifyUser(token) {
   featErrEl.innerHTML = '';
 
   try {
+    syncProgress('Authenticating with Spotify\u2026');
     const [me, nowPlaying] = await Promise.all([
       _spotifyGet('/me', token),
       _spotifyGet('/me/player/currently-playing', token).catch(() => null),
     ]);
 
-    // Try all time ranges until we get tracks
-    const topTracks = await _fetchTopTracksAnyRange(token);
-    const ids = topTracks.map(t => t.id).filter(Boolean);
+    // ── Use cached profile if synced within the last hour ────────────────────
+    const existing     = loadUserProfile(me.id);
+    const cachedRecent = existing?.last_synced_at &&
+      (Date.now() - new Date(existing.last_synced_at).getTime() < SYNC_TTL_MS);
+    let syncData;
 
-    if (!ids.length) {
-      syslog('No top tracks found (all time ranges exhausted).');
-      _showFeatureError('\u26A0 No top tracks found for this account/time range. Your listening history may be too short, or your top tracks are private.');
-      return;
+    if (cachedRecent) {
+      syslog(`Using cached profile for ${me.id} (synced ${existing.last_synced_at})`);
+      syncProgress(`Using cached profile (synced ${new Date(existing.last_synced_at).toLocaleTimeString()})\u2026`);
+      syncProgress('\u2713 Profile loaded from cache!');
+      syncData = existing;
+    } else {
+      // ── Full one-time sync ─────────────────────────────────────────────────
+      syncData = await runInitialSync(token, me);
     }
 
-    let tasteProfile = null;
+    // ── Build taste profile from derived data (with fallback) ────────────────
+    let tasteProfile   = syncData.derived?.taste_profile || null;
     let profileFallback = false;
-    try {
-      const features = await _fetchAudioFeatures(ids, token);
-      syslog(`Audio features: ${features.length} tracks.`);
 
-      if (features.length) {
-        tasteProfile = {};
-        const keys = ['energy','valence','danceability','acousticness','instrumentalness','speechiness'];
-        keys.forEach(k => {
-          const vals = features.map(f => f[k]).filter(v => v != null);
-          tasteProfile[k] = vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : 0.5;
-        });
-        const tempos = features.map(f => f.tempo).filter(Boolean);
-        tasteProfile.tempo_norm = _normTempo(
-          tempos.length ? tempos.reduce((s, v) => s + v, 0) / tempos.length : 120
-        );
-
-        // Enrich candidate pool with user's real tracks
-        const featureMap    = Object.fromEntries(features.map(f => [f.id, f]));
-        const realCandidates = topTracks
-          .filter(t => featureMap[t.id])
-          .map(t => {
-            const f = featureMap[t.id];
-            return {
-              track_id: t.id, track_name: t.name,
-              artist: t.artists?.map(a => a.name).join(', ') || '',
-              album: t.album?.name || '',
-              album_art: t.album?.images?.[1]?.url || null,
-              energy: f.energy, valence: f.valence, danceability: f.danceability,
-              acousticness: f.acousticness, instrumentalness: f.instrumentalness,
-              speechiness: f.speechiness, tempo_norm: _normTempo(f.tempo || 120),
-            };
-          });
-        const existing = new Set(realCandidates.map(t => t.track_id));
-        S.candidates = [...realCandidates, ...MOCK_CANDIDATES.filter(c => !existing.has(c.track_id))];
-        syslog(`Candidate pool: ${S.candidates.length} tracks (${realCandidates.length} real, ${S.candidates.length - realCandidates.length} mock).`);
-      }
-    } catch (featErr) {
-      syslog(`Audio features error: ${featErr.message}`);
-      if (featErr.status === 403) {
-        // Permanent Spotify API restriction — build a fallback profile from track
-        // popularity so the user can still enter the Bridge without re-authenticating.
-        syslog('Audio features 403 (Spotify API restricted) — building fallback profile from track popularity.');
-        tasteProfile = _inferProfileFromTracks(topTracks);
+    // If audio features returned nothing, build a popularity-based fallback profile
+    if (!tasteProfile || !syncData.audio_features?.length) {
+      const allTopTracks = [
+        ...(syncData.top_tracks.medium_term || []),
+        ...(syncData.top_tracks.short_term  || []),
+        ...(syncData.top_tracks.long_term   || []),
+      ];
+      if (!tasteProfile) {
+        tasteProfile   = _inferProfileFromTracks(allTopTracks);
         profileFallback = true;
-        const fallbackCandidates = topTracks.map(t => ({
-          track_id: t.id, track_name: t.name,
-          artist: t.artists?.map(a => a.name).join(', ') || '',
-          album: t.album?.name || '',
-          album_art: t.album?.images?.[1]?.url || null,
-          energy: tasteProfile.energy, valence: tasteProfile.valence,
-          danceability: tasteProfile.danceability, acousticness: tasteProfile.acousticness,
-          instrumentalness: tasteProfile.instrumentalness, speechiness: tasteProfile.speechiness,
-          tempo_norm: tasteProfile.tempo_norm,
-        }));
-        const existing = new Set(fallbackCandidates.map(t => t.track_id));
-        S.candidates = [...fallbackCandidates, ...MOCK_CANDIDATES.filter(c => !existing.has(c.track_id))];
-        syslog(`Candidate pool (fallback): ${S.candidates.length} tracks (${fallbackCandidates.length} real, ${S.candidates.length - fallbackCandidates.length} mock).`);
-        // Show a soft non-blocking notice; do NOT block the user from entering
+      }
+      if (allTopTracks.length && profileFallback) {
+        // Show soft notice; do not block the user
         featErrEl.style.display = 'block';
         featErrEl.innerHTML =
-          '\u26A0 Audio features unavailable (Spotify API restricted this endpoint for this app) \u2014 ' +
-          'your top tracks are loaded with approximate feature values. ' +
-          'The Bridge will still work.';
+          '\u26A0 Audio features unavailable (Spotify API restricted) \u2014 ' +
+          'taste profile approximated from track popularity. The Bridge will still work.';
       }
-      // For non-403 errors, tasteProfile stays null; the blocking error at the
-      // `if (!tasteProfile)` check below will then call _showFeatureError().
     }
 
     if (!tasteProfile) {
-      // Audio features could not be loaded — do NOT silently fall back to demo profile.
-      syslog('Audio features unavailable — Spotify flow blocked. User must retry or re-authenticate.');
-      _showFeatureError(null);
-      return;
+      const allTopTracks = [
+        ...(syncData.top_tracks.medium_term || []),
+        ...(syncData.top_tracks.short_term  || []),
+        ...(syncData.top_tracks.long_term   || []),
+      ];
+      if (!allTopTracks.length) {
+        syslog('No top tracks found — cannot build taste profile.');
+        _showFeatureError('\u26A0 No top tracks found. Your listening history may be too short or private.');
+        return;
+      }
+      tasteProfile    = _inferProfileFromTracks(allTopTracks);
+      profileFallback = true;
     }
+
+    // ── Enrich bridge-recommendation candidate pool with user's real tracks ───
+    const afMap = Object.fromEntries(
+      (syncData.audio_features || []).filter(Boolean).map(f => [f.id, f])
+    );
+    const allTopTracks = [
+      ...(syncData.top_tracks.medium_term || []),
+      ...(syncData.top_tracks.short_term  || []),
+      ...(syncData.top_tracks.long_term   || []),
+    ];
+    const seenCandidateIds = new Set();
+    const realCandidates   = [];
+    allTopTracks.forEach(t => {
+      if (seenCandidateIds.has(t.id)) return;
+      seenCandidateIds.add(t.id);
+      const f = afMap[t.id];
+      if (!f) return;
+      realCandidates.push({
+        track_id: t.id, track_name: t.name,
+        artist:   t.artists?.map(a => a.name).join(', ') || '',
+        album:    t.album?.name || '',
+        album_art: t.album?.images?.[1]?.url || null,
+        energy: f.energy, valence: f.valence, danceability: f.danceability,
+        acousticness: f.acousticness, instrumentalness: f.instrumentalness,
+        speechiness: f.speechiness, tempo_norm: _normTempo(f.tempo || 120),
+      });
+    });
+    const existingIds = new Set(realCandidates.map(c => c.track_id));
+    S.candidates = [...realCandidates, ...MOCK_CANDIDATES.filter(c => !existingIds.has(c.track_id))];
+    syslog(`Candidate pool: ${S.candidates.length} (${realCandidates.length} real, ${S.candidates.length - realCandidates.length} mock)`);
 
     renderNowPlaying(nowPlaying);
 
@@ -1546,13 +1605,28 @@ async function loadSpotifyUser(token) {
       tasteProfile,
       mode: 'spotify',
       welcomeMsg: {
-        heading: `Hey ${firstName}! \uD83D\uDC4B Taste Bridge is live.`,
-        body: profileFallback
-            ? `${topTracks.length} top tracks loaded from Spotify — taste profile approximated from track popularity (audio features unavailable).`
-            : `${topTracks.length} top tracks loaded from Spotify — your real taste profile is powering the bridge recommendation.`,
+        heading: `Hey ${firstName}! \uD83D\uDC4B Profile synced.`,
+        body: syncData.derived?.summary_text ||
+          (profileFallback
+            ? `Top tracks loaded (audio features unavailable \u2014 profile approximated).`
+            : `${allTopTracks.length} top tracks loaded from Spotify.`),
       },
     });
 
+    // ── Show two-user comparison if another profile is already stored ────────
+    const otherIds = getSavedUserIds().filter(id => id !== me.id);
+    if (otherIds.length) {
+      const otherProfile = loadUserProfile(otherIds[otherIds.length - 1]);
+      if (otherProfile?.derived) {
+        syslog(`Rendering comparison with stored profile: ${otherProfile.display_name}`);
+        renderComparison(syncData, otherProfile);
+      }
+    }
+
+    // Update synced-profiles list on landing page so it's fresh when user goes back
+    renderSyncedProfiles();
+
+    // Poll now-playing every 30 s
     setInterval(async () => {
       const t = _getToken();
       if (!t) return;
@@ -1564,10 +1638,7 @@ async function loadSpotifyUser(token) {
     console.error('Spotify error:', err);
     syslog(`Spotify error: ${err.status ? `[${err.status}] ` : ''}${err.message}`);
 
-    // A 403 on a core endpoint (/me, /me/top/tracks) means access is denied at the
-    // app level (e.g. Spotify app still in development mode and this account is not
-    // in the allowlist).  Clear the stored token so the page doesn't loop — every
-    // reload would otherwise re-try the same token and hit 403 again.
+    // 403 on /me or /me/top/* — clear token so we don't loop on every reload
     if (err.status === 403) {
       sessionStorage.removeItem('spotify_token');
       sessionStorage.removeItem('spotify_token_expiry');
@@ -1615,12 +1686,609 @@ document.querySelectorAll('.action-btn').forEach(btn => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
+//  localStorage persistence
+//  Profiles keyed by Spotify user ID; stored in browser localStorage only.
+// ═══════════════════════════════════════════════════════════════════════════
+
+function _profileKey(spotifyId) { return `${STORAGE_PREFIX}profile_${spotifyId}`; }
+function _userListKey()         { return `${STORAGE_PREFIX}user_ids`; }
+
+function saveUserProfile(data) {
+  try {
+    localStorage.setItem(_profileKey(data.spotify_id), JSON.stringify(data));
+    const ids = getSavedUserIds();
+    if (!ids.includes(data.spotify_id)) {
+      localStorage.setItem(_userListKey(), JSON.stringify([...ids, data.spotify_id]));
+    }
+    syslog(`Profile saved: ${data.display_name} (${data.spotify_id})`);
+  } catch (e) {
+    syslog(`Profile save failed (localStorage full?): ${e.message}`);
+  }
+}
+
+function loadUserProfile(spotifyId) {
+  try {
+    const raw = localStorage.getItem(_profileKey(spotifyId));
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function getSavedUserIds() {
+  try {
+    const raw = localStorage.getItem(_userListKey());
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function clearAllProfiles() {
+  getSavedUserIds().forEach(id => localStorage.removeItem(_profileKey(id)));
+  localStorage.removeItem(_userListKey());
+  renderSyncedProfiles();
+  syslog('All profiles cleared.');
+}
+
+function clearProfile(spotifyId) {
+  localStorage.removeItem(_profileKey(spotifyId));
+  localStorage.setItem(_userListKey(), JSON.stringify(getSavedUserIds().filter(id => id !== spotifyId)));
+  renderSyncedProfiles();
+  syslog(`Profile cleared: ${spotifyId}`);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Sync progress UI
+// ═══════════════════════════════════════════════════════════════════════════
+
+function syncProgress(msg) {
+  syslog(msg);
+  const statusEl = document.getElementById('sync-status');
+  if (statusEl) statusEl.textContent = msg;
+  const stepsEl = document.getElementById('sync-steps');
+  if (stepsEl) {
+    const div = document.createElement('div');
+    div.className = 'sync-step' + (msg.startsWith('\u2713') ? ' sync-step--done' : '');
+    div.textContent = msg;
+    stepsEl.appendChild(div);
+    stepsEl.scrollTop = stepsEl.scrollHeight;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Paginated Spotify fetch
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function _spotifyGetPaged(path, token, maxItems = 200) {
+  const items = [];
+  let url = path;
+  while (url && items.length < maxItems) {
+    // Spotify 'next' includes full base URL — strip it before calling _spotifyGet
+    const cleanUrl = url.replace('https://api.spotify.com/v1', '');
+    const data = await _spotifyGet(cleanUrl, token);
+    items.push(...(data.items || []));
+    url = (data.next && items.length < maxItems) ? data.next : null;
+  }
+  return items;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  One-time initial sync pipeline
+//  Fetches as much Spotify data as allowed by current scopes, then persists
+//  a rich taste profile to localStorage keyed by the user's Spotify ID.
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function runInitialSync(token, me) {
+  const syncData = {
+    spotify_id:       me.id,
+    display_name:     me.display_name || me.id,
+    country:          me.country || null,
+    last_synced_at:   new Date().toISOString(),
+    top_tracks:       { short_term: [], medium_term: [], long_term: [] },
+    top_artists:      { short_term: [], medium_term: [], long_term: [] },
+    recently_played:  [],
+    saved_tracks:     [],
+    followed_artists: [],
+    playlists:        [],
+    playlist_tracks:  {},
+    audio_features:   [],
+    derived:          null,
+  };
+
+  // ── Top tracks for all three time ranges ────────────────────────────────
+  for (const range of ['short_term', 'medium_term', 'long_term']) {
+    syncProgress(`Fetching top tracks (${range})\u2026`);
+    try {
+      const data = await _spotifyGet(`/me/top/tracks?limit=${MAX_TOP_ITEMS}&time_range=${range}`, token);
+      syncData.top_tracks[range] = data.items || [];
+      syslog(`  top_tracks/${range}: ${syncData.top_tracks[range].length}`);
+    } catch (e) { syslog(`  top_tracks/${range} skipped: ${e.message}`); }
+  }
+
+  // ── Top artists for all three time ranges ────────────────────────────────
+  for (const range of ['short_term', 'medium_term', 'long_term']) {
+    syncProgress(`Fetching top artists (${range})\u2026`);
+    try {
+      const data = await _spotifyGet(`/me/top/artists?limit=${MAX_TOP_ITEMS}&time_range=${range}`, token);
+      syncData.top_artists[range] = data.items || [];
+      syslog(`  top_artists/${range}: ${syncData.top_artists[range].length}`);
+    } catch (e) { syslog(`  top_artists/${range} skipped: ${e.message}`); }
+  }
+
+  // ── Recently played ──────────────────────────────────────────────────────
+  syncProgress('Fetching recently played\u2026');
+  try {
+    const data = await _spotifyGet(`/me/player/recently-played?limit=${MAX_RECENTLY_PLAYED}`, token);
+    syncData.recently_played = data.items || [];
+    syslog(`  recently_played: ${syncData.recently_played.length}`);
+  } catch (e) { syslog(`  recently_played skipped: ${e.message}`); }
+
+  // ── Saved tracks (paginated up to MAX_SAVED_TRACKS) ─────────────────────
+  syncProgress('Fetching saved tracks\u2026');
+  try {
+    syncData.saved_tracks = await _spotifyGetPaged(`/me/tracks?limit=50`, token, MAX_SAVED_TRACKS);
+    syslog(`  saved_tracks: ${syncData.saved_tracks.length}`);
+  } catch (e) { syslog(`  saved_tracks skipped: ${e.message}`); }
+
+  // ── Followed artists ─────────────────────────────────────────────────────
+  syncProgress('Fetching followed artists\u2026');
+  try {
+    const data = await _spotifyGet('/me/following?type=artist&limit=50', token);
+    syncData.followed_artists = data.artists?.items || [];
+    syslog(`  followed_artists: ${syncData.followed_artists.length}`);
+  } catch (e) { syslog(`  followed_artists skipped: ${e.message}`); }
+
+  // ── Playlists + tracks for user's owned playlists ────────────────────────
+  syncProgress('Fetching playlists\u2026');
+  try {
+    const data = await _spotifyGet(`/me/playlists?limit=${MAX_PLAYLISTS}`, token);
+    syncData.playlists = data.items || [];
+    syslog(`  playlists: ${syncData.playlists.length}`);
+    // Fetch tracks only for playlists the user owns (up to 5)
+    const ownedPlaylists = syncData.playlists.filter(p => p.owner?.id === me.id).slice(0, 5);
+    for (const pl of ownedPlaylists) {
+      syncProgress(`Fetching tracks for \u201c${pl.name.slice(0, 30)}\u201d\u2026`);
+      try {
+        const tracks = await _spotifyGet(`/playlists/${pl.id}/tracks?limit=${MAX_PLAYLIST_TRACKS}`, token);
+        syncData.playlist_tracks[pl.id] = tracks.items || [];
+      } catch (e) { syslog(`  playlist "${pl.name}" tracks skipped: ${e.message}`); }
+    }
+  } catch (e) { syslog(`  playlists skipped: ${e.message}`); }
+
+  // ── Audio features for all unique top tracks ─────────────────────────────
+  syncProgress('Fetching audio features\u2026');
+  const allTopTracks = [
+    ...syncData.top_tracks.short_term,
+    ...syncData.top_tracks.medium_term,
+    ...syncData.top_tracks.long_term,
+  ];
+  const uniqueTrackIds = [...new Set(allTopTracks.map(t => t.id))].filter(Boolean);
+  try {
+    if (uniqueTrackIds.length) {
+      syncData.audio_features = await _fetchAudioFeatures(uniqueTrackIds, token);
+      syslog(`  audio_features: ${syncData.audio_features.length} / ${uniqueTrackIds.length}`);
+    }
+  } catch (e) { syslog(`  audio_features skipped: ${e.message}`); }
+
+  // ── Build derived taste profile ──────────────────────────────────────────
+  syncProgress('Building taste profile\u2026');
+  syncData.derived = buildDerivedProfile(syncData);
+
+  // ── Persist to localStorage ──────────────────────────────────────────────
+  saveUserProfile(syncData);
+  syncProgress('\u2713 Sync complete!');
+  return syncData;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Derived taste profile builder
+//  Aggregates raw sync data into a normalised, comparable profile artifact.
+// ═══════════════════════════════════════════════════════════════════════════
+
+function buildDerivedProfile(syncData) {
+  const allTracks = [
+    ...syncData.top_tracks.short_term,
+    ...syncData.top_tracks.medium_term,
+    ...syncData.top_tracks.long_term,
+  ];
+  const allArtists = [
+    ...syncData.top_artists.short_term,
+    ...syncData.top_artists.medium_term,
+    ...syncData.top_artists.long_term,
+  ];
+
+  // Genre distribution — weighted by artist rank (top-ranked = highest weight)
+  const genreCounts = {};
+  allArtists.forEach((a, idx) => {
+    const w = Math.max(0.05, 1 - idx * 0.015);
+    (a.genres || []).forEach(g => { genreCounts[g] = (genreCounts[g] || 0) + w; });
+  });
+  const topGenres = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]).slice(0, 12).map(([g]) => g);
+
+  // Audio feature taste profile
+  const features = (syncData.audio_features || []).filter(Boolean);
+  const featureKeys = ['energy','valence','danceability','acousticness','instrumentalness','speechiness'];
+  let tasteProfile;
+  if (features.length) {
+    tasteProfile = {};
+    featureKeys.forEach(k => {
+      const vals = features.map(f => f[k]).filter(v => v != null);
+      tasteProfile[k] = vals.length
+        ? Math.round(vals.reduce((s, v) => s + v, 0) / vals.length * 1000) / 1000
+        : 0.5;
+    });
+    const tempos = features.map(f => f.tempo).filter(Boolean);
+    tasteProfile.tempo_norm = _normTempo(
+      tempos.length ? tempos.reduce((s, v) => s + v, 0) / tempos.length : 120
+    );
+  } else {
+    // Fallback: infer profile from track popularity
+    tasteProfile = _inferProfileFromTracks(allTracks);
+  }
+
+  // Favourite artists — scored across time ranges (recent = higher weight)
+  const artistScores = {};
+  const rangeWeights = { short_term: 1.0, medium_term: 0.7, long_term: 0.5 };
+  Object.entries(rangeWeights).forEach(([range, rw]) => {
+    (syncData.top_artists[range] || []).forEach((a, idx) => {
+      if (!artistScores[a.id]) artistScores[a.id] = { name: a.name, genres: a.genres || [], score: 0 };
+      artistScores[a.id].score += rw * Math.max(0.05, 1 - idx * 0.02);
+    });
+  });
+  const favoriteArtists = Object.values(artistScores).sort((a, b) => b.score - a.score).slice(0, 20);
+
+  // Decade distribution from unique top tracks
+  const decadeCounts = {};
+  const seenIds = new Set();
+  allTracks.forEach(t => {
+    if (seenIds.has(t.id)) return;
+    seenIds.add(t.id);
+    const year = t.album?.release_date?.slice(0, 4);
+    if (year) {
+      const decade = `${Math.floor(parseInt(year) / 10) * 10}s`;
+      decadeCounts[decade] = (decadeCounts[decade] || 0) + 1;
+    }
+  });
+
+  // Popularity summary
+  const pops = allTracks.map(t => t.popularity || 0).filter(Boolean);
+  const avgPopularity = pops.length ? Math.round(pops.reduce((s, v) => s + v, 0) / pops.length) : 50;
+
+  // Numeric taste vector for cosine similarity
+  const tasteVector = FEATURE_KEYS.map(k => tasteProfile[k] ?? 0.5);
+
+  // Human-readable summary
+  const summaryText = _buildSummaryText(
+    tasteProfile, topGenres.slice(0, 5), favoriteArtists.slice(0, 3), avgPopularity, decadeCounts
+  );
+
+  return {
+    taste_profile:      tasteProfile,
+    taste_vector:       tasteVector,
+    genre_distribution: genreCounts,
+    top_genres:         topGenres,
+    favorite_artists:   favoriteArtists,
+    popularity_summary: { avg: avgPopularity },
+    decade_distribution: decadeCounts,
+    summary_text:       summaryText,
+  };
+}
+
+function _buildSummaryText(tp, genres, artists, avgPop, decades) {
+  const energyDesc = tp.energy >= 0.65 ? 'high-energy' : tp.energy <= 0.4 ? 'laid-back' : 'moderately energetic';
+  const moodDesc   = tp.valence >= 0.6 ? 'upbeat' : tp.valence <= 0.35 ? 'melancholic' : 'balanced';
+  const topGenre   = genres[0] || 'eclectic sounds';
+  const topArtist  = artists[0]?.name;
+  const popDesc    = avgPop >= 70 ? 'mainstream hits' : avgPop >= 45 ? 'a mix of popular and indie' : 'underground gems';
+  const topDecade  = Object.entries(decades).sort((a, b) => b[1] - a[1])[0]?.[0];
+  const decadeStr  = topDecade ? `, rooted in the ${topDecade}` : '';
+  const artistStr  = topArtist ? `. Top artist: ${topArtist}` : '';
+  return `A ${energyDesc}, ${moodDesc} listener gravitating toward ${topGenre}${decadeStr}, with a taste for ${popDesc}${artistStr}.`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Two-user comparison engine
+// ═══════════════════════════════════════════════════════════════════════════
+
+function compareUserProfiles(profA, profB) {
+  const dA = profA.derived, dB = profB.derived;
+  if (!dA || !dB) return null;
+
+  // Artist overlap — collect names across all time ranges
+  const artistNamesA = new Set([
+    ...(profA.top_artists.short_term  || []),
+    ...(profA.top_artists.medium_term || []),
+    ...(profA.top_artists.long_term   || []),
+  ].map(a => a.name.toLowerCase()));
+  const artistNamesB = new Set([
+    ...(profB.top_artists.short_term  || []),
+    ...(profB.top_artists.medium_term || []),
+    ...(profB.top_artists.long_term   || []),
+  ].map(a => a.name.toLowerCase()));
+  const sharedArtistNames = [...artistNamesA].filter(n => artistNamesB.has(n));
+  const onlyArtistsA      = [...artistNamesA].filter(n => !artistNamesB.has(n));
+  const onlyArtistsB      = [...artistNamesB].filter(n => !artistNamesA.has(n));
+
+  // Track overlap — use "name|||primaryArtist" key to avoid cross-account ID mismatch
+  const trackKeyFn = t => `${t.name}|||${(t.artists?.[0]?.name || '')}`.toLowerCase();
+  const trackKeysA = new Set([
+    ...(profA.top_tracks.short_term  || []),
+    ...(profA.top_tracks.medium_term || []),
+    ...(profA.top_tracks.long_term   || []),
+  ].map(trackKeyFn));
+  const trackKeysB = new Set([
+    ...(profB.top_tracks.short_term  || []),
+    ...(profB.top_tracks.medium_term || []),
+    ...(profB.top_tracks.long_term   || []),
+  ].map(trackKeyFn));
+  const sharedTrackKeys = [...trackKeysA].filter(k => trackKeysB.has(k))
+    .map(k => { const [name, artist] = k.split('|||'); return { name, artist }; });
+
+  // Genre similarity — Jaccard on top genres
+  const genresA = new Set(dA.top_genres || []);
+  const genresB = new Set(dB.top_genres || []);
+  const sharedGenres  = [...genresA].filter(g => genresB.has(g));
+  const genreJaccard  = sharedGenres.length / Math.max(1, genresA.size + genresB.size - sharedGenres.length);
+
+  // Audio feature cosine similarity using normalised taste vectors
+  const vecA = dA.taste_vector || FEATURE_KEYS.map(() => 0.5);
+  const vecB = dB.taste_vector || FEATURE_KEYS.map(() => 0.5);
+  const dot  = vecA.reduce((s, v, i) => s + v * vecB[i], 0);
+  const nA   = Math.sqrt(vecA.reduce((s, v) => s + v * v, 0));
+  const nB   = Math.sqrt(vecB.reduce((s, v) => s + v * v, 0));
+  const featureSim = nA && nB ? _clamp(dot / (nA * nB)) : 0.5;
+
+  // Weighted overall similarity score
+  const artistOverlap = Math.min(1, sharedArtistNames.length / Math.max(1, Math.min(artistNamesA.size, artistNamesB.size)));
+  const trackOverlap  = Math.min(1, sharedTrackKeys.length  / Math.max(1, Math.min(trackKeysA.size,  trackKeysB.size)));
+  const overallSim = _clamp(0.30 * featureSim + 0.25 * genreJaccard + 0.25 * artistOverlap + 0.20 * trackOverlap);
+
+  // Bridge tracks — scored against the midpoint taste profile
+  const bridgeTracks = _findBridgeTracks(profA, profB);
+
+  // Fun "taste horoscope" summary
+  const horoscope = _generateTasteHoroscope(dA, dB, profA.display_name, profB.display_name, overallSim, sharedGenres);
+
+  // Capitalise artist name strings for display
+  const cap = s => s.replace(/\b\w/g, c => c.toUpperCase());
+
+  return {
+    overall_similarity: overallSim,
+    feature_similarity: featureSim,
+    genre_similarity:   genreJaccard,
+    shared_artists:     sharedArtistNames.slice(0, 10).map(cap),
+    only_a_artists:     onlyArtistsA.slice(0, 6).map(cap),
+    only_b_artists:     onlyArtistsB.slice(0, 6).map(cap),
+    shared_tracks:      sharedTrackKeys.slice(0, 5),
+    shared_genres:      sharedGenres.slice(0, 8),
+    bridge_tracks:      bridgeTracks,
+    horoscope,
+  };
+}
+
+function _generateTasteHoroscope(dA, dB, nameA, nameB, sim, sharedGenres) {
+  const simLabel = sim >= 0.72 ? 'music soulmates'
+    : sim >= 0.58 ? 'a strong musical alignment'
+    : sim >= 0.40 ? 'interesting overlapping taste'
+    : 'fascinatingly different taste';
+  const tpA = dA.taste_profile || {};
+  const tpB = dB.taste_profile || {};
+  const energyDiff  = (tpA.energy  || 0.5) - (tpB.energy  || 0.5);
+  const valenceDiff = (tpA.valence || 0.5) - (tpB.valence || 0.5);
+  let text = `${nameA} and ${nameB} share ${simLabel}.`;
+  if (sharedGenres.length) text += ` Common ground: ${sharedGenres.slice(0, 2).join(' and ')}.`;
+  if (Math.abs(energyDiff) > 0.2) {
+    const hi = energyDiff > 0 ? nameA : nameB;
+    const lo = energyDiff > 0 ? nameB : nameA;
+    text += ` ${hi} brings the intensity; ${lo} brings the atmosphere.`;
+  }
+  if (Math.abs(valenceDiff) > 0.2) {
+    const bright = valenceDiff > 0 ? nameA : nameB;
+    const dark   = valenceDiff > 0 ? nameB : nameA;
+    text += ` ${bright} trends brighter; ${dark} goes deeper.`;
+  }
+  return text;
+}
+
+function _findBridgeTracks(profA, profB) {
+  // Midpoint taste profile between both users
+  const tpA = profA.derived?.taste_profile || {};
+  const tpB = profB.derived?.taste_profile || {};
+  const midpoint = {};
+  FEATURE_KEYS.forEach(k => { midpoint[k] = ((tpA[k] || 0.5) + (tpB[k] || 0.5)) / 2; });
+
+  // Build a shared audio-feature map from both users' synced data
+  const afMap = {};
+  (profA.audio_features || []).forEach(f => { if (f) afMap[f.id] = f; });
+  (profB.audio_features || []).forEach(f => { if (f) afMap[f.id] = f; });
+
+  // Candidate tracks come from both users' medium + short term top tracks
+  const allTracks = [
+    ...(profA.top_tracks.medium_term || []),
+    ...(profA.top_tracks.short_term  || []),
+    ...(profB.top_tracks.medium_term || []),
+    ...(profB.top_tracks.short_term  || []),
+  ];
+  const seen = new Set();
+  const candidates = [];
+  allTracks.forEach(t => {
+    if (seen.has(t.id)) return;
+    seen.add(t.id);
+    const f = afMap[t.id];
+    if (!f) return;
+    candidates.push({
+      track_id:  t.id,   track_name: t.name,
+      artist:    t.artists?.map(a => a.name).join(', ') || '',
+      album:     t.album?.name || '',
+      album_art: t.album?.images?.[1]?.url || null,
+      energy: f.energy, valence: f.valence, danceability: f.danceability,
+      acousticness: f.acousticness, instrumentalness: f.instrumentalness,
+      speechiness: f.speechiness,  tempo_norm: _normTempo(f.tempo || 120),
+    });
+  });
+
+  if (!candidates.length) return [];
+  const scored = candidates.map(c => ({ ...c, score: _weightedSim(c, midpoint) }));
+  scored.sort((a, b) => b.score - a.score);
+  return scored.slice(0, 5);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Render synced profiles on landing page
+// ═══════════════════════════════════════════════════════════════════════════
+
+function renderSyncedProfiles() {
+  const section = document.getElementById('synced-profiles-section');
+  const list    = document.getElementById('synced-profiles-list');
+  if (!section || !list) return;
+
+  const ids = getSavedUserIds();
+  if (!ids.length) { section.style.display = 'none'; return; }
+
+  section.style.display = 'block';
+  list.innerHTML = ids.map(id => {
+    const p = loadUserProfile(id);
+    if (!p) return '';
+    const synced   = p.last_synced_at ? new Date(p.last_synced_at).toLocaleString() : 'unknown';
+    const genres   = (p.derived?.top_genres || []).slice(0, 4)
+      .map(g => `<span class="pill">${_esc(g)}</span>`).join('');
+    const nTracks  = (p.top_tracks?.medium_term || []).length;
+    const nArtists = (p.top_artists?.medium_term || []).length;
+    return `
+      <div class="synced-profile-card">
+        <div class="synced-profile-body">
+          <div class="synced-profile-name">&#127911; ${_esc(p.display_name)}</div>
+          <div class="synced-profile-meta">${nTracks} top tracks &middot; ${nArtists} top artists &middot; synced ${_esc(synced)}</div>
+          ${genres ? `<div class="genre-pills" style="margin-top:0.4rem">${genres}</div>` : ''}
+          ${p.derived?.summary_text ? `<div class="synced-profile-summary">${_esc(p.derived.summary_text)}</div>` : ''}
+        </div>
+        <button class="btn btn--sm"
+          style="color:var(--muted);border:1px solid var(--border);background:transparent;flex-shrink:0;align-self:flex-start"
+          onclick="clearProfile('${_esc(id)}')">Remove</button>
+      </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Render two-user comparison in room
+// ═══════════════════════════════════════════════════════════════════════════
+
+function renderComparison(currentProfile, otherProfile) {
+  const section = document.getElementById('comparison-section');
+  if (!section) return;
+
+  const result = compareUserProfiles(currentProfile, otherProfile);
+  if (!result) { section.style.display = 'none'; return; }
+
+  const pct   = Math.round(result.overall_similarity * 100);
+  const nameA = _esc(currentProfile.display_name);
+  const nameB = _esc(otherProfile.display_name);
+
+  let html = `
+    <div class="section-head" style="margin-top:2rem">
+      <span class="card__label-dot" style="background:var(--pink)"></span>
+      Taste Comparison &mdash; ${nameA} vs ${nameB}
+    </div>
+    <div class="card" style="margin-bottom:1.5rem">
+      <div class="compat-strip" style="margin-bottom:1rem;border:none;padding:0.5rem 0;background:transparent">
+        <span class="compat-label">Overall Match</span>
+        <div class="compat-bar-track">
+          <div class="compat-bar-fill" style="width:${pct}%;background:linear-gradient(90deg,var(--pink),var(--livekit))"></div>
+        </div>
+        <span class="compat-pct">${pct}%</span>
+      </div>
+      <p style="font-size:0.88rem;color:var(--muted);font-style:italic;margin-bottom:1.1rem">${_esc(result.horoscope)}</p>`;
+
+  if (result.shared_artists.length) {
+    html += `
+      <div class="comparison-block">
+        <div class="comparison-label">&#129309; You both like</div>
+        <div class="genre-pills">${result.shared_artists.map(n => `<span class="pill pill--green">${_esc(n)}</span>`).join('')}</div>
+      </div>`;
+  }
+
+  if (result.shared_genres.length) {
+    html += `
+      <div class="comparison-block">
+        <div class="comparison-label">&#127925; Shared genres</div>
+        <div class="genre-pills">${result.shared_genres.map(g => `<span class="pill">${_esc(g)}</span>`).join('')}</div>
+      </div>`;
+  }
+
+  if (result.shared_tracks.length) {
+    html += `
+      <div class="comparison-block">
+        <div class="comparison-label">&#9654; Shared top tracks</div>
+        <div class="genre-pills">${result.shared_tracks.map(t => `<span class="pill">${_esc(t.name)}</span>`).join('')}</div>
+      </div>`;
+  }
+
+  if (result.only_a_artists.length || result.only_b_artists.length) {
+    html += `<div class="comparison-grid">`;
+    if (result.only_a_artists.length) {
+      html += `
+        <div class="comparison-block">
+          <div class="comparison-label">Only ${nameA} likes</div>
+          <div class="genre-pills">${result.only_a_artists.map(n => `<span class="pill pill--teal">${_esc(n)}</span>`).join('')}</div>
+        </div>`;
+    }
+    if (result.only_b_artists.length) {
+      html += `
+        <div class="comparison-block">
+          <div class="comparison-label">Only ${nameB} likes</div>
+          <div class="genre-pills">${result.only_b_artists.map(n => `<span class="pill pill--lk">${_esc(n)}</span>`).join('')}</div>
+        </div>`;
+    }
+    html += `</div>`;
+  }
+
+  if (result.bridge_tracks.length) {
+    html += `
+      <div class="comparison-block" style="margin-top:0.75rem">
+        <div class="comparison-label">&#127751; Tracks you&rsquo;d both enjoy</div>
+        <ul class="track-list">
+          ${result.bridge_tracks.map((t, i) => `
+          <li class="track-item">
+            <span class="track-num">${i + 1}</span>
+            <div class="track-art">${t.album_art
+              ? `<img src="${_esc(t.album_art)}" alt="" loading="lazy">`
+              : '&#127925;'}</div>
+            <div class="track-info">
+              <div class="track-name-li">${_esc(t.track_name)}</div>
+              <div class="track-artist-li">${_esc(t.artist)}</div>
+            </div>
+          </li>`).join('')}
+        </ul>
+      </div>`;
+  }
+
+  // Similarity score mini-grid
+  html += `
+      <div style="margin-top:1rem">
+        <div class="score-grid" style="grid-template-columns:repeat(3,1fr)">
+          ${[
+            ['Audio features', Math.round(result.feature_similarity  * 100)],
+            ['Genre overlap',  Math.round(result.genre_similarity    * 100)],
+            ['Overall match',  Math.round(result.overall_similarity  * 100)],
+          ].map(([label, val]) => `
+          <div class="score-cell">
+            <span class="score-cell-label">${label}</span>
+            <div class="score-bar-track"><div class="score-bar-fill" style="width:${val}%"></div></div>
+            <span class="score-cell-val">${val}%</span>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>`; // closes .card
+
+  section.innerHTML = html;
+  section.style.display = 'block';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 //  Initialisation
 // ═══════════════════════════════════════════════════════════════════════════
 
 (async function init() {
   renderJasonGenres('jason-genres');
   renderJasonTracks('jason-tracks-pre');
+  renderSyncedProfiles(); // Populate stored profiles section on landing page
 
   const params = new URLSearchParams(window.location.search);
   const code   = params.get('code');
