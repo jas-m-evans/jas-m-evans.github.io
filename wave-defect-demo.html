@@ -675,13 +675,35 @@ const SCOPES = [
 const BACKEND_URL = null;
 
 // ─── Sync caps (one-time initial sync per user) ───────────────────────────────
-const MAX_TOP_ITEMS       = 50;   // tracks / artists per time range
-const MAX_PLAYLISTS       = 20;   // playlists to fetch
-const MAX_PLAYLIST_TRACKS = 100;  // tracks per playlist (first N owned playlists)
-const MAX_SAVED_TRACKS    = 200;  // saved-library tracks (paginated)
-const MAX_RECENTLY_PLAYED = 50;   // recently-played events
-const STORAGE_PREFIX      = 'tb_'; // localStorage key namespace
-const SYNC_TTL_MS         = 60 * 60 * 1000; // re-use cached profile for 1 hour
+const MAX_TOP_ITEMS        = 50;   // tracks / artists per time range
+const MAX_PLAYLISTS        = 20;   // playlists to list from /me/playlists
+const MAX_OWNED_PLAYLISTS  = 5;    // owned playlists whose tracks are fetched
+const MAX_PLAYLIST_TRACKS  = 100;  // tracks fetched per owned playlist
+const MAX_SAVED_TRACKS     = 200;  // saved-library tracks (paginated)
+const MAX_RECENTLY_PLAYED  = 50;   // recently-played events
+const STORAGE_PREFIX       = 'tb_'; // localStorage key namespace
+const SYNC_TTL_MS          = 60 * 60 * 1000; // re-use cached profile for 1 hour
+
+// ─── Derived-profile constants ─────────────────────────────────────────────────
+// Artist/genre rank-decay — weight = max(MIN_WEIGHT, 1 - idx * DECAY)
+const ARTIST_RANK_DECAY    = 0.02;
+const ARTIST_MIN_WEIGHT    = 0.05;
+const GENRE_RANK_DECAY     = 0.015;
+const GENRE_MIN_WEIGHT     = 0.05;
+// Time-range weights applied when scoring artists/genres across short/medium/long term
+const RANGE_WEIGHTS        = { short_term: 1.0, medium_term: 0.7, long_term: 0.5 };
+
+// ─── Comparison weights ────────────────────────────────────────────────────────
+const CMP_WEIGHT_FEATURES  = 0.30; // audio-feature cosine similarity
+const CMP_WEIGHT_GENRES    = 0.25; // genre Jaccard similarity
+const CMP_WEIGHT_ARTISTS   = 0.25; // artist overlap fraction
+const CMP_WEIGHT_TRACKS    = 0.20; // track overlap fraction
+
+// ─── Taste horoscope thresholds ────────────────────────────────────────────────
+const HOROSCOPE_SOULMATES  = 0.72; // similarity ≥ this → "music soulmates"
+const HOROSCOPE_STRONG     = 0.58; // similarity ≥ this → "strong alignment"
+const HOROSCOPE_OVERLAP    = 0.40; // similarity ≥ this → "interesting overlap"
+const SIGNIFICANT_FEAT_DIFF = 0.20; // audio-feature delta considered meaningful
 
 // ─── Diagnostics globals ─────────────────────────────────────────────────────
 let _lastSpotifyError = null;        // { endpoint, status, message, category, raw }
@@ -1842,7 +1864,7 @@ async function runInitialSync(token, me) {
     syncData.playlists = data.items || [];
     syslog(`  playlists: ${syncData.playlists.length}`);
     // Fetch tracks only for playlists the user owns (up to 5)
-    const ownedPlaylists = syncData.playlists.filter(p => p.owner?.id === me.id).slice(0, 5);
+    const ownedPlaylists = syncData.playlists.filter(p => p.owner?.id === me.id).slice(0, MAX_OWNED_PLAYLISTS);
     for (const pl of ownedPlaylists) {
       syncProgress(`Fetching tracks for \u201c${pl.name.slice(0, 30)}\u201d\u2026`);
       try {
@@ -1897,12 +1919,12 @@ function buildDerivedProfile(syncData) {
   // Genre distribution — weighted by artist rank (top-ranked = highest weight)
   const genreCounts = {};
   allArtists.forEach((a, idx) => {
-    const w = Math.max(0.05, 1 - idx * 0.015);
+    const w = Math.max(GENRE_MIN_WEIGHT, 1 - idx * GENRE_RANK_DECAY);
     (a.genres || []).forEach(g => { genreCounts[g] = (genreCounts[g] || 0) + w; });
   });
   const topGenres = Object.entries(genreCounts).sort((a, b) => b[1] - a[1]).slice(0, 12).map(([g]) => g);
 
-  // Audio feature taste profile
+  // Audio feature taste profile — averaged across all top tracks, rounded to 3 dp
   const features = (syncData.audio_features || []).filter(Boolean);
   const featureKeys = ['energy','valence','danceability','acousticness','instrumentalness','speechiness'];
   let tasteProfile;
@@ -1911,7 +1933,7 @@ function buildDerivedProfile(syncData) {
     featureKeys.forEach(k => {
       const vals = features.map(f => f[k]).filter(v => v != null);
       tasteProfile[k] = vals.length
-        ? Math.round(vals.reduce((s, v) => s + v, 0) / vals.length * 1000) / 1000
+        ? Math.round(vals.reduce((s, v) => s + v, 0) / vals.length * 1000) / 1000 // round to 3 dp
         : 0.5;
     });
     const tempos = features.map(f => f.tempo).filter(Boolean);
@@ -1925,11 +1947,10 @@ function buildDerivedProfile(syncData) {
 
   // Favourite artists — scored across time ranges (recent = higher weight)
   const artistScores = {};
-  const rangeWeights = { short_term: 1.0, medium_term: 0.7, long_term: 0.5 };
-  Object.entries(rangeWeights).forEach(([range, rw]) => {
+  Object.entries(RANGE_WEIGHTS).forEach(([range, rw]) => {
     (syncData.top_artists[range] || []).forEach((a, idx) => {
       if (!artistScores[a.id]) artistScores[a.id] = { name: a.name, genres: a.genres || [], score: 0 };
-      artistScores[a.id].score += rw * Math.max(0.05, 1 - idx * 0.02);
+      artistScores[a.id].score += rw * Math.max(ARTIST_MIN_WEIGHT, 1 - idx * ARTIST_RANK_DECAY);
     });
   });
   const favoriteArtists = Object.values(artistScores).sort((a, b) => b.score - a.score).slice(0, 20);
@@ -2038,7 +2059,12 @@ function compareUserProfiles(profA, profB) {
   // Weighted overall similarity score
   const artistOverlap = Math.min(1, sharedArtistNames.length / Math.max(1, Math.min(artistNamesA.size, artistNamesB.size)));
   const trackOverlap  = Math.min(1, sharedTrackKeys.length  / Math.max(1, Math.min(trackKeysA.size,  trackKeysB.size)));
-  const overallSim = _clamp(0.30 * featureSim + 0.25 * genreJaccard + 0.25 * artistOverlap + 0.20 * trackOverlap);
+  const overallSim = _clamp(
+    CMP_WEIGHT_FEATURES * featureSim +
+    CMP_WEIGHT_GENRES   * genreJaccard +
+    CMP_WEIGHT_ARTISTS  * artistOverlap +
+    CMP_WEIGHT_TRACKS   * trackOverlap
+  );
 
   // Bridge tracks — scored against the midpoint taste profile
   const bridgeTracks = _findBridgeTracks(profA, profB);
@@ -2064,9 +2090,9 @@ function compareUserProfiles(profA, profB) {
 }
 
 function _generateTasteHoroscope(dA, dB, nameA, nameB, sim, sharedGenres) {
-  const simLabel = sim >= 0.72 ? 'music soulmates'
-    : sim >= 0.58 ? 'a strong musical alignment'
-    : sim >= 0.40 ? 'interesting overlapping taste'
+  const simLabel = sim >= HOROSCOPE_SOULMATES ? 'music soulmates'
+    : sim >= HOROSCOPE_STRONG   ? 'a strong musical alignment'
+    : sim >= HOROSCOPE_OVERLAP  ? 'interesting overlapping taste'
     : 'fascinatingly different taste';
   const tpA = dA.taste_profile || {};
   const tpB = dB.taste_profile || {};
@@ -2074,12 +2100,12 @@ function _generateTasteHoroscope(dA, dB, nameA, nameB, sim, sharedGenres) {
   const valenceDiff = (tpA.valence || 0.5) - (tpB.valence || 0.5);
   let text = `${nameA} and ${nameB} share ${simLabel}.`;
   if (sharedGenres.length) text += ` Common ground: ${sharedGenres.slice(0, 2).join(' and ')}.`;
-  if (Math.abs(energyDiff) > 0.2) {
+  if (Math.abs(energyDiff) > SIGNIFICANT_FEAT_DIFF) {
     const hi = energyDiff > 0 ? nameA : nameB;
     const lo = energyDiff > 0 ? nameB : nameA;
     text += ` ${hi} brings the intensity; ${lo} brings the atmosphere.`;
   }
-  if (Math.abs(valenceDiff) > 0.2) {
+  if (Math.abs(valenceDiff) > SIGNIFICANT_FEAT_DIFF) {
     const bright = valenceDiff > 0 ? nameA : nameB;
     const dark   = valenceDiff > 0 ? nameB : nameA;
     text += ` ${bright} trends brighter; ${dark} goes deeper.`;
