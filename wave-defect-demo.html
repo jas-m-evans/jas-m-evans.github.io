@@ -1563,10 +1563,28 @@ async function loadSpotifyUser(token) {
   } catch (err) {
     console.error('Spotify error:', err);
     syslog(`Spotify error: ${err.status ? `[${err.status}] ` : ''}${err.message}`);
+
+    // A 403 on a core endpoint (/me, /me/top/tracks) means access is denied at the
+    // app level (e.g. Spotify app still in development mode and this account is not
+    // in the allowlist).  Clear the stored token so the page doesn't loop — every
+    // reload would otherwise re-try the same token and hit 403 again.
+    if (err.status === 403) {
+      sessionStorage.removeItem('spotify_token');
+      sessionStorage.removeItem('spotify_token_expiry');
+    }
+
     showState('landing');
     const errEl = document.getElementById('error-auth');
     errEl.style.display = 'block';
-    errEl.textContent   = `\u26A0 ${err.message}`;
+
+    if (err.status === 403) {
+      errEl.innerHTML =
+        '\u26A0 Spotify access denied (403) \u2014 this app is currently limited to approved users. ' +
+        'Re-authenticating will not resolve this. Use <strong>Demo Mode</strong> below, or ' +
+        '<a href="#" onclick="loginWithSpotify();return false;">try a different Spotify account</a>.';
+    } else {
+      errEl.textContent = `\u26A0 ${err.message}`;
+    }
   }
 }
 
