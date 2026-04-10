@@ -81,3 +81,94 @@ Anyone can try the experience without connecting Spotify. Clicking **Try Demo** 
 ### Backend integration
 
 This static demo runs entirely in the browser. To connect it to the full [wave2vector](https://github.com/jas-m-evans/wave2vector) FastAPI backend (with real LiveKit rooms, persistence, and multi-user support), set `BACKEND_URL` at the top of the script block in `wave-defect-demo.html` to your deployed backend URL.
+
+---
+
+## Real User Sync Prototype Mode
+
+> **Goal:** Record a convincing demo with two real Spotify accounts showing a full taste-profile comparison.
+
+### How it works
+
+When a real user authenticates with Spotify, the app performs a **one-time initial sync** that pulls as much useful music-profile data as Spotify's API allows, then persists it to `localStorage` (keyed by Spotify user ID). No backend is required.
+
+#### Data fetched per user
+
+| Data | Endpoint | Scope |
+|---|---|---|
+| User profile | `/me` | `user-read-private` |
+| Top tracks — short / medium / long term | `/me/top/tracks` | `user-top-read` |
+| Top artists — short / medium / long term | `/me/top/artists` | `user-top-read` |
+| Recently played | `/me/player/recently-played` | `user-read-recently-played` |
+| Saved tracks (up to 200) | `/me/tracks` | `user-library-read` |
+| Followed artists | `/me/following` | `user-follow-read` |
+| Playlists (up to 20) | `/me/playlists` | `user-read-private` |
+| Playlist tracks (first 5 owned, up to 100 each) | `/playlists/{id}/tracks` | `user-read-private` |
+| Audio features (all unique top tracks) | `/audio-features` | `user-top-read` |
+
+#### Derived taste profile (`derived` field)
+
+Each synced profile also stores a derived artifact:
+
+- **`taste_profile`** — averaged audio features (energy, valence, danceability, acousticness, instrumentalness, speechiness, tempo_norm)
+- **`taste_vector`** — numeric array for cosine similarity
+- **`genre_distribution`** — genre scores weighted by artist rank
+- **`top_genres`** — top 12 genres
+- **`favorite_artists`** — scored across time ranges
+- **`popularity_summary`** — average track popularity
+- **`decade_distribution`** — which decades dominate the library
+- **`summary_text`** — one-sentence human-readable taste description
+
+#### Sync constants
+
+These can be adjusted at the top of the script block in `wave-defect-demo.html`:
+
+```js
+const MAX_TOP_ITEMS       = 50;   // tracks/artists per time range
+const MAX_PLAYLISTS       = 20;   // playlists to fetch
+const MAX_PLAYLIST_TRACKS = 100;  // tracks per playlist
+const MAX_SAVED_TRACKS    = 200;  // saved-library pages
+const MAX_RECENTLY_PLAYED = 50;   // recently-played events
+const SYNC_TTL_MS         = 60 * 60 * 1000; // re-use cache for 1 hour
+```
+
+### Two-user comparison
+
+When a second user authenticates and their profile is synced:
+
+1. The app detects the previously stored profile in `localStorage`.
+2. A **Taste Comparison** panel appears in the room showing:
+   - Overall match percentage (weighted cosine + genre + artist overlap)
+   - Taste horoscope ("music soulmates" / "interesting overlap" / etc.)
+   - Shared artists, shared genres, shared top tracks
+   - "Only A likes" / "Only B likes" artist lists
+   - Up to 5 bridge tracks scored against the midpoint taste profile
+   - Audio feature similarity, genre overlap, and overall match scores
+
+### Running a two-person demo locally
+
+1. Person A opens the page and clicks **Connect Spotify** → authenticates → full sync runs → profile saved to `localStorage`.
+2. Person B (in the **same browser**) opens the page and clicks **Connect Spotify** → authenticates with a different Spotify account → full sync runs → comparison panel appears automatically.
+
+> Both profiles are stored in the browser's `localStorage`. They persist across page reloads but are **never sent to any server** — visible only in your browser.
+
+### Managing stored profiles
+
+- The **Synced Profiles** section on the landing page shows all stored profiles with their summary, top genres, and a **Remove** button.
+- A **Clear All** button resets all stored profiles.
+- To force a re-sync (bypassing the 1-hour cache), remove your profile via the landing page and re-authenticate.
+
+### Scopes required
+
+Add all of the following to your Spotify app's **Redirect URIs** and **Scopes** in the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard):
+
+```
+user-top-read
+user-read-recently-played
+user-read-currently-playing
+user-read-playback-state
+user-read-private
+user-library-read
+user-follow-read
+```
+
