@@ -930,6 +930,25 @@ function demoProfileFromName(name) {
   };
 }
 
+// Derives a rough taste profile from track popularity when /audio-features is unavailable
+// (e.g. Spotify API restriction — 403). Popularity (0-100) is used as a proxy for
+// energy and danceability; other features fall back to neutral values.
+function _inferProfileFromTracks(tracks) {
+  const avg = tracks.length
+    ? tracks.reduce((s, t) => s + (t.popularity || 50), 0) / tracks.length
+    : 50;
+  const pop = avg / 100; // normalise to 0–1
+  return {
+    energy:           Math.round(_clamp(pop * 0.6 + 0.25) * 1000) / 1000,
+    valence:          0.5,
+    danceability:     Math.round(_clamp(pop * 0.5 + 0.3) * 1000) / 1000,
+    acousticness:     Math.round(_clamp(0.5 - pop * 0.35) * 1000) / 1000,
+    instrumentalness: 0.05,
+    speechiness:      0.08,
+    tempo_norm:       0.55,
+  };
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 //  Compatibility (cosine similarity between taste profiles)
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1055,7 +1074,7 @@ function _classifySpotifyError(status) {
 function _spotifyErrorGuidance(category) {
   switch (category) {
     case 'auth error':   return 'Your session has expired or the token is invalid — click Re-authenticate.';
-    case 'forbidden':    return 'Insufficient Spotify permissions. Re-authenticate; the app requests the user-top-read scope.';
+    case 'forbidden':    return 'The Spotify Audio Features API is restricted for this app — re-authentication will not resolve this. Your top tracks are loaded with approximate feature values so you can still use the Bridge.';
     case 'rate-limited': return 'Spotify rate limit hit — wait ~60 s then click Retry loading audio features.';
     case 'server error': return 'Spotify server error — click Retry loading audio features in a few seconds.';
     case 'network':      return 'Network error — check your connection, then click Retry loading audio features.';
@@ -1443,6 +1462,7 @@ async function loadSpotifyUser(token) {
     }
 
     let tasteProfile = null;
+    let profileFallback = false;
     try {
       const features = await _fetchAudioFeatures(ids, token);
       syslog(`Audio features: ${features.length} tracks.`);
@@ -1480,8 +1500,35 @@ async function loadSpotifyUser(token) {
         syslog(`Candidate pool: ${S.candidates.length} tracks (${realCandidates.length} real, ${S.candidates.length - realCandidates.length} mock).`);
       }
     } catch (featErr) {
-      // Audio features fetch failed — show diagnostics, do NOT silently fall back
       syslog(`Audio features error: ${featErr.message}`);
+      if (featErr.status === 403) {
+        // Permanent Spotify API restriction — build a fallback profile from track
+        // popularity so the user can still enter the Bridge without re-authenticating.
+        syslog('Audio features 403 (Spotify API restricted) — building fallback profile from track popularity.');
+        tasteProfile = _inferProfileFromTracks(topTracks);
+        profileFallback = true;
+        const fallbackCandidates = topTracks.map(t => ({
+          track_id: t.id, track_name: t.name,
+          artist: t.artists?.map(a => a.name).join(', ') || '',
+          album: t.album?.name || '',
+          album_art: t.album?.images?.[1]?.url || null,
+          energy: tasteProfile.energy, valence: tasteProfile.valence,
+          danceability: tasteProfile.danceability, acousticness: tasteProfile.acousticness,
+          instrumentalness: tasteProfile.instrumentalness, speechiness: tasteProfile.speechiness,
+          tempo_norm: tasteProfile.tempo_norm,
+        }));
+        const existing = new Set(fallbackCandidates.map(t => t.track_id));
+        S.candidates = [...fallbackCandidates, ...MOCK_CANDIDATES.filter(c => !existing.has(c.track_id))];
+        syslog(`Candidate pool (fallback): ${S.candidates.length} tracks (${fallbackCandidates.length} real, ${S.candidates.length - fallbackCandidates.length} mock).`);
+        // Show a soft non-blocking notice; do NOT block the user from entering
+        featErrEl.style.display = 'block';
+        featErrEl.innerHTML =
+          '\u26A0 Audio features unavailable (Spotify API restricted this endpoint for this app) \u2014 ' +
+          'your top tracks are loaded with approximate feature values. ' +
+          'The Bridge will still work.';
+      }
+      // For non-403 errors, tasteProfile stays null; the blocking error at the
+      // `if (!tasteProfile)` check below will then call _showFeatureError().
     }
 
     if (!tasteProfile) {
@@ -1500,7 +1547,9 @@ async function loadSpotifyUser(token) {
       mode: 'spotify',
       welcomeMsg: {
         heading: `Hey ${firstName}! \uD83D\uDC4B Taste Bridge is live.`,
-        body: `${topTracks.length} top tracks loaded from Spotify — your real taste profile is powering the bridge recommendation.`,
+        body: profileFallback
+            ? `${topTracks.length} top tracks loaded from Spotify — taste profile approximated from track popularity (audio features unavailable).`
+            : `${topTracks.length} top tracks loaded from Spotify — your real taste profile is powering the bridge recommendation.`,
       },
     });
 
