@@ -2408,12 +2408,13 @@ function _telEvent({ event_type,
     track_kind,
     source,
     payload,
-    sequence:             ++TEL.sequence,
+    sequence:             0,  // assigned by _appendTelEvent
   };
 }
 
 // ── Append event to store and update UI ──────────────────────────────────────
 function _appendTelEvent(ev) {
+  ev.sequence = ++TEL.sequence;
   TEL.logs.push(ev);
   _renderTelLine(ev);
   syslog(`[Tel] ${ev.event_type} seq=${ev.sequence} mode=${ev.mode}`);
@@ -2546,7 +2547,7 @@ async function _connectRealLk() {
 
   room.on(LivekitClient.RoomEvent.DataReceived, (data, participant) => {
     let decoded = null;
-    try { decoded = new TextDecoder().decode(data); } catch (_) {}
+    try { decoded = new TextDecoder().decode(data); } catch (_err) { /* non-UTF-8 binary data; leave decoded as null */ }
     _appendTelEvent(_telEvent({
       event_type:           'data_received',
       participant_identity: participant ? participant.identity : null,
@@ -2625,7 +2626,7 @@ function stopTelemetry() {
   TEL.simTimers.forEach(t => clearTimeout(t));
   TEL.simTimers = [];
   if (TEL.room) {
-    try { TEL.room.disconnect(); } catch (_) {}
+    try { TEL.room.disconnect(); } catch (_err) { /* ignore disconnect errors during cleanup */ }
     TEL.room = null;
   }
 }
