@@ -11,6 +11,8 @@ permalink: /wave-defect-demo/
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- LiveKit client SDK — required for real room telemetry; harmless when unused -->
+  <script src="https://cdn.jsdelivr.net/npm/livekit-client@2/dist/livekit-client.umd.min.js"></script>
   <style>
     /* ─── Design tokens ─────────────────────────────────── */
     :root {
@@ -378,6 +380,23 @@ permalink: /wave-defect-demo/
     .pill--green { color: var(--green);      border-color: rgba(74,222,128,0.3);  background: rgba(74,222,128,0.08); }
     .pill--teal  { color: var(--teal-light); border-color: rgba(15,142,147,0.3);  background: rgba(15,142,147,0.08); }
     .pill--lk    { color: var(--livekit);    border-color: rgba(91,156,246,0.3);  background: rgba(91,156,246,0.08); }
+
+    /* ─── Telemetry panel ────────────────────────────────── */
+    .telemetry-card { margin-top: 1.5rem; }
+    .telemetry-header { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.9rem; }
+    .telemetry-title { font-size: 0.78rem; font-family: "IBM Plex Mono", monospace; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-bright); flex: 1; min-width: 120px; }
+    .mode-badge { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.68rem; font-family: "IBM Plex Mono", monospace; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 0.22rem 0.6rem; border-radius: 99px; border: 1px solid transparent; white-space: nowrap; }
+    .mode-badge--real { color: var(--green);  background: rgba(74,222,128,0.12); border-color: rgba(74,222,128,0.28); }
+    .mode-badge--sim  { color: var(--amber);  background: rgba(251,191,36,0.12); border-color: rgba(251,191,36,0.28); }
+    .telemetry-controls { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+    .tel-btn { font-size: 0.72rem; font-family: "IBM Plex Mono", monospace; font-weight: 600; padding: 0.3rem 0.7rem; border-radius: 8px; border: 1px solid var(--border-mid); background: var(--surface-2); color: var(--text); cursor: pointer; transition: background 0.15s, border-color 0.15s; }
+    .tel-btn:hover:not(:disabled) { background: var(--surface-3); border-color: var(--livekit); color: var(--text-bright); }
+    .tel-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .tel-count { font-size: 0.68rem; color: var(--muted); font-family: "IBM Plex Mono", monospace; margin-bottom: 0.4rem; }
+    .telemetry-log { font-family: "IBM Plex Mono", monospace; font-size: 0.68rem; line-height: 1.5; background: var(--ink); border: 1px solid var(--border); border-radius: 8px; padding: 0.65rem 0.85rem; height: 170px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+    .tel-log-line { color: var(--text); display: block; }
+    .tel-log-line--real { color: var(--green); }
+    .tel-log-placeholder { color: var(--muted); }
   </style>
 </head>
 <body>
@@ -635,6 +654,24 @@ permalink: /wave-defect-demo/
     <!-- Two-user comparison section — populated by renderComparison() when two synced profiles exist -->
     <div id="comparison-section" style="display:none"></div>
 
+    <!-- ── LiveKit Event Telemetry Panel ── -->
+    <div class="card telemetry-card" id="telemetry-card">
+      <div class="telemetry-header">
+        <span class="telemetry-title">&#9889; LiveKit Event Telemetry</span>
+        <span class="mode-badge mode-badge--sim" id="tel-mode-badge">&#127918; Simulation Mode</span>
+      </div>
+      <div class="telemetry-controls">
+        <button class="tel-btn" id="tel-btn-start"  onclick="startTelemetry()">&#9654; Start</button>
+        <button class="tel-btn" id="tel-btn-stop"   onclick="stopTelemetry()"  disabled>&#9646;&#9646; Stop</button>
+        <button class="tel-btn" id="tel-btn-export" onclick="exportNdjson()"   disabled>&#8595; Export NDJSON</button>
+        <button class="tel-btn" id="tel-btn-clear"  onclick="clearTelemetry()">&#128465; Clear</button>
+      </div>
+      <div class="tel-count" id="tel-count">0 events logged</div>
+      <div class="telemetry-log" id="tel-log" role="log" aria-label="Telemetry event log" aria-live="polite">
+        <span class="tel-log-placeholder">Waiting to start&hellip; Click &#9654; Start to capture events.</span>
+      </div>
+    </div>
+
     <details class="sys-console" id="sys-console">
       <summary>&#9656; System Console <button class="copy-diag-btn" id="copy-diag-btn" role="button" aria-label="Copy diagnostics to clipboard" onclick="event.stopPropagation();_copyDiagnostics()" title="Copy last Spotify error + recent log lines">Copy diagnostics</button></summary>
       <pre id="sys-log" class="sys-log" aria-live="polite"></pre>
@@ -673,6 +710,15 @@ const SCOPES = [
 ].join(' ');
 // Set to your deployed wave2vector backend URL to enable real LiveKit rooms.
 const BACKEND_URL = null;
+
+// ─── LiveKit Telemetry config ──────────────────────────────────────────────
+// Set LIVEKIT_URL plus either LIVEKIT_TOKEN or LIVEKIT_TOKEN_ENDPOINT to
+// enable real room telemetry.  Leave null to stay in simulation mode.
+const LIVEKIT_URL            = null;               // e.g. 'wss://your-project.livekit.cloud'
+const LIVEKIT_ROOM           = 'wave-defect-demo'; // room name to observe
+const LIVEKIT_TOKEN          = null;               // static participant token, or null
+const LIVEKIT_TOKEN_ENDPOINT = null;               // token-generation endpoint URL, or null
+const LIVEKIT_IDENTITY       = 'telemetry-observer'; // local participant identity (real mode only)
 
 // ─── Sync caps (one-time initial sync per user) ───────────────────────────────
 const MAX_TOP_ITEMS        = 50;   // tracks / artists per time range
@@ -2312,6 +2358,301 @@ function renderComparison(currentProfile, otherProfile) {
 
   section.innerHTML = html;
   section.style.display = 'block';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  LiveKit Event Telemetry
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Returns true when enough config is present to attempt a real LiveKit connection.
+function _lkConfigured() {
+  return !!(LIVEKIT_URL && (LIVEKIT_TOKEN || LIVEKIT_TOKEN_ENDPOINT));
+}
+
+// Generate a short random session ID for correlation.
+function _newSessionId() {
+  const b = new Uint8Array(8);
+  crypto.getRandomValues(b);
+  return Array.from(b, x => x.toString(16).padStart(2, '0')).join('');
+}
+
+// ── Telemetry runtime state ──────────────────────────────────────────────────
+const TEL = {
+  session_id: null,
+  mode:       'simulated',  // 'real' | 'simulated'
+  logs:       [],           // in-memory array of NDJSON event objects
+  sequence:   0,
+  room:       null,         // LivekitClient.Room instance when in real mode
+  running:    false,
+  simTimers:  [],           // setTimeout handles for simulation playback
+};
+
+// ── Telemetry schema normaliser ───────────────────────────────────────────────
+// Returns one canonically structured event object.
+function _telEvent({ event_type,
+                     participant_identity = null, participant_sid = null,
+                     track_sid = null, track_kind = null,
+                     source = null, payload = null }) {
+  const now = Date.now();
+  return {
+    ts_iso:               new Date(now).toISOString(),
+    ts_ms:                now,
+    session_id:           TEL.session_id,
+    room_name:            LIVEKIT_ROOM,
+    mode:                 TEL.mode,
+    event_type,
+    local_identity:       TEL.mode === 'real' ? LIVEKIT_IDENTITY : 'simulation',
+    participant_identity,
+    participant_sid,
+    track_sid,
+    track_kind,
+    source,
+    payload,
+    sequence:             0,  // assigned by _appendTelEvent
+  };
+}
+
+// ── Append event to store and update UI ──────────────────────────────────────
+function _appendTelEvent(ev) {
+  ev.sequence = ++TEL.sequence;
+  TEL.logs.push(ev);
+  _renderTelLine(ev);
+  syslog(`[Tel] ${ev.event_type} seq=${ev.sequence} mode=${ev.mode}`);
+}
+
+function _renderTelLine(ev) {
+  const logEl   = document.getElementById('tel-log');
+  const countEl = document.getElementById('tel-count');
+  if (!logEl) return;
+
+  // Clear placeholder on first real event.
+  if (TEL.logs.length === 1) logEl.innerHTML = '';
+
+  const line       = document.createElement('span');
+  line.className   = 'tel-log-line' + (ev.mode === 'real' ? ' tel-log-line--real' : '');
+  line.textContent = JSON.stringify(ev) + '\n';
+  logEl.appendChild(line);
+  logEl.scrollTop  = logEl.scrollHeight;
+
+  if (countEl) countEl.textContent = `${TEL.logs.length} event${TEL.logs.length === 1 ? '' : 's'} logged`;
+  _setTelExportEnabled(true);
+}
+
+function _setTelExportEnabled(enabled) {
+  const btn = document.getElementById('tel-btn-export');
+  if (btn) btn.disabled = !enabled;
+}
+
+function _updateModeBadge(mode) {
+  const badge = document.getElementById('tel-mode-badge');
+  if (!badge) return;
+  if (mode === 'real') {
+    badge.className   = 'mode-badge mode-badge--real';
+    badge.textContent = '\u26A1 Real LiveKit Telemetry';
+  } else {
+    badge.className   = 'mode-badge mode-badge--sim';
+    badge.textContent = '\uD83C\uDFAE Simulation Mode';
+  }
+}
+
+function _setTelButtons({ running }) {
+  const startBtn = document.getElementById('tel-btn-start');
+  const stopBtn  = document.getElementById('tel-btn-stop');
+  if (startBtn) startBtn.disabled = running;
+  if (stopBtn)  stopBtn.disabled  = !running;
+}
+
+// ── Real LiveKit connection ───────────────────────────────────────────────────
+
+async function _fetchLkToken() {
+  if (LIVEKIT_TOKEN) return LIVEKIT_TOKEN;
+  if (!LIVEKIT_TOKEN_ENDPOINT) return null;
+  const resp = await fetch(
+    `${LIVEKIT_TOKEN_ENDPOINT}?room=${encodeURIComponent(LIVEKIT_ROOM)}&identity=${encodeURIComponent(LIVEKIT_IDENTITY)}`
+  );
+  if (!resp.ok) throw new Error(`Token endpoint returned ${resp.status}`);
+  const data = await resp.json();
+  return data.token || data.accessToken || data.access_token || null;
+}
+
+async function _connectRealLk() {
+  if (typeof LivekitClient === 'undefined') {
+    throw new Error('LiveKit SDK not available — check network or ad-blocker.');
+  }
+
+  const token = await _fetchLkToken();
+  if (!token) throw new Error('No LiveKit token available.');
+
+  const room = new LivekitClient.Room({ adaptiveStream: true, dynacast: true });
+
+  room.on(LivekitClient.RoomEvent.Connected, () => {
+    _appendTelEvent(_telEvent({ event_type: 'room_connected' }));
+  });
+
+  room.on(LivekitClient.RoomEvent.Disconnected, () => {
+    _appendTelEvent(_telEvent({ event_type: 'room_disconnected' }));
+    TEL.running = false;
+    _setTelButtons({ running: false });
+  });
+
+  room.on(LivekitClient.RoomEvent.Reconnecting, () => {
+    _appendTelEvent(_telEvent({ event_type: 'room_reconnecting' }));
+  });
+
+  room.on(LivekitClient.RoomEvent.Reconnected, () => {
+    _appendTelEvent(_telEvent({ event_type: 'room_reconnected' }));
+  });
+
+  room.on(LivekitClient.RoomEvent.ConnectionStateChanged, state => {
+    _appendTelEvent(_telEvent({ event_type: 'connection_state_changed', payload: { state } }));
+  });
+
+  room.on(LivekitClient.RoomEvent.ParticipantConnected, participant => {
+    _appendTelEvent(_telEvent({
+      event_type:           'participant_joined',
+      participant_identity: participant.identity,
+      participant_sid:      participant.sid,
+    }));
+  });
+
+  room.on(LivekitClient.RoomEvent.ParticipantDisconnected, participant => {
+    _appendTelEvent(_telEvent({
+      event_type:           'participant_disconnected',
+      participant_identity: participant.identity,
+      participant_sid:      participant.sid,
+    }));
+  });
+
+  room.on(LivekitClient.RoomEvent.TrackPublished, (publication, participant) => {
+    _appendTelEvent(_telEvent({
+      event_type:           'track_published',
+      participant_identity: participant.identity,
+      participant_sid:      participant.sid,
+      track_sid:            publication.trackSid,
+      track_kind:           publication.kind,
+      source:               publication.source,
+    }));
+  });
+
+  room.on(LivekitClient.RoomEvent.TrackUnpublished, (publication, participant) => {
+    _appendTelEvent(_telEvent({
+      event_type:           'track_unpublished',
+      participant_identity: participant.identity,
+      participant_sid:      participant.sid,
+      track_sid:            publication.trackSid,
+      track_kind:           publication.kind,
+      source:               publication.source,
+    }));
+  });
+
+  room.on(LivekitClient.RoomEvent.DataReceived, (data, participant) => {
+    let decoded = null;
+    try { decoded = new TextDecoder().decode(data); } catch (_err) { /* non-UTF-8 binary data; leave decoded as null */ }
+    _appendTelEvent(_telEvent({
+      event_type:           'data_received',
+      participant_identity: participant ? participant.identity : null,
+      participant_sid:      participant ? participant.sid      : null,
+      payload:              { data: decoded },
+    }));
+  });
+
+  // autoSubscribe: false — observer only, no media consumption.
+  await room.connect(LIVEKIT_URL, token, { autoSubscribe: false });
+  TEL.room = room;
+}
+
+// ── Simulation mode ─────────────────────────────────────────────────────────
+// Pre-scripted events that faithfully exercise the schema without a real server.
+
+const _SIM_EVENTS = [
+  { delay:    400, event_type: 'room_connected' },
+  { delay:   1300, event_type: 'participant_joined',       participant_identity: 'alice',  participant_sid: 'PA_sim_001' },
+  { delay:   2100, event_type: 'track_published',          participant_identity: 'alice',  participant_sid: 'PA_sim_001', track_sid: 'TR_sim_a1', track_kind: 'audio', source: 'microphone' },
+  { delay:   2600, event_type: 'track_published',          participant_identity: 'alice',  participant_sid: 'PA_sim_001', track_sid: 'TR_sim_v1', track_kind: 'video', source: 'camera' },
+  { delay:   4800, event_type: 'participant_joined',       participant_identity: 'bob',    participant_sid: 'PA_sim_002' },
+  { delay:   5400, event_type: 'track_published',          participant_identity: 'bob',    participant_sid: 'PA_sim_002', track_sid: 'TR_sim_b1', track_kind: 'audio', source: 'microphone' },
+  { delay:  10000, event_type: 'track_unpublished',        participant_identity: 'alice',  participant_sid: 'PA_sim_001', track_sid: 'TR_sim_v1', track_kind: 'video', source: 'camera' },
+  { delay:  14000, event_type: 'data_received',            participant_identity: 'bob',    participant_sid: 'PA_sim_002', payload: { data: 'hello from bob' } },
+  { delay:  18000, event_type: 'participant_disconnected', participant_identity: 'alice',  participant_sid: 'PA_sim_001' },
+  { delay:  24000, event_type: 'participant_disconnected', participant_identity: 'bob',    participant_sid: 'PA_sim_002' },
+  { delay:  25500, event_type: 'room_disconnected' },
+];
+
+function _runSimulation() {
+  TEL.simTimers = _SIM_EVENTS.map(({ delay, ...fields }) =>
+    setTimeout(() => {
+      if (!TEL.running) return;
+      _appendTelEvent(_telEvent(fields));
+      if (fields.event_type === 'room_disconnected') {
+        TEL.running = false;
+        _setTelButtons({ running: false });
+      }
+    }, delay)
+  );
+}
+
+// ── Public API ───────────────────────────────────────────────────────────────
+
+async function startTelemetry() {
+  if (TEL.running) return;
+  TEL.session_id = _newSessionId();
+  TEL.sequence   = 0;
+  TEL.running    = true;
+  _setTelButtons({ running: true });
+
+  const isReal = _lkConfigured();
+  TEL.mode = isReal ? 'real' : 'simulated';
+  _updateModeBadge(TEL.mode);
+
+  if (isReal) {
+    try {
+      await _connectRealLk();
+    } catch (err) {
+      syslog(`[Tel] Real connection failed (${err.message}) — falling back to simulation mode.`);
+      TEL.mode = 'simulated';
+      _updateModeBadge('simulated');
+      _appendTelEvent(_telEvent({ event_type: 'connection_state_changed', payload: { state: 'failed', reason: err.message } }));
+      _runSimulation();
+    }
+  } else {
+    _runSimulation();
+  }
+}
+
+function stopTelemetry() {
+  if (!TEL.running) return;
+  TEL.running = false;
+  _setTelButtons({ running: false });
+  TEL.simTimers.forEach(t => clearTimeout(t));
+  TEL.simTimers = [];
+  if (TEL.room) {
+    try { TEL.room.disconnect(); } catch (_err) { /* ignore disconnect errors during cleanup */ }
+    TEL.room = null;
+  }
+}
+
+function exportNdjson() {
+  if (!TEL.logs.length) return;
+  const content = TEL.logs.map(e => JSON.stringify(e)).join('\n');
+  const blob    = new Blob([content], { type: 'application/x-ndjson' });
+  const url     = URL.createObjectURL(blob);
+  const a       = document.createElement('a');
+  a.href        = url;
+  a.download    = `wave-defect-telemetry-${TEL.session_id || 'session'}.ndjson`;
+  a.click();
+  URL.revokeObjectURL(url);
+  syslog(`[Tel] Exported ${TEL.logs.length} events as NDJSON.`);
+}
+
+function clearTelemetry() {
+  TEL.logs     = [];
+  TEL.sequence = 0;
+  const logEl  = document.getElementById('tel-log');
+  if (logEl)   logEl.innerHTML = '<span class="tel-log-placeholder">Cleared \u2014 click \u25B6 Start to begin a new session\u2026</span>';
+  const countEl = document.getElementById('tel-count');
+  if (countEl) countEl.textContent = '0 events logged';
+  _setTelExportEnabled(false);
+  syslog('[Tel] Log cleared.');
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
