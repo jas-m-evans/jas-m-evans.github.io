@@ -525,7 +525,7 @@ permalink: /wave-defect-demo/
 <!-- ── Bot HUD — step narration ── -->
 <div id="bot-hud" role="status" aria-live="polite" aria-label="Bot status">
   <div class="hud-header">
-    <span class="hud-icon">🤖</span>
+    <span class="hud-icon" role="img" aria-label="Robot">🤖</span>
     <span class="hud-title">Bot · Ollama</span>
     <div class="hud-live-dot"></div>
   </div>
@@ -555,7 +555,7 @@ permalink: /wave-defect-demo/
       <span class="badge badge--live badge--dot">Live</span>
       <span class="badge badge--spotify" id="spotify-badge" style="display:none">&#9834; Spotify Connected</span>
       <span class="badge badge--demo" id="demo-badge" style="display:none">&#127918; Demo Mode</span>
-      <span class="badge badge--ollama-off" id="ollama-badge" title="Local Ollama LLM status">&#129302; Ollama</span>
+      <span class="badge badge--ollama-off" id="ollama-badge" title="Local Ollama LLM status" aria-label="Ollama LLM status: offline">&#129302; Ollama</span>
     </div>
   </nav>
 
@@ -2614,7 +2614,8 @@ async function ollamaCheckHealth() {
     return true;
   } catch (err) {
     OLLAMA.online = false;
-    const msg = err.message.length > 50 ? 'Not reachable' : err.message;
+    const isTimeout = err.name === 'TimeoutError' || err.name === 'AbortError';
+    const msg = isTimeout ? 'Connection timed out \u2014 is Ollama running?' : err.message.slice(0, 47) + (err.message.length > 47 ? '\u2026' : '');
     _ollamaPill('offline', `&#10007;\u00A0${msg}`);
     _ollamaBadge(false);
     syslog(`[Ollama] Health check failed: ${err.message}`);
@@ -2627,7 +2628,7 @@ function _populateModels(names) {
   if (!sel || !names.length) return;
   const cur = sel.value;
   sel.innerHTML = names.map(n =>
-    `<option value="${_esc(n)}"${n === cur || n.startsWith(OLLAMA_MODEL) ? ' selected' : ''}>${_esc(n)}</option>`
+    `<option value="${_esc(n)}"${n === cur || n === OLLAMA_MODEL ? ' selected' : ''}>${_esc(n)}</option>`
   ).join('');
 }
 
@@ -2643,6 +2644,7 @@ function _ollamaBadge(online) {
   if (!b) return;
   b.className   = `badge ${online ? 'badge--ollama' : 'badge--ollama-off'}`;
   b.textContent = online ? '\uD83E\uDD16 Ollama \u2713' : '\uD83E\uDD16 Ollama';
+  b.setAttribute('aria-label', `Ollama LLM status: ${online ? 'online' : 'offline'}`);
 }
 
 // ── Stream a query to Ollama ──────────────────────────────────────────────────
@@ -2837,7 +2839,7 @@ function botNarrate(step, substep, progressPct) {
   if (stepEl) stepEl.textContent = step;
   const subEl  = document.getElementById('hud-substep');
   if (subEl)  subEl.textContent  = substep || '';
-  if (progressPct != null) {
+  if (progressPct !== null && progressPct !== undefined) {
     const fill = document.getElementById('hud-bar-fill');
     if (fill) fill.style.width = `${progressPct}%`;
   }
@@ -2869,9 +2871,12 @@ function botUnhighlight() {
   document.getElementById('bot-ring')?.classList.remove('active');
 }
 
+// Default duration (ms) for bot element highlight before auto-dismissal.
+const BOT_TARGET_DURATION_MS = 2600;
+
 // Highlight an element, narrate a step, then auto-hide after duration ms.
 function botTarget(el, step, substep, durationMs) {
-  const dur = durationMs ?? 2600;
+  const dur = durationMs ?? BOT_TARGET_DURATION_MS;
   botNarrate(step, substep, 60);
   botHighlight(el, step);
   clearTimeout(_ringTimer);
