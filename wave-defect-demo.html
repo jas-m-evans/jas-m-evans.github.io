@@ -397,9 +397,143 @@ permalink: /wave-defect-demo/
     .tel-log-line { color: var(--text); display: block; }
     .tel-log-line--real { color: var(--green); }
     .tel-log-placeholder { color: var(--muted); }
+
+    /* ─── Ollama LLM Inspector ───────────────────────────── */
+    :root { --ollama: #00ff41; --ollama-dim: rgba(0,255,65,0.12); --ollama-glow: rgba(0,255,65,0.35); }
+    .ollama-card { margin-top: 1.5rem; border-top: 2px solid var(--ollama); }
+    .ollama-header { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.85rem; }
+    .ollama-title { font-size: 0.78rem; font-family: "IBM Plex Mono", monospace; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ollama); flex: 1; min-width: 120px; }
+    .ollama-pill { display: inline-flex; align-items: center; gap: 0.28rem; font-size: 0.67rem; font-family: "IBM Plex Mono", monospace; font-weight: 600; padding: 0.2rem 0.55rem; border-radius: 99px; border: 1px solid; white-space: nowrap; }
+    .ollama-pill--online  { color: var(--ollama); background: var(--ollama-dim); border-color: var(--ollama-glow); }
+    .ollama-pill--offline { color: var(--amber);  background: rgba(251,191,36,0.1); border-color: rgba(251,191,36,0.35); }
+    .ollama-pill--checking { color: var(--livekit); background: var(--livekit-dim); border-color: rgba(91,156,246,0.35); animation: pulse-badge 1s ease-in-out infinite; }
+    .ollama-meta-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+    .ollama-meta-lbl { font-size: 0.65rem; font-family: "IBM Plex Mono", monospace; color: var(--muted); white-space: nowrap; }
+    .ollama-url-input { font-size: 0.7rem; font-family: "IBM Plex Mono", monospace; background: var(--ink); border: 1px solid var(--border-mid); color: var(--text); border-radius: 5px; padding: 0.22rem 0.55rem; outline: none; width: 220px; transition: border-color 0.15s; }
+    .ollama-url-input:focus { border-color: var(--ollama); }
+    .ollama-model-sel { font-size: 0.7rem; font-family: "IBM Plex Mono", monospace; background: var(--surface-2); border: 1px solid var(--border-mid); color: var(--text); border-radius: 5px; padding: 0.22rem 0.5rem; cursor: pointer; max-width: 140px; }
+    .ollama-box { background: var(--ink); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.8rem; margin-bottom: 0.45rem; }
+    .ollama-box--query { border-color: rgba(0,255,65,0.22); }
+    .ollama-box--resp  { border-color: rgba(91,156,246,0.2); }
+    .ollama-box-label { font-size: 0.6rem; font-family: "IBM Plex Mono", monospace; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.3rem; display: flex; align-items: center; justify-content: space-between; }
+    .ollama-box-label--q { color: rgba(0,255,65,0.75); }
+    .ollama-box-label--r { color: rgba(91,156,246,0.75); }
+    .ollama-box-ts { color: var(--muted); font-size: 0.58rem; }
+    .ollama-box-text { font-size: 0.7rem; font-family: "IBM Plex Mono", monospace; line-height: 1.6; white-space: pre-wrap; word-break: break-word; max-height: 130px; overflow-y: auto; }
+    .ollama-box-text--q { color: #b8ffca; }
+    .ollama-box-text--r { color: #9bb8f9; }
+    .ollama-cursor { display: inline-block; width: 7px; height: 13px; background: var(--ollama); animation: blink 1s step-end infinite; vertical-align: text-bottom; margin-left: 1px; }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+    .ollama-stats { display: flex; gap: 1rem; margin-top: 0.4rem; flex-wrap: wrap; }
+    .ollama-stat { font-size: 0.62rem; font-family: "IBM Plex Mono", monospace; color: var(--muted); }
+    .ollama-stat b { color: var(--text); font-weight: 600; }
+    .ollama-hist-summary { font-size: 0.65rem; font-family: "IBM Plex Mono", monospace; color: var(--muted); cursor: pointer; margin-top: 0.6rem; display: inline-block; }
+    .ollama-hist-summary:hover { color: var(--text); }
+    .ollama-history { margin-top: 0.5rem; max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.3rem; }
+    .ollama-hist-entry { font-size: 0.63rem; font-family: "IBM Plex Mono", monospace; padding: 0.3rem 0.55rem; border-radius: 5px; background: var(--surface-2); border: 1px solid var(--border); }
+    .ollama-hist-q { color: rgba(0,255,65,0.75); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ollama-hist-a { color: rgba(91,156,246,0.75); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 0.12rem; }
+    .ollama-hist-t { color: var(--muted); font-size: 0.57rem; margin-top: 0.1rem; }
+
+    /* ─── Bot scan overlay ───────────────────────────────── */
+    #bot-scan-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 9000; opacity: 0; transition: opacity 0.3s ease; }
+    #bot-scan-overlay.active { opacity: 1; }
+    .bot-scan-beam {
+      position: absolute; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent 0%, rgba(0,255,65,0.5) 15%, rgba(0,255,65,0.95) 50%, rgba(0,255,65,0.5) 85%, transparent 100%);
+      box-shadow: 0 0 14px 5px rgba(0,255,65,0.35), 0 0 40px 10px rgba(0,255,65,0.1);
+      animation: scan-sweep 2.4s cubic-bezier(0.45,0,0.55,1) infinite;
+    }
+    @keyframes scan-sweep {
+      0%   { top: 0vh; }
+      48%  { top: 100vh; }
+      50%  { top: 100vh; opacity: 0.3; }
+      52%  { top: 100vh; }
+      100% { top: 0vh; }
+    }
+    .bot-corner { position: absolute; width: 14px; height: 14px; border-color: rgba(0,255,65,0.6); border-style: solid; }
+    .bot-corner--tl { top: 6px; left: 6px; border-width: 2px 0 0 2px; }
+    .bot-corner--tr { top: 6px; right: 6px; border-width: 2px 2px 0 0; }
+    .bot-corner--bl { bottom: 6px; left: 6px; border-width: 0 0 2px 2px; }
+    .bot-corner--br { bottom: 6px; right: 6px; border-width: 0 2px 2px 0; }
+
+    /* ─── Bot element highlight ring ─────────────────────── */
+    #bot-ring {
+      position: fixed; pointer-events: none; z-index: 9100; display: none;
+      border: 2px solid rgba(0,255,65,0.9); border-radius: 8px;
+      box-shadow: 0 0 0 4px rgba(0,255,65,0.15), 0 0 20px 6px rgba(0,255,65,0.3);
+      transition: left 0.25s cubic-bezier(0.34,1.56,0.64,1), top 0.25s cubic-bezier(0.34,1.56,0.64,1),
+                  width 0.25s cubic-bezier(0.34,1.56,0.64,1), height 0.25s cubic-bezier(0.34,1.56,0.64,1);
+      animation: ring-pulse 1.4s ease-in-out infinite;
+    }
+    #bot-ring.active { display: block; }
+    @keyframes ring-pulse {
+      0%,100% { box-shadow: 0 0 0 4px rgba(0,255,65,0.12), 0 0 18px 5px rgba(0,255,65,0.25); }
+      50%      { box-shadow: 0 0 0 6px rgba(0,255,65,0.2),  0 0 28px 9px rgba(0,255,65,0.42); }
+    }
+    #bot-ring-label {
+      position: absolute; top: calc(100% + 5px); left: 0;
+      font-size: 0.58rem; font-family: "IBM Plex Mono", monospace; font-weight: 600;
+      color: var(--ollama); background: rgba(14,17,23,0.93);
+      border: 1px solid rgba(0,255,65,0.4); padding: 0.15rem 0.45rem; border-radius: 4px;
+      white-space: nowrap; text-transform: uppercase; letter-spacing: 0.07em;
+    }
+
+    /* ─── Bot HUD (narration panel) ──────────────────────── */
+    #bot-hud {
+      position: fixed; bottom: 1.2rem; right: 1.2rem; z-index: 9200;
+      background: rgba(14,17,23,0.95); border: 1px solid rgba(0,255,65,0.38);
+      border-radius: 10px; padding: 0.65rem 0.95rem; min-width: 240px; max-width: 360px;
+      font-family: "IBM Plex Mono", monospace; display: none;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.65), 0 0 24px rgba(0,255,65,0.06);
+      backdrop-filter: blur(14px); transition: opacity 0.35s ease, transform 0.35s ease;
+      opacity: 0; transform: translateY(8px);
+    }
+    #bot-hud.active { display: block; }
+    #bot-hud.visible { opacity: 1; transform: translateY(0); }
+    .hud-header { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.4rem; }
+    .hud-icon { font-size: 0.85rem; }
+    .hud-title { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(0,255,65,0.8); flex: 1; }
+    .hud-live-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--ollama); animation: pulse-dot 1.3s ease-in-out infinite; }
+    @keyframes pulse-dot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.65); } }
+    .hud-step { font-size: 0.73rem; color: #c0ffcc; line-height: 1.45; min-height: 1.3em; }
+    .hud-substep { font-size: 0.62rem; color: var(--muted); margin-top: 0.22rem; min-height: 1em; }
+    .hud-bar { height: 2px; border-radius: 99px; background: var(--border); margin-top: 0.5rem; overflow: hidden; }
+    .hud-bar-fill { height: 100%; background: linear-gradient(90deg, rgba(0,255,65,0.5), var(--ollama)); border-radius: 99px; transition: width 0.5s ease; }
+
+    /* ─── Ollama topbar badge ─────────────────────────────── */
+    .badge--ollama     { color: var(--ollama);  background: var(--ollama-dim); border-color: var(--ollama-glow); }
+    .badge--ollama-off { color: var(--muted);   background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
   </style>
 </head>
 <body>
+
+<!-- ── Bot scan overlay (full-page, fixed) ── -->
+<div id="bot-scan-overlay" aria-hidden="true">
+  <div class="bot-scan-beam"></div>
+  <div class="bot-corner bot-corner--tl"></div>
+  <div class="bot-corner bot-corner--tr"></div>
+  <div class="bot-corner bot-corner--bl"></div>
+  <div class="bot-corner bot-corner--br"></div>
+</div>
+
+<!-- ── Bot element highlight ring ── -->
+<div id="bot-ring" aria-hidden="true">
+  <span id="bot-ring-label"></span>
+</div>
+
+<!-- ── Bot HUD — step narration ── -->
+<div id="bot-hud" role="status" aria-live="polite" aria-label="Bot status">
+  <div class="hud-header">
+    <span class="hud-icon">🤖</span>
+    <span class="hud-title">Bot · Ollama</span>
+    <div class="hud-live-dot"></div>
+  </div>
+  <div class="hud-step" id="hud-step">Idle</div>
+  <div class="hud-substep" id="hud-substep"></div>
+  <div class="hud-bar"><div class="hud-bar-fill" id="hud-bar-fill" style="width:0%"></div></div>
+</div>
+
 <div class="app">
 
   <!-- ── Top bar ──────────────────────────────────────── -->
@@ -421,6 +555,7 @@ permalink: /wave-defect-demo/
       <span class="badge badge--live badge--dot">Live</span>
       <span class="badge badge--spotify" id="spotify-badge" style="display:none">&#9834; Spotify Connected</span>
       <span class="badge badge--demo" id="demo-badge" style="display:none">&#127918; Demo Mode</span>
+      <span class="badge badge--ollama-off" id="ollama-badge" title="Local Ollama LLM status">&#129302; Ollama</span>
     </div>
   </nav>
 
@@ -670,6 +805,56 @@ permalink: /wave-defect-demo/
       <div class="telemetry-log" id="tel-log" role="log" aria-label="Telemetry event log" aria-live="polite">
         <span class="tel-log-placeholder">Waiting to start&hellip; Click &#9654; Start to capture events.</span>
       </div>
+    </div>
+
+    <!-- ── Ollama LLM Query / Response Inspector ── -->
+    <div class="card ollama-card" id="ollama-card">
+      <div class="ollama-header">
+        <span class="ollama-title">&#129302; Ollama LLM Inspector</span>
+        <span class="ollama-pill ollama-pill--offline" id="ollama-status-pill">&#9888; Not detected</span>
+      </div>
+      <div class="ollama-meta-row">
+        <span class="ollama-meta-lbl">Endpoint:</span>
+        <input id="ollama-url-input" class="ollama-url-input" value="http://localhost:11434" placeholder="http://localhost:11434" title="Ollama API base URL">
+        <span class="ollama-meta-lbl">Model:</span>
+        <select id="ollama-model-sel" class="ollama-model-sel">
+          <option value="llama3.2">llama3.2</option>
+          <option value="llama3.1">llama3.1</option>
+          <option value="mistral">mistral</option>
+          <option value="phi3">phi3</option>
+          <option value="gemma2">gemma2</option>
+          <option value="qwen2.5">qwen2.5</option>
+        </select>
+        <button class="tel-btn" onclick="ollamaCheckHealth()" title="Ping Ollama and refresh model list">&#x21BB; Ping</button>
+      </div>
+      <!-- Query box -->
+      <div class="ollama-box ollama-box--query">
+        <div class="ollama-box-label ollama-box-label--q">
+          <span>&#9658; Query sent</span>
+          <span class="ollama-box-ts" id="ollama-query-ts">—</span>
+        </div>
+        <div class="ollama-box-text ollama-box-text--q" id="ollama-query-text">No queries yet — type in the chat or ask about the music.</div>
+      </div>
+      <!-- Response box -->
+      <div class="ollama-box ollama-box--resp">
+        <div class="ollama-box-label ollama-box-label--r">
+          <span>&#9668; Response received</span>
+          <span class="ollama-box-ts" id="ollama-resp-ts">—</span>
+        </div>
+        <div class="ollama-box-text ollama-box-text--r" id="ollama-resp-text">Waiting&hellip;</div>
+      </div>
+      <!-- Stats row -->
+      <div class="ollama-stats" id="ollama-stats" style="display:none">
+        <div class="ollama-stat">Tokens: <b id="ollama-stat-tok">—</b></div>
+        <div class="ollama-stat">Duration: <b id="ollama-stat-dur">—</b></div>
+        <div class="ollama-stat">Total queries: <b id="ollama-stat-count">0</b></div>
+        <div class="ollama-stat">Model: <b id="ollama-stat-model">—</b></div>
+      </div>
+      <!-- Query history -->
+      <details id="ollama-hist-details" style="margin-top:0.6rem">
+        <summary class="ollama-hist-summary" id="ollama-hist-summary">&#9656; Query history (0)</summary>
+        <div class="ollama-history" id="ollama-history"></div>
+      </details>
     </div>
 
     <details class="sys-console" id="sys-console">
@@ -1445,9 +1630,14 @@ function recompute({ emitChat = true } = {}) {
   document.getElementById('reco-loading').classList.remove('hidden');
   document.getElementById('reco-card').classList.add('hidden');
 
+  // ── Bot visual: scanning while computing ──────────────────────────────────
+  botScanStart();
+  botNarrate('Scanning taste profiles\u2026', 'Analysing audio features \u00B7 genre overlap \u00B7 mood\u2026', 15);
+
   setTimeout(() => {
+    botNarrate('Computing bridge recommendation\u2026', 'Running weighted similarity across candidates\u2026', 55);
     const result = recommendBridge(pA, pB, S.candidates, S.knobs, S.recentTrackIds);
-    if (!result) { syslog('No candidates available.'); return; }
+    if (!result) { syslog('No candidates available.'); botReset(); return; }
     const commentary = generateCommentary(pA, pB, JASON.name, S.guest.name, result);
     renderRecommendation(result, commentary);
     updateCompatibility(pA, pB);
@@ -1458,6 +1648,14 @@ function recompute({ emitChat = true } = {}) {
         isSystem: true,
       });
     }
+    // ── Bot visual: found the recommendation ───────────────────────────────
+    botNarrate(`\u2713 Found: ${result.track_name}`, `Confidence: ${Math.round((result.score || 0) * 100)}%`, 100);
+    setTimeout(() => {
+      const card = document.querySelector('.bridge-track-card');
+      if (card) botTarget(card, '\u2605 Bridge track found', result.track_name, 2800);
+      else      botNarrateEnd(1500);
+      botScanStop();
+    }, 120);
   }, 60);
 }
 
@@ -1509,11 +1707,23 @@ function handleUserMessage(text) {
       syslog(`NLP nudge: ${parts}`);
       recompute({ emitChat: false });
     } else {
-      appendChatMsg({
-        sender: 'System',
-        content: `Heard you! Try a command like \`/weirder\`, \`/moodier\`, \`/next\` — or describe what you're after, e.g. "something darker" or "more energy".`,
-        isSystem: true,
-      });
+      // Route free-text to Ollama when it's available; otherwise show the tip message.
+      if (OLLAMA.online && !OLLAMA.streaming) {
+        const ctx      = _ollamaContext();
+        const msgEl    = appendChatMsg({ sender: 'Ollama', content: '\u231B Thinking\u2026', isSystem: true });
+        const contentEl = msgEl?.querySelector('.msg-content');
+        ollamaQuery(text, {
+          context:  ctx,
+          onToken: (_tok, full) => { if (contentEl) contentEl.textContent = full; },
+        }).then(resp => {
+          if (resp && contentEl) contentEl.textContent = resp;
+        });
+      } else {
+        const tip = OLLAMA.online
+          ? 'Ollama is busy — please wait for the current response to finish.'
+          : 'Try a command like `/weirder`, `/moodier`, `/next` \u2014 or describe what you\u2019re after. Tip: connect Ollama below for free-text AI chat.';
+        appendChatMsg({ sender: 'System', content: tip, isSystem: true });
+      }
     }
   }
 }
@@ -1757,7 +1967,11 @@ document.getElementById('demo-name').addEventListener('keydown', e => {
 });
 
 document.querySelectorAll('.action-btn').forEach(btn => {
-  btn.addEventListener('click', () => handleUserMessage(btn.dataset.cmd));
+  btn.addEventListener('click', () => {
+    // Bot: highlight the button and narrate the action before executing
+    botTarget(btn, btn.title || btn.textContent.trim(), `Applying ${btn.dataset.cmd}\u2026`, 1800);
+    handleUserMessage(btn.dataset.cmd);
+  });
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -2361,6 +2575,323 @@ function renderComparison(currentProfile, otherProfile) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+//  Ollama LLM Integration
+//  Connects to a local Ollama instance (default: http://localhost:11434).
+//  All queries and streaming responses are shown in the inspector panel.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── Runtime config (user-overridable via inspector inputs) ──────────────────
+let OLLAMA_URL   = 'http://localhost:11434';
+let OLLAMA_MODEL = 'llama3.2';
+
+// ── State ────────────────────────────────────────────────────────────────────
+const OLLAMA = {
+  online:     false,
+  queryCount: 0,
+  streaming:  false,
+  history:    [],   // [{ prompt, response, durationMs, model, ts }]
+};
+
+// ── Helper: read current URL/model from inspector inputs ─────────────────────
+function _ollamaUrl()   { return (document.getElementById('ollama-url-input')?.value   || OLLAMA_URL).replace(/\/$/, ''); }
+function _ollamaModel() { return (document.getElementById('ollama-model-sel')?.value   || OLLAMA_MODEL); }
+
+// ── Health check / model list refresh ────────────────────────────────────────
+async function ollamaCheckHealth() {
+  const url = _ollamaUrl();
+  OLLAMA_URL = url;
+  _ollamaPill('checking', '&#x231B; Checking\u2026');
+  try {
+    const resp = await fetch(`${url}/api/tags`, { signal: AbortSignal.timeout(4000) });
+    if (!resp.ok) throw new Error(`HTTP\u00A0${resp.status}`);
+    const data   = await resp.json();
+    const models = (data.models || []).map(m => m.name);
+    OLLAMA.online = true;
+    _populateModels(models);
+    _ollamaPill('online', `&#10003;\u00A0Online\u00A0\u00B7\u00A0${models.length} model${models.length === 1 ? '' : 's'}`);
+    _ollamaBadge(true);
+    syslog(`[Ollama] Connected: ${url} \u2014 models: ${models.join(', ')}`);
+    return true;
+  } catch (err) {
+    OLLAMA.online = false;
+    const msg = err.message.length > 50 ? 'Not reachable' : err.message;
+    _ollamaPill('offline', `&#10007;\u00A0${msg}`);
+    _ollamaBadge(false);
+    syslog(`[Ollama] Health check failed: ${err.message}`);
+    return false;
+  }
+}
+
+function _populateModels(names) {
+  const sel = document.getElementById('ollama-model-sel');
+  if (!sel || !names.length) return;
+  const cur = sel.value;
+  sel.innerHTML = names.map(n =>
+    `<option value="${_esc(n)}"${n === cur || n.startsWith(OLLAMA_MODEL) ? ' selected' : ''}>${_esc(n)}</option>`
+  ).join('');
+}
+
+function _ollamaPill(state, html) {
+  const el = document.getElementById('ollama-status-pill');
+  if (!el) return;
+  el.innerHTML  = html;
+  el.className  = `ollama-pill ollama-pill--${state === 'online' ? 'online' : state === 'checking' ? 'checking' : 'offline'}`;
+}
+
+function _ollamaBadge(online) {
+  const b = document.getElementById('ollama-badge');
+  if (!b) return;
+  b.className   = `badge ${online ? 'badge--ollama' : 'badge--ollama-off'}`;
+  b.textContent = online ? '\uD83E\uDD16 Ollama \u2713' : '\uD83E\uDD16 Ollama';
+}
+
+// ── Stream a query to Ollama ──────────────────────────────────────────────────
+// onToken(token, fullSoFar) is called for each streamed token.
+// Returns the full response string, or null on error.
+async function ollamaQuery(prompt, { context = '', onToken = null, signal = null } = {}) {
+  const url   = _ollamaUrl();
+  const model = _ollamaModel();
+  const full  = context ? `${context}\n\n${prompt}` : prompt;
+
+  OLLAMA.streaming = true;
+  OLLAMA.queryCount++;
+
+  const qTs = new Date();
+  _ollamaShowQuery(full, qTs, model);
+  _ollamaShowResp('', qTs, model, true);  // streaming=true → show cursor
+
+  botScanStart();
+  botNarrate(`Querying Ollama (${model})\u2026`, 'Sending prompt to local LLM\u2026', 10);
+
+  const t0 = Date.now();
+  let response = '';
+  let tokens   = 0;
+
+  try {
+    const res = await fetch(`${url}/api/generate`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ model, prompt: full, stream: true }),
+      signal,
+    });
+    if (!res.ok) throw new Error(`Ollama returned HTTP\u00A0${res.status}`);
+
+    const reader = res.body.getReader();
+    const dec    = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      for (const line of dec.decode(value, { stream: true }).split('\n')) {
+        if (!line.trim()) continue;
+        try {
+          const obj = JSON.parse(line);
+          if (obj.response) {
+            response += obj.response;
+            tokens++;
+            onToken?.(obj.response, response);
+            _ollamaAppendToken(obj.response);
+          }
+          if (obj.done) {
+            const ms = Date.now() - t0;
+            _ollamaFinalise(response, ms, model, tokens, qTs);
+            botNarrate('\u2713 Ollama replied', `${tokens} tokens \u00B7 ${(ms / 1000).toFixed(1)}s`, 100);
+            setTimeout(botScanStop, 900);
+          }
+        } catch (_e) { /* non-JSON lines are normal in streaming */ }
+      }
+    }
+  } catch (err) {
+    _ollamaShowResp(`[Error: ${err.message}]`, qTs, model, false);
+    botNarrate('\u2717 Ollama error', err.message.slice(0, 60), 0);
+    botScanStop();
+    syslog(`[Ollama] Query error: ${err.message}`);
+    OLLAMA.streaming = false;
+    return null;
+  }
+
+  OLLAMA.streaming = false;
+  OLLAMA.history.push({ prompt: full, response, durationMs: Date.now() - t0, model, ts: qTs });
+  _ollamaRenderHistory();
+  syslog(`[Ollama] Done: ${tokens} tokens, ${Date.now() - t0}ms, model=${model}`);
+  return response;
+}
+
+// ── Inspector DOM helpers ─────────────────────────────────────────────────────
+
+function _ollamaShowQuery(text, ts, model) {
+  const el  = document.getElementById('ollama-query-text');
+  const tsEl = document.getElementById('ollama-query-ts');
+  if (el)  el.textContent  = text;
+  if (tsEl) tsEl.textContent = `${ts.toLocaleTimeString()} \u00B7 ${model}`;
+  const stats = document.getElementById('ollama-stats');
+  if (stats) stats.style.display = 'flex';
+  const cnt = document.getElementById('ollama-stat-count');
+  if (cnt) cnt.textContent = OLLAMA.queryCount;
+  const mod = document.getElementById('ollama-stat-model');
+  if (mod) mod.textContent = model;
+}
+
+function _ollamaShowResp(text, ts, model, streaming) {
+  const el  = document.getElementById('ollama-resp-text');
+  const tsEl = document.getElementById('ollama-resp-ts');
+  if (!el) return;
+  el.innerHTML = '';
+  if (text) el.appendChild(document.createTextNode(text));
+  if (streaming) {
+    const cur    = document.createElement('span');
+    cur.className = 'ollama-cursor';
+    cur.id        = 'ollama-cursor';
+    el.appendChild(cur);
+  }
+  if (tsEl) tsEl.textContent = streaming ? 'streaming\u2026' : `${ts.toLocaleTimeString()} \u00B7 ${model}`;
+}
+
+function _ollamaAppendToken(tok) {
+  const el  = document.getElementById('ollama-resp-text');
+  if (!el) return;
+  const cur = document.getElementById('ollama-cursor');
+  const tn  = document.createTextNode(tok);
+  if (cur) el.insertBefore(tn, cur);
+  else     el.appendChild(tn);
+  el.scrollTop = el.scrollHeight;
+}
+
+function _ollamaFinalise(text, ms, model, tokens, ts) {
+  const el  = document.getElementById('ollama-resp-text');
+  if (el)  { el.textContent = text; el.scrollTop = el.scrollHeight; }
+  const tsEl = document.getElementById('ollama-resp-ts');
+  if (tsEl) tsEl.textContent = `${ts.toLocaleTimeString()} \u00B7 ${(ms / 1000).toFixed(2)}s`;
+  const durEl = document.getElementById('ollama-stat-dur');
+  if (durEl) durEl.textContent = `${ms}ms`;
+  const tokEl = document.getElementById('ollama-stat-tok');
+  if (tokEl) tokEl.textContent = tokens;
+}
+
+function _ollamaRenderHistory() {
+  const list = document.getElementById('ollama-history');
+  const sum  = document.getElementById('ollama-hist-summary');
+  if (!list) return;
+  list.innerHTML = OLLAMA.history.slice().reverse().map(h => `
+    <div class="ollama-hist-entry">
+      <div class="ollama-hist-q">&#9658; ${_esc(h.prompt.slice(0, 110))}${h.prompt.length > 110 ? '\u2026' : ''}</div>
+      <div class="ollama-hist-a">&#9668; ${_esc(h.response.slice(0, 150))}${h.response.length > 150 ? '\u2026' : ''}</div>
+      <div class="ollama-hist-t">${_esc(h.model)} \u00B7 ${h.ts.toLocaleTimeString()} \u00B7 ${h.durationMs}ms</div>
+    </div>`).join('');
+  if (sum) sum.textContent = `\u25B6 Query history (${OLLAMA.history.length})`;
+}
+
+// ── Context builder for music chat ───────────────────────────────────────────
+function _ollamaContext() {
+  const pA = JASON;
+  const pB = S.guest?.tasteProfile;
+  const lines = [
+    'You are a concise music recommendation assistant helping two people find songs they both enjoy.',
+    `Host: ${_esc(pA.name)} \u2014 ${pA.derived?.summary_text || 'music fan'}`,
+  ];
+  if (pB) lines.push(`Guest: ${pB.derived?.summary_text || 'music fan'}`);
+  const tn = document.getElementById('bridge-track-name');
+  if (tn?.textContent && tn.textContent !== '\u2014') lines.push(`Current pick: "${_esc(tn.textContent)}"`);
+  lines.push('Answer the user in 2–3 sentences. Focus on music. Be direct and fun.');
+  return lines.join('\n');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  Bot visual effects — scan line · element highlight ring · HUD narration
+// ═══════════════════════════════════════════════════════════════════════════
+
+let _hudTimer   = null;
+let _ringTimer  = null;
+
+// ── Scan overlay ─────────────────────────────────────────────────────────────
+function botScanStart() {
+  const ov = document.getElementById('bot-scan-overlay');
+  if (ov) ov.classList.add('active');
+  _hudShow();
+}
+
+function botScanStop() {
+  const ov = document.getElementById('bot-scan-overlay');
+  if (ov) ov.classList.remove('active');
+}
+
+// ── HUD narration ─────────────────────────────────────────────────────────────
+function _hudShow() {
+  const hud = document.getElementById('bot-hud');
+  if (!hud) return;
+  hud.classList.add('active');
+  requestAnimationFrame(() => requestAnimationFrame(() => hud.classList.add('visible')));
+}
+
+function _hudHide() {
+  const hud = document.getElementById('bot-hud');
+  if (!hud) return;
+  hud.classList.remove('visible');
+  setTimeout(() => hud.classList.remove('active'), 360);
+}
+
+// Update HUD step text.  progressPct 0–100 or null to leave unchanged.
+function botNarrate(step, substep, progressPct) {
+  _hudShow();
+  const stepEl = document.getElementById('hud-step');
+  if (stepEl) stepEl.textContent = step;
+  const subEl  = document.getElementById('hud-substep');
+  if (subEl)  subEl.textContent  = substep || '';
+  if (progressPct != null) {
+    const fill = document.getElementById('hud-bar-fill');
+    if (fill) fill.style.width = `${progressPct}%`;
+  }
+}
+
+// Dim / hide the HUD after a delay.
+function botNarrateEnd(delayMs = 2000) {
+  clearTimeout(_hudTimer);
+  _hudTimer = setTimeout(() => { botScanStop(); _hudHide(); }, delayMs);
+}
+
+// ── Element highlight ring ────────────────────────────────────────────────────
+function botHighlight(el, label) {
+  if (!el) return;
+  const ring = document.getElementById('bot-ring');
+  if (!ring) return;
+  const r   = el.getBoundingClientRect();
+  const pad = 7;
+  ring.style.left   = `${r.left   - pad}px`;
+  ring.style.top    = `${r.top    - pad}px`;
+  ring.style.width  = `${r.width  + pad * 2}px`;
+  ring.style.height = `${r.height + pad * 2}px`;
+  ring.classList.add('active');
+  const lbl = document.getElementById('bot-ring-label');
+  if (lbl) lbl.textContent = label || '';
+}
+
+function botUnhighlight() {
+  document.getElementById('bot-ring')?.classList.remove('active');
+}
+
+// Highlight an element, narrate a step, then auto-hide after duration ms.
+function botTarget(el, step, substep, durationMs) {
+  const dur = durationMs ?? 2600;
+  botNarrate(step, substep, 60);
+  botHighlight(el, step);
+  clearTimeout(_ringTimer);
+  _ringTimer = setTimeout(() => {
+    botUnhighlight();
+    botNarrate('\u2713 Done', '', 100);
+    botNarrateEnd(1200);
+  }, dur);
+}
+
+// Reset all bot effects immediately.
+function botReset() {
+  botScanStop();
+  botUnhighlight();
+  _hudHide();
+  clearTimeout(_hudTimer);
+  clearTimeout(_ringTimer);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 //  LiveKit Event Telemetry
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -2698,6 +3229,9 @@ function clearTelemetry() {
 
   const token = _getToken();
   if (token) await loadSpotifyUser(token);
+
+  // ── Ping Ollama on startup (non-blocking, best-effort) ────────────────────
+  ollamaCheckHealth().catch(() => {});
 })();
 </script>
 </body>
