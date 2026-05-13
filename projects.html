@@ -6,16 +6,37 @@ author_profile: true
 ---
 
 <div class="projects-grid">
+  {% assign featured_titles = "Supervised Learning: Five Algorithms, Two Domains, One Experimental Framework|||Strategy Learner for Algorithmic Trading|||Unsupervised Learning and Dimensionality Reduction" | split: "|||" %}
+  {% assign rendered_titles = "" %}
+
+  {% for featured_title in featured_titles %}
+    {% assign project = site.projects | where: "title", featured_title | first %}
+    {% if project %}
+      <div class="project-item">
+        {% if project.image %}
+          <a href="{{ project.url }}" class="project-item__image-link">
+            <img src="{{ project.image }}" alt="{{ project.title }}" class="project-item__image" loading="lazy">
+          </a>
+        {% endif %}
+        <h2><a href="{{ project.url }}">{{ project.title }}</a></h2>
+        <p>{{ project.description }}</p>
+      </div>
+      {% assign rendered_titles = rendered_titles | append: project.title | append: "|||" %}
+    {% endif %}
+  {% endfor %}
+
   {% assign sorted_projects = site.projects | sort: "title" %}
   {% for project in sorted_projects %}
-    <div class="project-item">
-      {% if project.image %}
-        <a href="{{ project.url }}" class="project-item__image-link">
-          <img src="{{ project.image }}" alt="{{ project.title }}" class="project-item__image" loading="lazy">
-        </a>
-      {% endif %}
-      <h2><a href="{{ project.url }}">{{ project.title }}</a></h2>
-      <p>{{ project.description }}</p>
-    </div>
+    {% unless rendered_titles contains project.title %}
+      <div class="project-item">
+        {% if project.image %}
+          <a href="{{ project.url }}" class="project-item__image-link">
+            <img src="{{ project.image }}" alt="{{ project.title }}" class="project-item__image" loading="lazy">
+          </a>
+        {% endif %}
+        <h2><a href="{{ project.url }}">{{ project.title }}</a></h2>
+        <p>{{ project.description }}</p>
+      </div>
+    {% endunless %}
   {% endfor %}
 </div>
