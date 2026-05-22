@@ -8,98 +8,140 @@ classes: music-page
 
 <div class="music-shell">
   <section class="music-hero">
-    <h1>Music Lab</h1>
-    <p>Live drums are my favorite real-time systems problem: listen fast, lock in hard, and keep control when the room gets chaotic.</p>
-    <p>Current rig: Ludwig NeuSonic kit, Ludwig Black Beauty snare, Sabian AAX crashes, Sabian HH hats, XS20 ride.</p>
-    <p>This page is intentionally dark and pixel-styled to match the vibe: arcade energy, tight timing, no fluff.</p>
-    <div class="music-actions">
-      {% if site.spotify_url and site.spotify_url != "" %}
-        <a class="btn btn--music" href="{{ site.spotify_url }}" target="_blank" rel="noopener noreferrer">Current Band</a>
-      {% endif %}
-      <a class="btn btn--music-outline" href="/projects/">Related Projects</a>
+    <div class="music-hero__copy">
+      <p class="music-kicker">Live drums • heavy pocket • sharp edges</p>
+      <h1>Music // Live System</h1>
+      <p>Drums are the part of the stack where instinct, timing, and control all have to survive impact. I like loud rooms, hard transitions, and parts that still breathe under pressure.</p>
+      <p>The current setup centers on a Ludwig NeuSonic kit with a Ludwig Black Beauty snare, Sabian HH hats, Sabian AAX crashes, and an XS20 ride.</p>
+      <ul class="music-statline">
+        <li>Live-ready timing</li>
+        <li>Aggressive dynamics</li>
+        <li>Studio-tight choices</li>
+      </ul>
+      <div class="music-actions">
+        {% if site.spotify_url and site.spotify_url != "" %}
+          <a class="btn btn--music" href="{{ site.spotify_url }}" target="_blank" rel="noopener noreferrer">Current Band</a>
+        {% endif %}
+        <a class="btn btn--music-outline" href="/projects/">Related Projects</a>
+      </div>
+    </div>
+
+    <div class="music-hero__visual">
+      <div class="music-portrait">
+        <img src="/assets/images/me.jpeg" alt="Portrait of Jason Evans" loading="eager" decoding="async">
+      </div>
+      <div class="music-sprite-card music-sprite-card--player" aria-hidden="true">
+        <span class="music-sprite-card__tag">PLAYER 01</span>
+        <span class="music-sprite music-sprite--player"></span>
+      </div>
+      <div class="music-sprite-card music-sprite-card--kit" aria-hidden="true">
+        <span class="music-sprite-card__tag">KIT LOAD</span>
+        <span class="music-sprite music-sprite--kit"></span>
+      </div>
     </div>
   </section>
 
-  <section class="music-pixel-stage">
-    <article class="music-pixel-card">
-      <h2>Pixel Me</h2>
-      <svg class="pixel-svg" viewBox="0 0 16 16" role="img" aria-label="Pixel portrait of Jason with drumsticks">
-        <rect width="16" height="16" fill="#10141f"/>
-        <rect x="5" y="1" width="6" height="2" fill="#1f2535"/>
-        <rect x="4" y="3" width="8" height="1" fill="#2b3248"/>
-        <rect x="4" y="4" width="8" height="4" fill="#f6c58e"/>
-        <rect x="5" y="5" width="1" height="1" fill="#232738"/>
-        <rect x="10" y="5" width="1" height="1" fill="#232738"/>
-        <rect x="6" y="7" width="4" height="1" fill="#e7a96f"/>
-        <rect x="3" y="8" width="10" height="4" fill="#6b79ff"/>
-        <rect x="2" y="10" width="2" height="4" fill="#f6c58e"/>
-        <rect x="12" y="10" width="2" height="4" fill="#f6c58e"/>
-        <rect x="1" y="9" width="4" height="1" fill="#d7b173"/>
-        <rect x="11" y="9" width="4" height="1" fill="#d7b173"/>
-        <rect x="5" y="12" width="2" height="3" fill="#2e3a58"/>
-        <rect x="9" y="12" width="2" height="3" fill="#2e3a58"/>
-      </svg>
-    </article>
-
-    <article class="music-pixel-card">
-      <h2>Pixel Drum Gear</h2>
-      <svg class="pixel-svg pixel-svg--wide" viewBox="0 0 24 16" role="img" aria-label="Pixel drum kit with cymbals">
-        <rect width="24" height="16" fill="#10141f"/>
-        <rect x="2" y="3" width="4" height="1" fill="#f8c44f"/>
-        <rect x="18" y="3" width="4" height="1" fill="#f8c44f"/>
-        <rect x="3" y="4" width="2" height="5" fill="#8fa2c4"/>
-        <rect x="19" y="4" width="2" height="5" fill="#8fa2c4"/>
-        <rect x="8" y="6" width="8" height="5" fill="#d55572"/>
-        <rect x="9" y="7" width="6" height="3" fill="#ff7892"/>
-        <rect x="5" y="8" width="3" height="3" fill="#4f5f88"/>
-        <rect x="16" y="8" width="3" height="3" fill="#4f5f88"/>
-        <rect x="10" y="11" width="4" height="4" fill="#4f5f88"/>
-        <rect x="11" y="12" width="2" height="3" fill="#2d3856"/>
-      </svg>
-    </article>
-  </section>
-
-  <section class="music-grid">
+  <section class="music-overview">
     <article class="music-card">
       <h2>Live Focus</h2>
-      <p>Groove consistency, sharp dynamics, and clean transitions in loud, messy rooms.</p>
+      <p>Groove consistency first, then the dynamic hits. The goal is to make heavy songs feel locked instead of loose.</p>
     </article>
     <article class="music-card">
       <h2>Practice Loop</h2>
-      <p>Subdivision work, displacement drills, and short recording/review cycles.</p>
+      <p>Subdivision work, displacement drills, and short record-review cycles keep the details honest.</p>
     </article>
     <article class="music-card">
       <h2>Studio Mindset</h2>
-      <p>Fast intentional choices, tight takes, and enough space for songs to breathe.</p>
+      <p>Fast intentional choices, clean takes, and just enough air around the part to let the song hit harder.</p>
     </article>
   </section>
 
-  {% if site.spotify_embed_url and site.spotify_embed_url != "" %}
-    <section class="music-embed">
-      <h2>Now Playing</h2>
-      <iframe src="{{ site.spotify_embed_url }}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-    </section>
-  {% else %}
+  <section class="music-loadout">
+    <div class="music-section-heading">
+      <p class="music-kicker">Gear loadout</p>
+      <h2>Drum Arsenal</h2>
+      <p>A darker, game-inventory view of the pieces I actually lean on.</p>
+    </div>
+    <div class="music-loadout-grid">
+      <article class="music-slot">
+        <span class="music-slot__label">Snare</span>
+        <h3>Ludwig Black Beauty</h3>
+        <p>Fast crack, dense body, and enough cut to stay present when the room gets ugly.</p>
+      </article>
+      <article class="music-slot">
+        <span class="music-slot__label">Kit</span>
+        <h3>Ludwig NeuSonic</h3>
+        <p>The center of the setup: punchy shells that stay controlled live and focused on a mic.</p>
+      </article>
+      <article class="music-slot">
+        <span class="music-slot__label">Hi-Hats</span>
+        <h3>Sabian HH Hats</h3>
+        <p>Dark bite with clear definition for tight openings, ghost-note detail, and fast foot work.</p>
+      </article>
+      <article class="music-slot">
+        <span class="music-slot__label">Crashes</span>
+        <h3>Sabian AAX</h3>
+        <p>Quick response and bright attack for the accents that need to jump out instantly.</p>
+      </article>
+      <article class="music-slot">
+        <span class="music-slot__label">Ride</span>
+        <h3>Sabian XS20</h3>
+        <p>Solid stick definition with enough wash to open up without losing the pulse.</p>
+      </article>
+      <article class="music-slot">
+        <span class="music-slot__label">Hardware</span>
+        <h3>Locked-In Stands</h3>
+        <p>Stability matters. If the hardware moves, the pocket moves with it.</p>
+      </article>
+      <article class="music-slot">
+        <span class="music-slot__label">Sticks</span>
+        <h3>Attack Layer</h3>
+        <p>The last part of the chain: rebound, weight, and consistency that keep the whole kit speaking evenly.</p>
+      </article>
+      <article class="music-slot">
+        <span class="music-slot__label">Mode</span>
+        <h3>Stage Pressure</h3>
+        <p>Play hard, stay in control, and leave enough headroom for the song to breathe.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="music-lane">
+    {% if site.spotify_embed_url and site.spotify_embed_url != "" %}
+      <section class="music-embed">
+        <h2>Now Playing</h2>
+        <iframe src="{{ site.spotify_embed_url }}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+      </section>
+    {% else %}
+      <section class="music-note">
+        <h2>Now Playing</h2>
+        <p>Add spotify_embed_url in _config.yml to activate listening embeds on this page.</p>
+      </section>
+    {% endif %}
+
     <section class="music-note">
-      Add spotify_embed_url in _config.yml to activate listening embeds on this page.
+      <h2>Stage Notes</h2>
+      <p>This page is meant to feel like a dark menu screen instead of a stack of disconnected widgets: one lane for the current band, one for the rig, one for the mentality behind it.</p>
+      <p>The floating character cards keep the game influence, but the page now leads with cleaner visuals and a tighter flow.</p>
     </section>
-  {% endif %}
+  </section>
 
   {% comment %}
-    Previous artist visual embed intentionally disabled (no image panel wanted on this page).
+    Dead Pixel / previous band section intentionally removed from the page.
+
     {% if site.spotify_prev_embed_url and site.spotify_prev_embed_url != "" %}
       <section class="music-embed">
         <h2>Previous Project</h2>
         <iframe src="{{ site.spotify_prev_embed_url }}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
       </section>
     {% endif %}
-  {% endcomment %}
 
-  {% if site.spotify_prev_url and site.spotify_prev_url != "" %}
-    <section class="music-note">
-      <h2>Previous Band</h2>
-      <p>Old project link only, no picture embed:</p>
-      <a class="btn btn--music-outline" href="{{ site.spotify_prev_url }}" target="_blank" rel="noopener noreferrer">Open Previous Band on Spotify</a>
-    </section>
-  {% endif %}
+    {% if site.spotify_prev_url and site.spotify_prev_url != "" %}
+      <section class="music-note">
+        <h2>Previous Band</h2>
+        <p>Old project link only, no picture embed:</p>
+        <a class="btn btn--music-outline" href="{{ site.spotify_prev_url }}" target="_blank" rel="noopener noreferrer">Open Previous Band on Spotify</a>
+      </section>
+    {% endif %}
+  {% endcomment %}
 </div>
