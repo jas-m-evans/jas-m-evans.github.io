@@ -27,10 +27,10 @@ url: "https://jas-m-evans.github.io" # the base hostname & protocol for your sit
 #twitter_username: jekyllrb
 github_username:  jas-m-evans
 linkedin_url: "https://www.linkedin.com/in/jasmevans/"
-# spotify_url: "https://open.spotify.com/artist/6A0yJMXzU5N9a7vXe9hCuG"
-# spotify_embed_url: "https://open.spotify.com/embed/artist/6A0yJMXzU5N9a7vXe9hCuG"
-# spotify_prev_url: "https://open.spotify.com/artist/7xlSmeQmggtnDr9wDjX2pY"
-# spotify_prev_embed_url: "https://open.spotify.com/embed/artist/7xlSmeQmggtnDr9wDjX2pY"
+spotify_url: "https://open.spotify.com/artist/6A0yJMXzU5N9a7vXe9hCuG"
+spotify_embed_url: "https://open.spotify.com/embed/artist/6A0yJMXzU5N9a7vXe9hCuG"
+spotify_prev_url: "https://open.spotify.com/artist/7xlSmeQmggtnDr9wDjX2pY"
+spotify_prev_embed_url: "https://open.spotify.com/embed/artist/7xlSmeQmggtnDr9wDjX2pY"
 
 # Build settings
 plugins:
