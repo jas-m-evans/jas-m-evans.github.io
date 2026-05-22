@@ -7,17 +7,17 @@ author_profile: true
 
 ## Hi, I'm Jason
 
-I'm a computer scientist with an M.Sc., specializing in data engineering and machine learning. I enjoy building robust data pipelines, experimenting with deep learning models, and sharing what I learn through projects and writing.
+I'm a computer scientist with an M.Sc., working as a data engineer and musician. I enjoy building robust data pipelines, keeping systems reliable, and spending as much time as possible behind a drum kit.
 
 ## Background
 
 - **Education:** M.Sc. Computer Science
-- **Focus areas:** Data engineering, NLP, speech/audio ML
-- **Tools I use regularly:** Python, SQL, Spark, PyTorch, Hugging Face Transformers, dbt, Airflow
+- **Focus areas:** Data engineering, analytics engineering, live drums
+- **Tools I use regularly:** Python, SQL, Spark, dbt, Airflow
 
 ## What I'm Working On
 
-Recently I've been exploring speech and audio machine learning, including fine-tuning and applying models like wav2vec 2.0 for automatic speech recognition tasks. I'm also interested in building end-to-end data platforms that are reliable, observable, and easy to maintain.
+Lately I've been focused on building dependable data platforms, tightening up observability and workflow quality, and keeping music work active with regular playing, writing, and live prep.
 
 ## Get in Touch
 

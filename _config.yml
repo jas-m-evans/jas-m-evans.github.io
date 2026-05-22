@@ -21,7 +21,7 @@
 title: Jason Evans, M.Sc.
 email: jas.m.evans@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Data Developer 
+  Data Engineer · Musician
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://jas-m-evans.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 #twitter_username: jekyllrb
@@ -48,7 +48,7 @@ header_links: false
 # Author sidebar
 author:
   name: "Jason Evans"
-  bio: "M.Sc. Computer Science · Data Engineer · ML Researcher"
+  bio: "M.Sc. Computer Science · Data Engineer · Musician"
   location: "Canada"
   email: "jas.m.evans@gmail.com"
   links:
