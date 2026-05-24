@@ -61,75 +61,135 @@ classes: music-page
     <div class="music-section-heading">
       <p class="music-kicker">Gear loadout</p>
       <h2>Drum Inventory</h2>
-      <p>Hover or click a slot for the short version.</p>
+      <p>Current gigging setup built for punch, control, and fast changeovers.</p>
     </div>
     <div class="music-inventory" aria-label="Interactive drum gear inventory">
-      <article class="music-item">
-        <button type="button" class="music-item__button" aria-describedby="music-item-snare-tip">
+      <details class="music-item">
+        <summary class="music-item__summary">
           <span class="music-item__slot">Snare</span>
-          <span class="music-pixel music-pixel--snare" aria-hidden="true"></span>
-          <span class="music-item__name">Black Beauty</span>
-        </button>
-        <div class="music-item__tooltip" id="music-item-snare-tip">
-          <strong>Ludwig Black Beauty</strong>
-          <span>Sharp crack up front, full body underneath.</span>
+          <span class="music-item__media" aria-hidden="true">
+            <img src="{{ '/assets/images/music/black-beauty-snare.svg' | relative_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">
+          </span>
+          <span class="music-item__body">
+            <span class="music-item__name">Ludwig Black Beauty</span>
+            <span class="music-item__spec">6.5x14 • black nickel over brass</span>
+          </span>
+          <span class="music-item__hint">
+            <span>Tone note</span>
+            <svg class="music-item__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M3.5 6.25 8 10.75l4.5-4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
+            </svg>
+          </span>
+        </summary>
+        <div class="music-item__details">
+          <p>Sharp crack up front, full body underneath.</p>
         </div>
-      </article>
-      <article class="music-item">
-        <button type="button" class="music-item__button" aria-describedby="music-item-kit-tip">
+      </details>
+      <details class="music-item">
+        <summary class="music-item__summary">
           <span class="music-item__slot">Kit</span>
-          <span class="music-pixel music-pixel--kit" aria-hidden="true"></span>
-          <span class="music-item__name">NeuSonic</span>
-        </button>
-        <div class="music-item__tooltip" id="music-item-kit-tip">
-          <strong>Ludwig NeuSonic</strong>
-          <span>Punchy shells that stay tight live and focused on a mic.</span>
+          <span class="music-item__media" aria-hidden="true">
+            <img src="{{ '/assets/images/music/neusonic-kit.svg' | relative_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">
+          </span>
+          <span class="music-item__body">
+            <span class="music-item__name">Ludwig NeuSonic</span>
+            <span class="music-item__spec">Butterscotch Pearl wrap • punchy live shells</span>
+          </span>
+          <span class="music-item__hint">
+            <span>Tone note</span>
+            <svg class="music-item__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M3.5 6.25 8 10.75l4.5-4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
+            </svg>
+          </span>
+        </summary>
+        <div class="music-item__details">
+          <p>Punchy shells that stay tight live and focused on a mic.</p>
         </div>
-      </article>
-      <article class="music-item">
-        <button type="button" class="music-item__button" aria-describedby="music-item-hats-tip">
+      </details>
+      <details class="music-item">
+        <summary class="music-item__summary">
           <span class="music-item__slot">Hi-Hats</span>
-          <span class="music-pixel music-pixel--hats" aria-hidden="true"></span>
-          <span class="music-item__name">Sabian HH</span>
-        </button>
-        <div class="music-item__tooltip" id="music-item-hats-tip">
-          <strong>Sabian HH Hats</strong>
-          <span>Dark bite with clear definition when the part gets busy.</span>
+          <span class="music-item__media" aria-hidden="true">
+            <img src="{{ '/assets/images/music/sabian-hh-hats.svg' | relative_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">
+          </span>
+          <span class="music-item__body">
+            <span class="music-item__name">Sabian HH Hats</span>
+            <span class="music-item__spec">Dark bite with clear definition</span>
+          </span>
+          <span class="music-item__hint">
+            <span>Tone note</span>
+            <svg class="music-item__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M3.5 6.25 8 10.75l4.5-4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
+            </svg>
+          </span>
+        </summary>
+        <div class="music-item__details">
+          <p>Dark bite with clear definition when the part gets busy.</p>
         </div>
-      </article>
-      <article class="music-item">
-        <button type="button" class="music-item__button" aria-describedby="music-item-crash-tip">
+      </details>
+      <details class="music-item">
+        <summary class="music-item__summary">
           <span class="music-item__slot">Crashes</span>
-          <span class="music-pixel music-pixel--crash" aria-hidden="true"></span>
-          <span class="music-item__name">Sabian AAX</span>
-        </button>
-        <div class="music-item__tooltip" id="music-item-crash-tip">
-          <strong>Sabian AAX</strong>
-          <span>They open fast, hit hard, and clear out quickly.</span>
+          <span class="music-item__media" aria-hidden="true">
+            <img src="{{ '/assets/images/music/sabian-aax-crashes.svg' | relative_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">
+          </span>
+          <span class="music-item__body">
+            <span class="music-item__name">Sabian AAX Crashes</span>
+            <span class="music-item__spec">Fast attack and quick clear-out</span>
+          </span>
+          <span class="music-item__hint">
+            <span>Tone note</span>
+            <svg class="music-item__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M3.5 6.25 8 10.75l4.5-4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
+            </svg>
+          </span>
+        </summary>
+        <div class="music-item__details">
+          <p>They open fast, hit hard, and clear out quickly.</p>
         </div>
-      </article>
-      <article class="music-item">
-        <button type="button" class="music-item__button" aria-describedby="music-item-ride-tip">
+      </details>
+      <details class="music-item">
+        <summary class="music-item__summary">
           <span class="music-item__slot">Ride</span>
-          <span class="music-pixel music-pixel--ride" aria-hidden="true"></span>
-          <span class="music-item__name">XS20</span>
-        </button>
-        <div class="music-item__tooltip" id="music-item-ride-tip">
-          <strong>Sabian XS20 Ride</strong>
-          <span>Stick definition stays clear even when the wash opens up.</span>
+          <span class="music-item__media" aria-hidden="true">
+            <img src="{{ '/assets/images/music/sabian-xs20-ride.svg' | relative_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">
+          </span>
+          <span class="music-item__body">
+            <span class="music-item__name">Sabian XS20 Ride</span>
+            <span class="music-item__spec">Clear stick definition with controlled wash</span>
+          </span>
+          <span class="music-item__hint">
+            <span>Tone note</span>
+            <svg class="music-item__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M3.5 6.25 8 10.75l4.5-4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
+            </svg>
+          </span>
+        </summary>
+        <div class="music-item__details">
+          <p>Stick definition stays clear even when the wash opens up.</p>
         </div>
-      </article>
-      <article class="music-item">
-        <button type="button" class="music-item__button" aria-describedby="music-item-sticks-tip">
+      </details>
+      <details class="music-item">
+        <summary class="music-item__summary">
           <span class="music-item__slot">Sticks</span>
-          <span class="music-pixel music-pixel--sticks" aria-hidden="true"></span>
-          <span class="music-item__name">Wood Tip Pair</span>
-        </button>
-        <div class="music-item__tooltip" id="music-item-sticks-tip">
-          <strong>Stick Choice</strong>
-          <span>Enough weight for rimshots, enough rebound to stay loose.</span>
+          <span class="music-item__media" aria-hidden="true">
+            <img src="{{ '/assets/images/music/travis-barker-sticks.svg' | relative_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">
+          </span>
+          <span class="music-item__body">
+            <span class="music-item__name">Travis Barker Zildjian</span>
+            <span class="music-item__spec">White signature pair for weight and rebound</span>
+          </span>
+          <span class="music-item__hint">
+            <span>Tone note</span>
+            <svg class="music-item__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+              <path d="M3.5 6.25 8 10.75l4.5-4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
+            </svg>
+          </span>
+        </summary>
+        <div class="music-item__details">
+          <p>Enough weight for rimshots, enough rebound to stay loose.</p>
         </div>
-      </article>
+      </details>
     </div>
   </section>
 
