@@ -1,30 +1,45 @@
 <svg width="640" height="440" viewBox="0 0 640 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">Sabian AAX crashes illustration</title>
-  <desc id="desc">Pair of bright crash cymbals on chrome stands.</desc>
+  <desc id="desc">Two bright crash cymbals on chrome boom stands.</desc>
   <defs>
-    <linearGradient id="cymbal" x1="116" y1="110" x2="524" y2="222" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#fee79d"/>
-      <stop offset="48%" stop-color="#e0af52"/>
-      <stop offset="100%" stop-color="#b97d1f"/>
+    <linearGradient id="cymbalFace" x1="140" y1="112" x2="500" y2="210" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffe7a9"/>
+      <stop offset="42%" stop-color="#ebb965"/>
+      <stop offset="100%" stop-color="#b77822"/>
     </linearGradient>
-    <linearGradient id="metal" x1="166" y1="150" x2="474" y2="360" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#edf4ff"/>
-      <stop offset="50%" stop-color="#9ca8bb"/>
-      <stop offset="100%" stop-color="#e6edf9"/>
+    <radialGradient id="cymbalGlow" cx="50%" cy="38%" r="58%">
+      <stop offset="0%" stop-color="#fff8d8" stop-opacity="0.72"/>
+      <stop offset="100%" stop-color="#fff8d8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hardware" x1="150" y1="150" x2="490" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f4f8ff"/>
+      <stop offset="45%" stop-color="#9aa7bb"/>
+      <stop offset="100%" stop-color="#edf4ff"/>
     </linearGradient>
   </defs>
-  <ellipse cx="320" cy="366" rx="170" ry="26" fill="#060910" opacity="0.3"/>
-  <ellipse cx="210" cy="150" rx="118" ry="22" fill="url(#cymbal)" transform="rotate(-8 210 150)"/>
-  <ellipse cx="430" cy="136" rx="124" ry="24" fill="url(#cymbal)" transform="rotate(9 430 136)"/>
-  <ellipse cx="210" cy="150" rx="72" ry="10" fill="#fff4ce" opacity="0.32" transform="rotate(-8 210 150)"/>
-  <ellipse cx="430" cy="136" rx="82" ry="12" fill="#fff4ce" opacity="0.34" transform="rotate(9 430 136)"/>
-  <path d="M210 164V300" stroke="url(#metal)" stroke-width="10" stroke-linecap="round"/>
-  <path d="M430 150V300" stroke="url(#metal)" stroke-width="10" stroke-linecap="round"/>
-  <path d="M210 222L166 338" stroke="#8c97ab" stroke-width="7" stroke-linecap="round"/>
-  <path d="M210 222L252 338" stroke="#8c97ab" stroke-width="7" stroke-linecap="round"/>
-  <path d="M430 220L390 340" stroke="#8c97ab" stroke-width="7" stroke-linecap="round"/>
-  <path d="M430 220L470 340" stroke="#8c97ab" stroke-width="7" stroke-linecap="round"/>
-  <path d="M320 148V342" stroke="#8792a5" stroke-width="5" stroke-linecap="round" opacity="0.56"/>
-  <circle cx="210" cy="150" r="8" fill="#c18f33"/>
-  <circle cx="430" cy="136" r="8" fill="#c18f33"/>
+
+  <ellipse cx="320" cy="366" rx="176" ry="28" fill="#050910" opacity="0.34"/>
+
+  <g transform="rotate(-9 218 158)">
+    <ellipse cx="218" cy="158" rx="124" ry="26" fill="url(#cymbalFace)"/>
+    <ellipse cx="218" cy="158" rx="88" ry="16" fill="url(#cymbalGlow)"/>
+    <ellipse cx="218" cy="158" rx="18" ry="4" fill="#f4cf7e"/>
+    <circle cx="218" cy="158" r="6" fill="#c98b31"/>
+  </g>
+
+  <g transform="rotate(10 426 144)">
+    <ellipse cx="426" cy="144" rx="128" ry="28" fill="url(#cymbalFace)"/>
+    <ellipse cx="426" cy="144" rx="92" ry="18" fill="url(#cymbalGlow)"/>
+    <ellipse cx="426" cy="144" rx="20" ry="5" fill="#f4cf7e"/>
+    <circle cx="426" cy="144" r="6" fill="#c98b31"/>
+  </g>
+
+  <path d="M218 178V292" stroke="url(#hardware)" stroke-width="10" stroke-linecap="round"/>
+  <path d="M426 164V292" stroke="url(#hardware)" stroke-width="10" stroke-linecap="round"/>
+  <path d="M218 224L172 344" stroke="#8e9bae" stroke-width="7" stroke-linecap="round"/>
+  <path d="M218 224L262 344" stroke="#8e9bae" stroke-width="7" stroke-linecap="round"/>
+  <path d="M426 220L382 344" stroke="#8e9bae" stroke-width="7" stroke-linecap="round"/>
+  <path d="M426 220L470 344" stroke="#8e9bae" stroke-width="7" stroke-linecap="round"/>
+
+  <path d="M316 150V342" stroke="#8793a7" stroke-width="5" stroke-linecap="round" opacity="0.52"/>
 </svg>

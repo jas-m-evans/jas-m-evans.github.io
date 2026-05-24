@@ -525,29 +525,10 @@ body.music-page .music-loadout p {
 
 .music-hero__copy h1 {
   margin: 0 0 0.8rem;
-  font-size: clamp(2.2rem, 4vw, 3.2rem);
-  line-height: 0.95;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-.music-statline {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.65rem;
-  padding: 0;
-  margin: 1rem 0 0;
-  list-style: none;
-}
-
-.music-statline li {
-  padding: 0.45rem 0.8rem;
-  border-radius: 999px;
-  border: 1px solid rgba(149, 112, 160, 0.28);
-  background: rgba(17, 21, 32, 0.86);
-  color: #efe9ff;
-  font-size: 0.86rem;
-  font-weight: 600;
+  font-size: clamp(1.8rem, 3.6vw, 2.6rem);
+  line-height: 1.1;
+  text-transform: none;
+  letter-spacing: 0.005em;
 }
 
 .music-hero__visual {
@@ -785,6 +766,7 @@ line-height: 1.6;
 display: grid;
 gap: 0.75rem;
   margin-top: 1rem;
+  color-scheme: dark;
 }
 
 .music-form label {
@@ -794,12 +776,19 @@ gap: 0.75rem;
 
 .music-form input,
 .music-form textarea {
+  appearance: none;
   width: 100%;
   padding: 0.8rem 0.9rem;
   border: 1px solid rgba(149, 112, 160, 0.3);
   border-radius: 12px;
   background: rgba(9, 12, 20, 0.92);
   color: #f7f1ff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.music-form input::placeholder,
+.music-form textarea::placeholder {
+  color: #9ca8d0;
 }
 
 .music-form input:focus,

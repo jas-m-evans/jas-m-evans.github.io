@@ -1,30 +1,38 @@
 <svg width="640" height="440" viewBox="0 0 640 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
   <title id="title">Travis Barker Zildjian sticks illustration</title>
-  <desc id="desc">White signature drumsticks crossed over a dark stage shadow.</desc>
+  <desc id="desc">Pair of white signature drumsticks crossed with thick shafts and rounded tips.</desc>
   <defs>
-    <linearGradient id="stick" x1="176" y1="110" x2="474" y2="328" gradientUnits="userSpaceOnUse">
+    <linearGradient id="stickBody" x1="170" y1="130" x2="486" y2="318" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="45%" stop-color="#eff3f8"/>
-      <stop offset="100%" stop-color="#cfd7e3"/>
+      <stop offset="46%" stop-color="#f1f5fb"/>
+      <stop offset="100%" stop-color="#d8e0ec"/>
     </linearGradient>
-    <linearGradient id="tip" x1="176" y1="110" x2="474" y2="328" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#ffd5de"/>
-      <stop offset="100%" stop-color="#f06d92"/>
+    <linearGradient id="shadow" x1="198" y1="170" x2="452" y2="292" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#111723" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#111723" stop-opacity="0.4"/>
     </linearGradient>
   </defs>
-  <ellipse cx="320" cy="342" rx="128" ry="22" fill="#060910" opacity="0.28"/>
-  <g transform="rotate(-34 320 220)">
-    <rect x="162" y="200" width="316" height="18" rx="9" fill="url(#stick)"/>
-    <rect x="408" y="200" width="38" height="18" rx="9" fill="#181d29" opacity="0.85"/>
-    <rect x="172" y="200" width="30" height="18" rx="9" fill="url(#tip)"/>
-    <path d="M464 200L500 209L464 218Z" fill="#d9e1ed"/>
+
+  <ellipse cx="320" cy="344" rx="136" ry="22" fill="#060910" opacity="0.28"/>
+
+  <g transform="rotate(-31 320 222)">
+    <rect x="156" y="206" width="332" height="26" rx="13" fill="url(#stickBody)"/>
+    <rect x="394" y="206" width="48" height="26" rx="12" fill="#1a2030" opacity="0.78"/>
+    <ellipse cx="178" cy="219" rx="14" ry="11" fill="#ffffff"/>
+    <ellipse cx="178" cy="219" rx="7" ry="5" fill="#dbe3ef"/>
+    <path d="M464 206L504 219L464 232Z" fill="#dbe3ef"/>
+    <path d="M224 220H284" stroke="#9ba8be" stroke-width="3" stroke-linecap="round" opacity="0.58"/>
   </g>
-  <g transform="rotate(34 320 220)">
-    <rect x="162" y="222" width="316" height="18" rx="9" fill="url(#stick)"/>
-    <rect x="372" y="222" width="44" height="18" rx="9" fill="#181d29" opacity="0.85"/>
-    <rect x="176" y="222" width="34" height="18" rx="9" fill="url(#tip)"/>
-    <path d="M464 222L502 231L464 240Z" fill="#d9e1ed"/>
+
+  <g transform="rotate(31 320 222)">
+    <rect x="156" y="214" width="332" height="26" rx="13" fill="url(#stickBody)"/>
+    <rect x="360" y="214" width="54" height="26" rx="12" fill="#1a2030" opacity="0.78"/>
+    <ellipse cx="180" cy="227" rx="14" ry="11" fill="#ffffff"/>
+    <ellipse cx="180" cy="227" rx="7" ry="5" fill="#dbe3ef"/>
+    <path d="M464 214L504 227L464 240Z" fill="#dbe3ef"/>
+    <path d="M240 228H300" stroke="#9ba8be" stroke-width="3" stroke-linecap="round" opacity="0.58"/>
   </g>
-  <path d="M250 176H296" stroke="#0f141f" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
-  <path d="M346 254H396" stroke="#0f141f" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
+
+  <path d="M228 174H278" stroke="url(#shadow)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M360 266H410" stroke="url(#shadow)" stroke-width="4" stroke-linecap="round"/>
 </svg>

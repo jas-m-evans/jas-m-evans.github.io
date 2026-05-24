@@ -9,21 +9,9 @@ classes: music-page
 <div class="music-shell">
   <section class="music-hero">
     <div class="music-hero__copy">
-      <p class="music-kicker">Drums • 20+ years • jazz to punk</p>
-      <h1>Drummer for loud rooms and locked-in songs</h1>
-      <p>I've played drums for 20+ years across jazz, rock, and folk, with a natural pull toward punk rock.</p>
-      <p>I care about time, feel, and parts that hit hard without getting messy.</p>
-      <ul class="music-statline">
-        <li>20+ years playing</li>
-        <li>Jazz → rock → folk</li>
-        <li>Leaning punk rock</li>
-      </ul>
-      <div class="music-actions">
-        {% if site.spotify_url and site.spotify_url != "" %}
-          <a class="btn btn--music" href="{{ site.spotify_url }}" target="_blank" rel="noopener noreferrer">Current Band</a>
-        {% endif %}
-        <a class="btn btn--music-outline" href="#music-contact">Gig Inquiries</a>
-      </div>
+      <p class="music-kicker">Drums</p>
+      <h1>Drummer for live rooms and studio sessions</h1>
+      <p>I have played for over 20 years across jazz, rock, folk, and punk, with an emphasis on time, touch, and choices that serve the song.</p>
     </div>
 
     <div class="music-hero__visual">
@@ -42,26 +30,11 @@ classes: music-page
     </div>
   </section>
 
-  <section class="music-overview">
-    <article class="music-card">
-      <h2>20+ Years</h2>
-      <p>Long enough to know when a song needs space, when it needs force, and when it needs both.</p>
-    </article>
-    <article class="music-card">
-      <h2>Range</h2>
-      <p>Jazz phrasing, rock weight, folk restraint, and punk energy all show up in the way I play.</p>
-    </article>
-    <article class="music-card">
-      <h2>What Matters</h2>
-      <p>Good pocket, clean dynamics, quick prep, and serving the song instead of crowding it.</p>
-    </article>
-  </section>
-
   <section class="music-loadout">
     <div class="music-section-heading">
       <p class="music-kicker">Gear loadout</p>
       <h2>Drum Inventory</h2>
-      <p>Current gigging setup built for punch, control, and fast changeovers.</p>
+      <p>Core setup for live sets and sessions.</p>
     </div>
     <div class="music-inventory" aria-label="Interactive drum gear inventory">
       <details class="music-item">
@@ -207,19 +180,19 @@ classes: music-page
     {% endif %}
 
     <section class="music-note music-contact" id="music-contact">
-      <h2>Gig Inquiries</h2>
-      <p>For gigs, fill-ins, or session work, send a quick note.</p>
+      <h2>Contact</h2>
+      <p>For sessions, live dates, or collaborations, send a quick note.</p>
       <form class="music-form" action="mailto:{{ site.email }}?subject=Music%20Inquiry" method="post" enctype="text/plain">
         <label for="music-name">Name</label>
         <input id="music-name" name="Name" type="text" autocomplete="name">
 
-        <label for="music-contact">Email</label>
-        <input id="music-contact" name="Email" type="email" autocomplete="email">
+        <label for="music-email">Email</label>
+        <input id="music-email" name="Email" type="email" autocomplete="email">
 
         <label for="music-message">What do you need?</label>
         <textarea id="music-message" name="Message" rows="5" placeholder="Gig date, city, set length, or anything else helpful."></textarea>
 
-        <button class="btn btn--music" type="submit">Start Email</button>
+        <button class="btn btn--music" type="submit">Open Email Draft</button>
       </form>
       <p class="music-form__note">This opens your email app with the details ready to send.</p>
     </section>
