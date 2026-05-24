@@ -1,0 +1,30 @@
+<svg width="640" height="440" viewBox="0 0 640 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Sabian AAX crashes illustration</title>
+  <desc id="desc">Pair of bright crash cymbals on chrome stands.</desc>
+  <defs>
+    <linearGradient id="cymbal" x1="116" y1="110" x2="524" y2="222" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fee79d"/>
+      <stop offset="48%" stop-color="#e0af52"/>
+      <stop offset="100%" stop-color="#b97d1f"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="166" y1="150" x2="474" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#edf4ff"/>
+      <stop offset="50%" stop-color="#9ca8bb"/>
+      <stop offset="100%" stop-color="#e6edf9"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="320" cy="366" rx="170" ry="26" fill="#060910" opacity="0.3"/>
+  <ellipse cx="210" cy="150" rx="118" ry="22" fill="url(#cymbal)" transform="rotate(-8 210 150)"/>
+  <ellipse cx="430" cy="136" rx="124" ry="24" fill="url(#cymbal)" transform="rotate(9 430 136)"/>
+  <ellipse cx="210" cy="150" rx="72" ry="10" fill="#fff4ce" opacity="0.32" transform="rotate(-8 210 150)"/>
+  <ellipse cx="430" cy="136" rx="82" ry="12" fill="#fff4ce" opacity="0.34" transform="rotate(9 430 136)"/>
+  <path d="M210 164V300" stroke="url(#metal)" stroke-width="10" stroke-linecap="round"/>
+  <path d="M430 150V300" stroke="url(#metal)" stroke-width="10" stroke-linecap="round"/>
+  <path d="M210 222L166 338" stroke="#8c97ab" stroke-width="7" stroke-linecap="round"/>
+  <path d="M210 222L252 338" stroke="#8c97ab" stroke-width="7" stroke-linecap="round"/>
+  <path d="M430 220L390 340" stroke="#8c97ab" stroke-width="7" stroke-linecap="round"/>
+  <path d="M430 220L470 340" stroke="#8c97ab" stroke-width="7" stroke-linecap="round"/>
+  <path d="M320 148V342" stroke="#8792a5" stroke-width="5" stroke-linecap="round" opacity="0.56"/>
+  <circle cx="210" cy="150" r="8" fill="#c18f33"/>
+  <circle cx="430" cy="136" r="8" fill="#c18f33"/>
+</svg>

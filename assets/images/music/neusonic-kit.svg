@@ -1,0 +1,56 @@
+<svg width="640" height="440" viewBox="0 0 640 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Ludwig NeuSonic kit illustration</title>
+  <desc id="desc">Warm butterscotch pearl drum kit with cymbals and chrome hardware.</desc>
+  <defs>
+    <linearGradient id="shellWarm" x1="178" y1="118" x2="474" y2="314" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffe3a6"/>
+      <stop offset="38%" stop-color="#efc16f"/>
+      <stop offset="75%" stop-color="#d79d43"/>
+      <stop offset="100%" stop-color="#bf7f26"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="170" y1="102" x2="474" y2="348" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f1f7ff"/>
+      <stop offset="48%" stop-color="#a2aec1"/>
+      <stop offset="100%" stop-color="#f7fbff"/>
+    </linearGradient>
+    <linearGradient id="cymbal" x1="88" y1="122" x2="548" y2="210" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fbe092"/>
+      <stop offset="55%" stop-color="#d9aa47"/>
+      <stop offset="100%" stop-color="#b97f22"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="322" cy="366" rx="168" ry="28" fill="#060a12" opacity="0.34"/>
+  <ellipse cx="160" cy="130" rx="90" ry="16" fill="url(#cymbal)"/>
+  <ellipse cx="482" cy="118" rx="96" ry="18" fill="url(#cymbal)"/>
+  <path d="M160 146V294" stroke="#99a3b7" stroke-width="9" stroke-linecap="round"/>
+  <path d="M482 136V292" stroke="#99a3b7" stroke-width="9" stroke-linecap="round"/>
+  <path d="M160 210L126 314" stroke="#8590a3" stroke-width="6" stroke-linecap="round"/>
+  <path d="M160 210L194 314" stroke="#8590a3" stroke-width="6" stroke-linecap="round"/>
+  <path d="M482 198L452 314" stroke="#8590a3" stroke-width="6" stroke-linecap="round"/>
+  <path d="M482 198L514 314" stroke="#8590a3" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="320" cy="258" r="92" fill="url(#shellWarm)" stroke="#e9eef8" stroke-width="8"/>
+  <circle cx="320" cy="258" r="61" fill="#152131" opacity="0.88"/>
+  <circle cx="320" cy="258" r="58" fill="none" stroke="#d9a04a" stroke-width="9" opacity="0.7"/>
+  <circle cx="250" cy="182" r="50" fill="url(#shellWarm)" stroke="#eef2fa" stroke-width="7"/>
+  <circle cx="250" cy="182" r="31" fill="#162232" opacity="0.74"/>
+  <circle cx="390" cy="176" r="54" fill="url(#shellWarm)" stroke="#eef2fa" stroke-width="7"/>
+  <circle cx="390" cy="176" r="34" fill="#162232" opacity="0.74"/>
+  <circle cx="446" cy="258" r="62" fill="url(#shellWarm)" stroke="#eef2fa" stroke-width="7"/>
+  <circle cx="446" cy="258" r="39" fill="#162232" opacity="0.74"/>
+  <circle cx="198" cy="252" r="44" fill="url(#shellWarm)" stroke="#eef2fa" stroke-width="7"/>
+  <circle cx="198" cy="252" r="28" fill="#162232" opacity="0.74"/>
+  <path d="M320 170V104" stroke="#9aa4b8" stroke-width="7" stroke-linecap="round"/>
+  <path d="M320 112L250 152" stroke="#9aa4b8" stroke-width="6" stroke-linecap="round"/>
+  <path d="M320 112L390 146" stroke="#9aa4b8" stroke-width="6" stroke-linecap="round"/>
+  <path d="M270 258L234 340" stroke="#909bad" stroke-width="8" stroke-linecap="round"/>
+  <path d="M370 258L406 340" stroke="#909bad" stroke-width="8" stroke-linecap="round"/>
+  <path d="M320 258V350" stroke="#909bad" stroke-width="9" stroke-linecap="round"/>
+  <path d="M198 296L168 348" stroke="#8c96a9" stroke-width="7" stroke-linecap="round"/>
+  <path d="M198 296L224 348" stroke="#8c96a9" stroke-width="7" stroke-linecap="round"/>
+  <path d="M446 320L420 350" stroke="#8c96a9" stroke-width="7" stroke-linecap="round"/>
+  <path d="M446 320L472 350" stroke="#8c96a9" stroke-width="7" stroke-linecap="round"/>
+  <rect x="241" y="151" width="10" height="22" rx="5" fill="url(#metal)"/>
+  <rect x="385" y="143" width="10" height="22" rx="5" fill="url(#metal)"/>
+  <rect x="193" y="222" width="10" height="20" rx="5" fill="url(#metal)"/>
+  <rect x="441" y="228" width="10" height="20" rx="5" fill="url(#metal)"/>
+</svg>

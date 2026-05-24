@@ -1,0 +1,26 @@
+<svg width="640" height="440" viewBox="0 0 640 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Sabian XS20 ride illustration</title>
+  <desc id="desc">Large ride cymbal on a chrome stand.</desc>
+  <defs>
+    <linearGradient id="cymbal" x1="152" y1="106" x2="510" y2="246" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fee8a5"/>
+      <stop offset="46%" stop-color="#d9ab4c"/>
+      <stop offset="100%" stop-color="#a66e1c"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="274" y1="122" x2="374" y2="376" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f3f8ff"/>
+      <stop offset="50%" stop-color="#a2aec0"/>
+      <stop offset="100%" stop-color="#e8eef8"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="320" cy="364" rx="132" ry="24" fill="#060910" opacity="0.3"/>
+  <ellipse cx="334" cy="148" rx="180" ry="34" fill="url(#cymbal)" transform="rotate(-8 334 148)"/>
+  <ellipse cx="334" cy="148" rx="116" ry="18" fill="#fff0c5" opacity="0.28" transform="rotate(-8 334 148)"/>
+  <path d="M320 172V346" stroke="url(#metal)" stroke-width="11" stroke-linecap="round"/>
+  <path d="M320 232L278 328" stroke="#93a0b3" stroke-width="7" stroke-linecap="round"/>
+  <path d="M320 232L362 328" stroke="#93a0b3" stroke-width="7" stroke-linecap="round"/>
+  <path d="M320 286L282 364" stroke="#8692a5" stroke-width="6" stroke-linecap="round"/>
+  <path d="M320 286L358 364" stroke="#8692a5" stroke-width="6" stroke-linecap="round"/>
+  <path d="M320 174L268 106" stroke="#99a3b7" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="320" cy="174" r="10" fill="#bc8a2f"/>
+</svg>

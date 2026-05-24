@@ -1,0 +1,46 @@
+<svg width="640" height="440" viewBox="0 0 640 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Ludwig Black Beauty snare illustration</title>
+  <desc id="desc">Dark black nickel over brass snare drum on a chrome stand.</desc>
+  <defs>
+    <linearGradient id="shell" x1="180" y1="150" x2="450" y2="285" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0f131b"/>
+      <stop offset="48%" stop-color="#1b202b"/>
+      <stop offset="100%" stop-color="#444d5d"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="175" y1="112" x2="466" y2="112" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#eef4ff"/>
+      <stop offset="45%" stop-color="#9ba7bb"/>
+      <stop offset="100%" stop-color="#f5fbff"/>
+    </linearGradient>
+    <linearGradient id="head" x1="179" y1="128" x2="465" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fbfcff"/>
+      <stop offset="100%" stop-color="#d8dde8"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="320" cy="360" rx="136" ry="24" fill="#070b12" opacity="0.38"/>
+  <path d="M275 284L238 360" stroke="#8d97aa" stroke-width="10" stroke-linecap="round"/>
+  <path d="M365 284L402 360" stroke="#8d97aa" stroke-width="10" stroke-linecap="round"/>
+  <path d="M320 302V364" stroke="#98a3b7" stroke-width="10" stroke-linecap="round"/>
+  <path d="M320 306L266 348" stroke="#98a3b7" stroke-width="7" stroke-linecap="round" opacity="0.9"/>
+  <path d="M320 306L374 348" stroke="#98a3b7" stroke-width="7" stroke-linecap="round" opacity="0.9"/>
+  <ellipse cx="320" cy="145" rx="145" ry="34" fill="url(#head)" stroke="#f7fbff" stroke-width="8"/>
+  <path d="M185 145V252C185 272 245 286 320 286C395 286 455 272 455 252V145" fill="url(#shell)" stroke="#d4ddeb" stroke-width="8"/>
+  <ellipse cx="320" cy="252" rx="135" ry="28" fill="#0d1017" opacity="0.7"/>
+  <ellipse cx="320" cy="145" rx="135" ry="23" fill="none" stroke="#808a9b" stroke-width="4" opacity="0.45"/>
+  <path d="M232 166V253" stroke="#d4ddeb" stroke-width="7" stroke-linecap="round"/>
+  <path d="M276 158V260" stroke="#d4ddeb" stroke-width="7" stroke-linecap="round"/>
+  <path d="M320 155V263" stroke="#d4ddeb" stroke-width="7" stroke-linecap="round"/>
+  <path d="M364 158V260" stroke="#d4ddeb" stroke-width="7" stroke-linecap="round"/>
+  <path d="M408 166V253" stroke="#d4ddeb" stroke-width="7" stroke-linecap="round"/>
+  <rect x="227" y="173" width="10" height="26" rx="5" fill="url(#metal)"/>
+  <rect x="271" y="166" width="10" height="26" rx="5" fill="url(#metal)"/>
+  <rect x="315" y="162" width="10" height="26" rx="5" fill="url(#metal)"/>
+  <rect x="359" y="166" width="10" height="26" rx="5" fill="url(#metal)"/>
+  <rect x="403" y="173" width="10" height="26" rx="5" fill="url(#metal)"/>
+  <rect x="227" y="223" width="10" height="26" rx="5" fill="url(#metal)"/>
+  <rect x="271" y="230" width="10" height="26" rx="5" fill="url(#metal)"/>
+  <rect x="315" y="234" width="10" height="26" rx="5" fill="url(#metal)"/>
+  <rect x="359" y="230" width="10" height="26" rx="5" fill="url(#metal)"/>
+  <rect x="403" y="223" width="10" height="26" rx="5" fill="url(#metal)"/>
+  <path d="M215 180C250 162 384 160 426 180" stroke="#718198" stroke-width="6" stroke-linecap="round" opacity="0.45"/>
+</svg>

@@ -1,0 +1,29 @@
+<svg width="640" height="440" viewBox="0 0 640 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Sabian HH hi-hats illustration</title>
+  <desc id="desc">Pair of dark golden hi-hats on a chrome stand.</desc>
+  <defs>
+    <linearGradient id="cymbal" x1="208" y1="144" x2="432" y2="216" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fbe097"/>
+      <stop offset="45%" stop-color="#d6a548"/>
+      <stop offset="100%" stop-color="#9b6917"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="272" y1="126" x2="372" y2="376" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f0f6ff"/>
+      <stop offset="50%" stop-color="#a1acbf"/>
+      <stop offset="100%" stop-color="#e7eef9"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="322" cy="362" rx="116" ry="22" fill="#060a10" opacity="0.32"/>
+  <ellipse cx="320" cy="162" rx="126" ry="21" fill="url(#cymbal)"/>
+  <ellipse cx="320" cy="192" rx="134" ry="23" fill="url(#cymbal)" opacity="0.92"/>
+  <ellipse cx="320" cy="162" rx="84" ry="10" fill="#fff4cf" opacity="0.42"/>
+  <ellipse cx="320" cy="192" rx="92" ry="12" fill="#fff4cf" opacity="0.22"/>
+  <path d="M320 154V126" stroke="#b68a31" stroke-width="6" stroke-linecap="round"/>
+  <path d="M320 192V346" stroke="url(#metal)" stroke-width="11" stroke-linecap="round"/>
+  <path d="M320 246L278 322" stroke="#97a3b6" stroke-width="7" stroke-linecap="round"/>
+  <path d="M320 246L362 322" stroke="#97a3b6" stroke-width="7" stroke-linecap="round"/>
+  <path d="M320 286L278 360" stroke="#8792a6" stroke-width="6" stroke-linecap="round"/>
+  <path d="M320 286L362 360" stroke="#8792a6" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="320" cy="192" r="9" fill="#bd8d2d"/>
+  <circle cx="320" cy="162" r="7" fill="#bd8d2d"/>
+</svg>

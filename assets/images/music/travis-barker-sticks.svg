@@ -1,0 +1,30 @@
+<svg width="640" height="440" viewBox="0 0 640 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Travis Barker Zildjian sticks illustration</title>
+  <desc id="desc">White signature drumsticks crossed over a dark stage shadow.</desc>
+  <defs>
+    <linearGradient id="stick" x1="176" y1="110" x2="474" y2="328" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="45%" stop-color="#eff3f8"/>
+      <stop offset="100%" stop-color="#cfd7e3"/>
+    </linearGradient>
+    <linearGradient id="tip" x1="176" y1="110" x2="474" y2="328" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffd5de"/>
+      <stop offset="100%" stop-color="#f06d92"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="320" cy="342" rx="128" ry="22" fill="#060910" opacity="0.28"/>
+  <g transform="rotate(-34 320 220)">
+    <rect x="162" y="200" width="316" height="18" rx="9" fill="url(#stick)"/>
+    <rect x="408" y="200" width="38" height="18" rx="9" fill="#181d29" opacity="0.85"/>
+    <rect x="172" y="200" width="30" height="18" rx="9" fill="url(#tip)"/>
+    <path d="M464 200L500 209L464 218Z" fill="#d9e1ed"/>
+  </g>
+  <g transform="rotate(34 320 220)">
+    <rect x="162" y="222" width="316" height="18" rx="9" fill="url(#stick)"/>
+    <rect x="372" y="222" width="44" height="18" rx="9" fill="#181d29" opacity="0.85"/>
+    <rect x="176" y="222" width="34" height="18" rx="9" fill="url(#tip)"/>
+    <path d="M464 222L502 231L464 240Z" fill="#d9e1ed"/>
+  </g>
+  <path d="M250 176H296" stroke="#0f141f" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
+  <path d="M346 254H396" stroke="#0f141f" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
+</svg>
