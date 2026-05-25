@@ -637,8 +637,7 @@ grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   grid-template-areas:
     "hats crashes ride"
     ". kit ."
-    ". snare ."
-    ". sticks .";
+    "snare . sticks";
   gap: 0.85rem;
   position: relative;
   max-width: 760px;
@@ -1134,8 +1133,7 @@ body.music-page form.music-form {
       "crashes crashes"
       "hats ride"
       "kit kit"
-      "snare snare"
-      "sticks sticks";
+      "snare sticks";
     padding: 0.8rem;
   }
 
