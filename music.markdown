@@ -170,7 +170,7 @@ classes: music-page
     <section class="music-note music-contact" id="music-contact">
       <h2>Get in touch</h2>
       <p>Send a quick note and I will get back to you.</p>
-      <form class="music-form" action="mailto:{{ site.email }}?subject=Music%20Inquiry" method="post" enctype="text/plain">
+      <form class="music-form" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; border: 0 !important; box-shadow: none !important;" action="mailto:{{ site.email }}?subject=Music%20Inquiry" method="post" enctype="text/plain">
         <label for="music-name">Name</label>
         <input id="music-name" name="Name" type="text" autocomplete="name">
 
