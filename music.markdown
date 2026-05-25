@@ -102,7 +102,7 @@ classes: music-page
     <section class="music-note music-contact" id="music-contact">
       <h2>Get in touch</h2>
       <p>Send a quick note and I will get back to you.</p>
-      <form class="music-form" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; border: 0 !important; box-shadow: none !important;" action="https://formsubmit.co/{{ site.email }}" method="post">
+      <form id="music-contact-form" class="music-form" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; border: 0 !important; box-shadow: none !important;" action="https://formsubmit.co/ajax/{{ site.email }}" method="post">
         <input type="hidden" name="_subject" value="Music Contact Form Submission">
         <input type="hidden" name="_captcha" value="false">
         <input type="hidden" name="_template" value="table">
@@ -119,8 +119,63 @@ classes: music-page
 
         <button class="btn btn--music" type="submit">Submit</button>
       </form>
+      <p id="music-form-status" class="music-form__note" aria-live="polite"></p>
     </section>
   </section>
+
+  <script>
+    (function() {
+      var form = document.getElementById("music-contact-form");
+      var status = document.getElementById("music-form-status");
+
+      if (!form) {
+        return;
+      }
+
+      form.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        var formData = new FormData(form);
+        if (status) {
+          status.textContent = "Sending...";
+        }
+
+        fetch(form.action, {
+          method: "POST",
+          headers: {
+            "Accept": "application/json"
+          },
+          body: formData
+        })
+          .then(function(response) {
+            if (!response.ok) {
+              throw new Error("submit_failed");
+            }
+            window.location.href = "{{ site.url }}/music/?submitted=1";
+          })
+          .catch(function() {
+            var name = formData.get("Name") || "";
+            var email = formData.get("Email") || "";
+            var message = formData.get("Message") || "";
+            var body = [
+              "Name: " + name,
+              "Email: " + email,
+              "",
+              message
+            ].join("\n");
+            var mailto = "mailto:{{ site.email }}"
+              + "?subject=" + encodeURIComponent("Music Contact Form Submission")
+              + "&body=" + encodeURIComponent(body);
+
+            if (status) {
+              status.textContent = "Web submit is temporarily unavailable. Opening your email app instead.";
+            }
+
+            window.location.href = mailto;
+          });
+      });
+    })();
+  </script>
 
   {% comment %}
     Dead Pixel / previous band section intentionally removed from the page.
