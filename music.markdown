@@ -6,6 +6,50 @@ author_profile: true
 classes: music-page
 ---
 
+<style>
+  body.music-page .music-equip-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-areas:
+      "hats crashes ride"
+      ". kit ."
+      ". snare ."
+      ". sticks .";
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  body.music-page .music-equip-slot--kit {
+    min-height: 224px;
+  }
+
+  body.music-page .music-equip-slot--hats,
+  body.music-page .music-equip-slot--crashes,
+  body.music-page .music-equip-slot--ride {
+    min-height: 108px;
+  }
+
+  body.music-page .music-equip-slot--snare {
+    min-height: 130px;
+  }
+
+  body.music-page .music-equip-slot--sticks {
+    min-height: 110px;
+  }
+
+  @media (max-width: 640px) {
+    body.music-page .music-equip-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-areas:
+        "crashes crashes"
+        "hats ride"
+        "kit kit"
+        "snare snare"
+        "sticks sticks";
+    }
+  }
+</style>
+
 <div class="music-shell">
   <section class="music-hero">
     <div class="music-hero__copy">
