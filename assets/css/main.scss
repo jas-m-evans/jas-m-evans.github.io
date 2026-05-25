@@ -777,6 +777,15 @@ body.music-page .page__content .music-contact .music-form {
   padding: 0 !important;
   border: 0 !important;
   background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+body.music-page form.music-form {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
   box-shadow: none !important;
 }
 
