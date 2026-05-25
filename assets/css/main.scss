@@ -430,6 +430,30 @@ body.music-page .page__footer {
   background: rgba(7, 10, 17, 0.94);
 }
 
+body.music-page .greedy-nav,
+body.music-page .greedy-nav .hidden-links {
+  background: rgba(7, 10, 17, 0.96);
+  border-color: rgba(137, 92, 147, 0.28);
+}
+
+body.music-page .greedy-nav a,
+body.music-page .greedy-nav .site-title,
+body.music-page .greedy-nav__toggle {
+  color: #d9e0ff;
+}
+
+body.music-page .navicon,
+body.music-page .navicon::before,
+body.music-page .navicon::after {
+  background-color: #d9e0ff;
+}
+
+body.music-page .author__urls-wrapper,
+body.music-page .author__urls-wrapper button,
+body.music-page .btn.btn--inverse {
+  display: none !important;
+}
+
 body.music-page .archive,
 body.music-page .page__content,
 body.music-page .page__meta,
@@ -474,7 +498,7 @@ body.music-page .music-note {
 
 body.music-page .music-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.9fr);
+  grid-template-columns: 1fr;
   gap: 1.5rem;
   align-items: center;
   padding: 1.6rem;

@@ -13,21 +13,6 @@ classes: music-page
       <h1>Drummer for live rooms and studio sessions</h1>
       <p>I have played for over 20 years across jazz, rock, folk, and punk, with an emphasis on time, touch, and choices that serve the song.</p>
     </div>
-
-    <div class="music-hero__visual">
-      <section class="music-note music-note--compact">
-        <h2>Available for</h2>
-        <ul class="music-list">
-          <li>Gigs and fill-ins</li>
-          <li>Session tracking</li>
-          <li>Fast learning, solid pocket</li>
-        </ul>
-      </section>
-      <section class="music-note music-note--compact">
-        <h2>Current setup</h2>
-        <p>Ludwig NeuSonic kit, Ludwig Black Beauty snare, Sabian HH hats, Sabian AAX crashes, and an XS20 ride.</p>
-      </section>
-    </div>
   </section>
 
   <section class="music-loadout">
