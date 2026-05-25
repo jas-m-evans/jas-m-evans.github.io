@@ -10,8 +10,8 @@ classes: music-page
   <section class="music-hero">
     <div class="music-hero__copy">
       <p class="music-kicker">Drums</p>
-      <h1>Drummer for stage and studio</h1>
-      <p>I have played for over 20 years across jazz, rock, folk, and punk. I care about strong time, deep pocket, and bringing intensity when the music asks for it.</p>
+      <h1>Drummer focused on feel, pocket, and impact</h1>
+      <p>I have played for over 20 years across jazz, rock, folk, and punk, with a focus on strong time, musical dynamics, and emotional impact.</p>
     </div>
   </section>
 
