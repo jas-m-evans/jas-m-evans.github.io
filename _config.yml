@@ -60,7 +60,7 @@ collections:
   projects:
     output: true
   posts:
-    output: false
+    output: true
 
 defaults:
   - scope:
