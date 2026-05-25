@@ -654,6 +654,7 @@ grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 26px 48px rgba(2, 4, 11, 0.42);
   isolation: isolate;
+  overflow: visible;
 }
 
 .music-equip-grid::before {
@@ -780,7 +781,7 @@ grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease;
-  z-index: 6;
+  z-index: 40;
 }
 
 .music-equip-slot--ride .music-equip-slot__tooltip {
@@ -814,6 +815,7 @@ grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
 .music-equip-slot:focus,
 .music-equip-slot:focus-visible,
 .music-equip-slot:active {
+  z-index: 12;
   transform: translateY(-2px);
   border-color: rgba(255, 196, 110, 0.52);
   box-shadow:
