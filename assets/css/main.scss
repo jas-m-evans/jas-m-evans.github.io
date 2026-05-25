@@ -1130,15 +1130,19 @@ body.music-page form.music-form {
   }
 
   .music-equip-slot__tooltip,
-  .music-equip-slot:nth-child(4) .music-equip-slot__tooltip,
-  .music-equip-slot:nth-child(5) .music-equip-slot__tooltip {
-    position: static;
-    width: 100%;
-    margin-top: 0.15rem;
-    transform: none;
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
+  .music-equip-slot--ride .music-equip-slot__tooltip {
+    top: calc(100% + 0.4rem);
+    left: 0;
+    right: auto;
+    width: min(240px, 82vw);
+    transform: translateY(-4px);
+  }
+
+  .music-equip-slot:hover .music-equip-slot__tooltip,
+  .music-equip-slot:focus .music-equip-slot__tooltip,
+  .music-equip-slot:focus-visible .music-equip-slot__tooltip,
+  .music-equip-slot:active .music-equip-slot__tooltip {
+    transform: translateY(0);
   }
 
   .music-item__summary {
