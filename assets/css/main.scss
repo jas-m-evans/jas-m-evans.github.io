@@ -767,6 +767,17 @@ display: grid;
 gap: 0.75rem;
   margin-top: 1rem;
   color-scheme: dark;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+body.music-page .page__content .music-contact .music-form {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .music-form label {
