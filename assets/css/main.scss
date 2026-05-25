@@ -633,14 +633,16 @@ grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
 
 .music-equip-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 1.2fr) minmax(0, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-areas:
     "hats crashes ride"
     ". kit ."
     ". snare ."
-    "sticks . .";
+    ". sticks .";
   gap: 0.85rem;
   position: relative;
+  max-width: 760px;
+  margin: 0 auto;
   padding: 1rem;
   border: 1px solid rgba(120, 131, 196, 0.24);
   border-radius: 18px;
@@ -672,7 +674,7 @@ grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   padding: 0.55rem;
   margin: 0;
   width: 100%;
-  min-height: 110px;
+  min-height: 118px;
   text-align: left;
   background:
     linear-gradient(180deg, rgba(24, 20, 33, 0.95), rgba(10, 13, 23, 0.98)),
@@ -702,7 +704,21 @@ grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
 .music-equip-slot--sticks { grid-area: sticks; }
 
 .music-equip-slot--kit {
-  min-height: 208px;
+  min-height: 224px;
+}
+
+.music-equip-slot--hats,
+.music-equip-slot--crashes,
+.music-equip-slot--ride {
+  min-height: 108px;
+}
+
+.music-equip-slot--snare {
+  min-height: 130px;
+}
+
+.music-equip-slot--sticks {
+  min-height: 110px;
 }
 
 .music-equip-slot__label {
@@ -1113,9 +1129,10 @@ body.music-page form.music-form {
   .music-equip-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
-      "hats crashes"
+      "crashes crashes"
+      "hats ride"
       "kit kit"
-      "ride snare"
+      "snare snare"
       "sticks sticks";
     padding: 0.8rem;
   }
