@@ -1,0 +1,18 @@
+<script>
+(function() {
+  var revision = "{{ site.github.build_revision | default: site.time | date: '%s' }}";
+  var links = document.querySelectorAll('link[href*="/assets/css/main.css"]');
+  for (var i = 0; i < links.length; i += 1) {
+    var href = links[i].getAttribute('href');
+    if (!href) {
+      continue;
+    }
+    var hasQuery = href.indexOf('?') !== -1;
+    var hasVersion = href.indexOf('v=') !== -1;
+    if (hasVersion) {
+      continue;
+    }
+    links[i].setAttribute('href', href + (hasQuery ? '&' : '?') + 'v=' + revision);
+  }
+})();
+</script>
