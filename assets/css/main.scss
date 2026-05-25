@@ -633,11 +633,12 @@ grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
 
 .music-equip-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(240px, 1.1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 1.2fr) minmax(0, 1fr);
   grid-template-areas:
-    "snare kit crashes"
-    "hats kit ride"
-    "sticks kit ride";
+    "hats crashes ride"
+    ". kit ."
+    ". snare ."
+    "sticks . .";
   gap: 0.85rem;
   position: relative;
   padding: 1rem;
@@ -684,7 +685,7 @@ grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   align-content: start;
   position: relative;
   z-index: 1;
-  cursor: default;
+  cursor: pointer;
   transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
 }
 
@@ -701,7 +702,7 @@ grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
 .music-equip-slot--sticks { grid-area: sticks; }
 
 .music-equip-slot--kit {
-  min-height: 232px;
+  min-height: 208px;
 }
 
 .music-equip-slot__label {
@@ -766,8 +767,7 @@ grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   z-index: 6;
 }
 
-.music-equip-slot:nth-child(4) .music-equip-slot__tooltip,
-.music-equip-slot:nth-child(5) .music-equip-slot__tooltip {
+.music-equip-slot--ride .music-equip-slot__tooltip {
   left: auto;
   right: calc(100% + 0.65rem);
   transform: translateY(-50%) translateX(6px);
@@ -794,32 +794,31 @@ grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   border-top: 1px solid rgba(147, 127, 187, 0.24);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .music-equip-slot:hover,
-  .music-equip-slot:focus-visible {
-    transform: translateY(-2px);
-    border-color: rgba(255, 196, 110, 0.52);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.08),
-      0 18px 34px rgba(2, 4, 11, 0.44);
-  }
+.music-equip-slot:hover,
+.music-equip-slot:focus,
+.music-equip-slot:focus-visible,
+.music-equip-slot:active {
+  transform: translateY(-2px);
+  border-color: rgba(255, 196, 110, 0.52);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 18px 34px rgba(2, 4, 11, 0.44);
+}
 
-  .music-equip-slot:hover .music-equip-slot__tooltip,
-  .music-equip-slot:focus-visible .music-equip-slot__tooltip,
-  .music-equip-slot:focus-within .music-equip-slot__tooltip {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(-50%) translateX(0);
-  }
+.music-equip-slot:hover .music-equip-slot__tooltip,
+.music-equip-slot:focus .music-equip-slot__tooltip,
+.music-equip-slot:focus-visible .music-equip-slot__tooltip,
+.music-equip-slot:active .music-equip-slot__tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(0);
+}
 
-  .music-equip-slot:nth-child(4):hover .music-equip-slot__tooltip,
-  .music-equip-slot:nth-child(5):hover .music-equip-slot__tooltip,
-  .music-equip-slot:nth-child(4):focus-visible .music-equip-slot__tooltip,
-  .music-equip-slot:nth-child(5):focus-visible .music-equip-slot__tooltip,
-  .music-equip-slot:nth-child(4):focus-within .music-equip-slot__tooltip,
-  .music-equip-slot:nth-child(5):focus-within .music-equip-slot__tooltip {
-    transform: translateY(-50%) translateX(0);
-  }
+.music-equip-slot--ride:hover .music-equip-slot__tooltip,
+.music-equip-slot--ride:focus .music-equip-slot__tooltip,
+.music-equip-slot--ride:focus-visible .music-equip-slot__tooltip,
+.music-equip-slot--ride:active .music-equip-slot__tooltip {
+  transform: translateY(-50%) translateX(0);
 }
 
 .music-item__slot {
@@ -1114,9 +1113,9 @@ body.music-page form.music-form {
   .music-equip-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
+      "hats crashes"
       "kit kit"
-      "snare crashes"
-      "hats ride"
+      "ride snare"
       "sticks sticks";
     padding: 0.8rem;
   }

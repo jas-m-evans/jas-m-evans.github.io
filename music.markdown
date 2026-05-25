@@ -22,7 +22,7 @@ classes: music-page
       <p>Core setup for live sets and sessions.</p>
     </div>
     <div class="music-inventory music-inventory--d2" aria-label="Equipped drum gear inventory">
-      <p class="music-inventory__tip">Hover or focus a slot to inspect the gear.</p>
+      <p class="music-inventory__tip">Inspect each equipped slot to see details.</p>
 
       <div class="music-equip-grid" role="list" aria-label="Drum gear slots">
         <button class="music-equip-slot music-equip-slot--snare" type="button" role="listitem" aria-label="Snare: Ludwig Black Beauty">
