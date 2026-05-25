@@ -170,19 +170,23 @@ classes: music-page
     <section class="music-note music-contact" id="music-contact">
       <h2>Get in touch</h2>
       <p>Send a quick note and I will get back to you.</p>
-      <form class="music-form" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; border: 0 !important; box-shadow: none !important;" action="mailto:{{ site.email }}?subject=Music%20Inquiry" method="post" enctype="text/plain">
+      <form class="music-form" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; border: 0 !important; box-shadow: none !important;" action="https://formsubmit.co/{{ site.email }}" method="post">
+        <input type="hidden" name="_subject" value="Music Contact Form Submission">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_next" value="{{ site.url }}/music/?submitted=1">
+
         <label for="music-name">Name</label>
-        <input id="music-name" name="Name" type="text" autocomplete="name">
+        <input id="music-name" name="Name" type="text" autocomplete="name" required>
 
         <label for="music-email">Email</label>
-        <input id="music-email" name="Email" type="email" autocomplete="email">
+        <input id="music-email" name="Email" type="email" autocomplete="email" required>
 
-        <label for="music-message">What do you need?</label>
-        <textarea id="music-message" name="Message" rows="5" placeholder="Share a few details about your project."></textarea>
+        <label for="music-message">Message</label>
+        <textarea id="music-message" name="Message" rows="5" placeholder="Write your message." required></textarea>
 
-        <button class="btn btn--music" type="submit">Open Email Draft</button>
+        <button class="btn btn--music" type="submit">Submit</button>
       </form>
-      <p class="music-form__note">This opens your email app with the details ready to send.</p>
     </section>
   </section>
 
