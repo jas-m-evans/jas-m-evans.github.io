@@ -6,50 +6,6 @@ author_profile: true
 classes: music-page
 ---
 
-<style>
-  body.music-page .music-equip-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-template-areas:
-      "hats crashes ride"
-      ". kit ."
-      ". snare ."
-      ". sticks .";
-    max-width: 760px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  body.music-page .music-equip-slot--kit {
-    min-height: 224px;
-  }
-
-  body.music-page .music-equip-slot--hats,
-  body.music-page .music-equip-slot--crashes,
-  body.music-page .music-equip-slot--ride {
-    min-height: 108px;
-  }
-
-  body.music-page .music-equip-slot--snare {
-    min-height: 130px;
-  }
-
-  body.music-page .music-equip-slot--sticks {
-    min-height: 110px;
-  }
-
-  @media (max-width: 640px) {
-    body.music-page .music-equip-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      grid-template-areas:
-        "crashes crashes"
-        "hats ride"
-        "kit kit"
-        "snare snare"
-        "sticks sticks";
-    }
-  }
-</style>
-
 <div class="music-shell">
   <section class="music-hero">
     <div class="music-hero__copy">
@@ -66,8 +22,8 @@ classes: music-page
       <p>Core setup for live sets and sessions.</p>
     </div>
     <div class="music-inventory music-inventory--d2" aria-label="Equipped drum gear inventory">
-      <div class="music-equip-grid" role="list" aria-label="Drum gear slots">
-        <button class="music-equip-slot music-equip-slot--snare" type="button" role="listitem" aria-label="Snare: Ludwig Black Beauty">
+      <div class="music-equip-grid" style="grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-areas: 'hats crashes ride' '. kit .' '. snare .' '. sticks .'; max-width: 760px; margin-left: auto; margin-right: auto;" role="list" aria-label="Drum gear slots">
+        <button class="music-equip-slot music-equip-slot--snare" style="min-height: 130px;" type="button" role="listitem" aria-label="Snare: Ludwig Black Beauty">
           <span class="music-equip-slot__label">Snare</span>
           <span class="music-equip-slot__icon" aria-hidden="true">
             <img src="{{ '/assets/images/music/black-beauty-snare.svg' | relative_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">
@@ -79,7 +35,7 @@ classes: music-page
           </span>
         </button>
 
-        <button class="music-equip-slot music-equip-slot--kit" type="button" role="listitem" aria-label="Kit: Ludwig NeuSonic">
+        <button class="music-equip-slot music-equip-slot--kit" style="min-height: 224px;" type="button" role="listitem" aria-label="Kit: Ludwig NeuSonic">
           <span class="music-equip-slot__label">Kit</span>
           <span class="music-equip-slot__icon" aria-hidden="true">
             <img src="{{ '/assets/images/music/neusonic-kit.svg' | relative_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">
@@ -91,7 +47,7 @@ classes: music-page
           </span>
         </button>
 
-        <button class="music-equip-slot music-equip-slot--hats" type="button" role="listitem" aria-label="Hi-Hats: Sabian HH Hats">
+        <button class="music-equip-slot music-equip-slot--hats" style="min-height: 108px;" type="button" role="listitem" aria-label="Hi-Hats: Sabian HH Hats">
           <span class="music-equip-slot__label">Hi-Hats</span>
           <span class="music-equip-slot__icon" aria-hidden="true">
             <img src="{{ '/assets/images/music/sabian-hh-hats.svg' | relative_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">
@@ -103,7 +59,7 @@ classes: music-page
           </span>
         </button>
 
-        <button class="music-equip-slot music-equip-slot--crashes" type="button" role="listitem" aria-label="Crashes: Sabian AAX Crashes">
+        <button class="music-equip-slot music-equip-slot--crashes" style="min-height: 108px;" type="button" role="listitem" aria-label="Crashes: Sabian AAX Crashes">
           <span class="music-equip-slot__label">Crashes</span>
           <span class="music-equip-slot__icon" aria-hidden="true">
             <img src="{{ '/assets/images/music/sabian-aax-crashes.svg' | relative_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">
@@ -115,7 +71,7 @@ classes: music-page
           </span>
         </button>
 
-        <button class="music-equip-slot music-equip-slot--ride" type="button" role="listitem" aria-label="Ride: Sabian XS20 Ride">
+        <button class="music-equip-slot music-equip-slot--ride" style="min-height: 108px;" type="button" role="listitem" aria-label="Ride: Sabian XS20 Ride">
           <span class="music-equip-slot__label">Ride</span>
           <span class="music-equip-slot__icon" aria-hidden="true">
             <img src="{{ '/assets/images/music/sabian-xs20-ride.svg' | relative_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">
@@ -127,7 +83,7 @@ classes: music-page
           </span>
         </button>
 
-        <button class="music-equip-slot music-equip-slot--sticks" type="button" role="listitem" aria-label="Sticks: Travis Barker Zildjian">
+        <button class="music-equip-slot music-equip-slot--sticks" style="min-height: 110px;" type="button" role="listitem" aria-label="Sticks: Travis Barker Zildjian">
           <span class="music-equip-slot__label">Sticks</span>
           <span class="music-equip-slot__icon" aria-hidden="true">
             <img src="{{ '/assets/images/music/travis-barker-sticks.svg' | relative_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">
