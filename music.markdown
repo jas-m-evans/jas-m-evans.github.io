@@ -167,21 +167,9 @@ classes: music-page
   </section>
 
   <section class="music-lane">
-    {% if site.spotify_embed_url and site.spotify_embed_url != "" %}
-      <section class="music-embed">
-        <h2>Current Band</h2>
-        <iframe src="{{ site.spotify_embed_url }}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-      </section>
-    {% else %}
-      <section class="music-note">
-        <h2>Current Band</h2>
-        <p>Add spotify_embed_url in _config.yml to activate listening embeds on this page.</p>
-      </section>
-    {% endif %}
-
     <section class="music-note music-contact" id="music-contact">
-      <h2>Contact</h2>
-      <p>For sessions, live dates, or collaborations, send a quick note.</p>
+      <h2>Get in touch</h2>
+      <p>Send a quick note and I will get back to you.</p>
       <form class="music-form" action="mailto:{{ site.email }}?subject=Music%20Inquiry" method="post" enctype="text/plain">
         <label for="music-name">Name</label>
         <input id="music-name" name="Name" type="text" autocomplete="name">
@@ -190,7 +178,7 @@ classes: music-page
         <input id="music-email" name="Email" type="email" autocomplete="email">
 
         <label for="music-message">What do you need?</label>
-        <textarea id="music-message" name="Message" rows="5" placeholder="Gig date, city, set length, or anything else helpful."></textarea>
+        <textarea id="music-message" name="Message" rows="5" placeholder="Share a few details about your project."></textarea>
 
         <button class="btn btn--music" type="submit">Open Email Draft</button>
       </form>
