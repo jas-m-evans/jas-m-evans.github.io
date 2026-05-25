@@ -21,133 +21,82 @@ classes: music-page
       <h2>Drum Inventory</h2>
       <p>Core setup for live sets and sessions.</p>
     </div>
-    <div class="music-inventory" aria-label="Interactive drum gear inventory">
-      <details class="music-item">
-        <summary class="music-item__summary">
-          <span class="music-item__slot">Snare</span>
-          <span class="music-item__media" aria-hidden="true">
+    <div class="music-inventory music-inventory--d2" aria-label="Equipped drum gear inventory">
+      <p class="music-inventory__tip">Hover or focus a slot to inspect the gear.</p>
+
+      <div class="music-equip-grid" role="list" aria-label="Drum gear slots">
+        <button class="music-equip-slot music-equip-slot--snare" type="button" role="listitem" aria-label="Snare: Ludwig Black Beauty">
+          <span class="music-equip-slot__label">Snare</span>
+          <span class="music-equip-slot__icon" aria-hidden="true">
             <img src="{{ '/assets/images/music/black-beauty-snare.svg' | relative_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">
           </span>
-          <span class="music-item__body">
-            <span class="music-item__name">Ludwig Black Beauty</span>
-            <span class="music-item__spec">6.5x14 • black nickel over brass</span>
+          <span class="music-equip-slot__tooltip" role="tooltip">
+            <span class="music-equip-slot__name">Ludwig Black Beauty</span>
+            <span class="music-equip-slot__spec">6.5x14 • black nickel over brass</span>
+            <span class="music-equip-slot__note">Sharp crack up front, full body underneath.</span>
           </span>
-          <span class="music-item__hint">
-            <span>Tone note</span>
-            <svg class="music-item__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-              <path d="M3.5 6.25 8 10.75l4.5-4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
-            </svg>
-          </span>
-        </summary>
-        <div class="music-item__details">
-          <p>Sharp crack up front, full body underneath.</p>
-        </div>
-      </details>
-      <details class="music-item">
-        <summary class="music-item__summary">
-          <span class="music-item__slot">Kit</span>
-          <span class="music-item__media" aria-hidden="true">
+        </button>
+
+        <button class="music-equip-slot music-equip-slot--kit" type="button" role="listitem" aria-label="Kit: Ludwig NeuSonic">
+          <span class="music-equip-slot__label">Kit</span>
+          <span class="music-equip-slot__icon" aria-hidden="true">
             <img src="{{ '/assets/images/music/neusonic-kit.svg' | relative_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">
           </span>
-          <span class="music-item__body">
-            <span class="music-item__name">Ludwig NeuSonic</span>
-            <span class="music-item__spec">Butterscotch Pearl wrap • punchy live shells</span>
+          <span class="music-equip-slot__tooltip" role="tooltip">
+            <span class="music-equip-slot__name">Ludwig NeuSonic</span>
+            <span class="music-equip-slot__spec">Butterscotch Pearl wrap • punchy live shells</span>
+            <span class="music-equip-slot__note">Punchy shells that stay tight live and focused on a mic.</span>
           </span>
-          <span class="music-item__hint">
-            <span>Tone note</span>
-            <svg class="music-item__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-              <path d="M3.5 6.25 8 10.75l4.5-4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
-            </svg>
-          </span>
-        </summary>
-        <div class="music-item__details">
-          <p>Punchy shells that stay tight live and focused on a mic.</p>
-        </div>
-      </details>
-      <details class="music-item">
-        <summary class="music-item__summary">
-          <span class="music-item__slot">Hi-Hats</span>
-          <span class="music-item__media" aria-hidden="true">
+        </button>
+
+        <button class="music-equip-slot music-equip-slot--hats" type="button" role="listitem" aria-label="Hi-Hats: Sabian HH Hats">
+          <span class="music-equip-slot__label">Hi-Hats</span>
+          <span class="music-equip-slot__icon" aria-hidden="true">
             <img src="{{ '/assets/images/music/sabian-hh-hats.svg' | relative_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">
           </span>
-          <span class="music-item__body">
-            <span class="music-item__name">Sabian HH Hats</span>
-            <span class="music-item__spec">Dark bite with clear definition</span>
+          <span class="music-equip-slot__tooltip" role="tooltip">
+            <span class="music-equip-slot__name">Sabian HH Hats</span>
+            <span class="music-equip-slot__spec">Dark bite with clear definition</span>
+            <span class="music-equip-slot__note">Dark bite with clear definition when the part gets busy.</span>
           </span>
-          <span class="music-item__hint">
-            <span>Tone note</span>
-            <svg class="music-item__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-              <path d="M3.5 6.25 8 10.75l4.5-4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
-            </svg>
-          </span>
-        </summary>
-        <div class="music-item__details">
-          <p>Dark bite with clear definition when the part gets busy.</p>
-        </div>
-      </details>
-      <details class="music-item">
-        <summary class="music-item__summary">
-          <span class="music-item__slot">Crashes</span>
-          <span class="music-item__media" aria-hidden="true">
+        </button>
+
+        <button class="music-equip-slot music-equip-slot--crashes" type="button" role="listitem" aria-label="Crashes: Sabian AAX Crashes">
+          <span class="music-equip-slot__label">Crashes</span>
+          <span class="music-equip-slot__icon" aria-hidden="true">
             <img src="{{ '/assets/images/music/sabian-aax-crashes.svg' | relative_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">
           </span>
-          <span class="music-item__body">
-            <span class="music-item__name">Sabian AAX Crashes</span>
-            <span class="music-item__spec">Fast attack and quick clear-out</span>
+          <span class="music-equip-slot__tooltip" role="tooltip">
+            <span class="music-equip-slot__name">Sabian AAX Crashes</span>
+            <span class="music-equip-slot__spec">Fast attack and quick clear-out</span>
+            <span class="music-equip-slot__note">They open fast, hit hard, and clear out quickly.</span>
           </span>
-          <span class="music-item__hint">
-            <span>Tone note</span>
-            <svg class="music-item__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-              <path d="M3.5 6.25 8 10.75l4.5-4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
-            </svg>
-          </span>
-        </summary>
-        <div class="music-item__details">
-          <p>They open fast, hit hard, and clear out quickly.</p>
-        </div>
-      </details>
-      <details class="music-item">
-        <summary class="music-item__summary">
-          <span class="music-item__slot">Ride</span>
-          <span class="music-item__media" aria-hidden="true">
+        </button>
+
+        <button class="music-equip-slot music-equip-slot--ride" type="button" role="listitem" aria-label="Ride: Sabian XS20 Ride">
+          <span class="music-equip-slot__label">Ride</span>
+          <span class="music-equip-slot__icon" aria-hidden="true">
             <img src="{{ '/assets/images/music/sabian-xs20-ride.svg' | relative_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">
           </span>
-          <span class="music-item__body">
-            <span class="music-item__name">Sabian XS20 Ride</span>
-            <span class="music-item__spec">Clear stick definition with controlled wash</span>
+          <span class="music-equip-slot__tooltip" role="tooltip">
+            <span class="music-equip-slot__name">Sabian XS20 Ride</span>
+            <span class="music-equip-slot__spec">Clear stick definition with controlled wash</span>
+            <span class="music-equip-slot__note">Stick definition stays clear even when the wash opens up.</span>
           </span>
-          <span class="music-item__hint">
-            <span>Tone note</span>
-            <svg class="music-item__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-              <path d="M3.5 6.25 8 10.75l4.5-4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
-            </svg>
-          </span>
-        </summary>
-        <div class="music-item__details">
-          <p>Stick definition stays clear even when the wash opens up.</p>
-        </div>
-      </details>
-      <details class="music-item">
-        <summary class="music-item__summary">
-          <span class="music-item__slot">Sticks</span>
-          <span class="music-item__media" aria-hidden="true">
+        </button>
+
+        <button class="music-equip-slot music-equip-slot--sticks" type="button" role="listitem" aria-label="Sticks: Travis Barker Zildjian">
+          <span class="music-equip-slot__label">Sticks</span>
+          <span class="music-equip-slot__icon" aria-hidden="true">
             <img src="{{ '/assets/images/music/travis-barker-sticks.svg' | relative_url }}" alt="" loading="lazy" decoding="async" width="640" height="440">
           </span>
-          <span class="music-item__body">
-            <span class="music-item__name">Travis Barker Zildjian</span>
-            <span class="music-item__spec">White signature pair for weight and rebound</span>
+          <span class="music-equip-slot__tooltip" role="tooltip">
+            <span class="music-equip-slot__name">Travis Barker Zildjian</span>
+            <span class="music-equip-slot__spec">White signature pair for weight and rebound</span>
+            <span class="music-equip-slot__note">Enough weight for rimshots, enough rebound to stay loose.</span>
           </span>
-          <span class="music-item__hint">
-            <span>Tone note</span>
-            <svg class="music-item__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-              <path d="M3.5 6.25 8 10.75l4.5-4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
-            </svg>
-          </span>
-        </summary>
-        <div class="music-item__details">
-          <p>Enough weight for rimshots, enough rebound to stay loose.</p>
-        </div>
-      </details>
+        </button>
+      </div>
     </div>
   </section>
 

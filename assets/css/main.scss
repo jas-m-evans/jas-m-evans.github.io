@@ -617,6 +617,211 @@ margin-bottom: 0;
 grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
 }
 
+.music-inventory--d2 {
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+}
+
+.music-inventory__tip {
+  margin: 0;
+  color: #9ea9d8;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.music-equip-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 1.1fr) minmax(0, 1fr);
+  grid-template-areas:
+    "snare kit crashes"
+    "hats kit ride"
+    "sticks kit ride";
+  gap: 0.85rem;
+  position: relative;
+  padding: 1rem;
+  border: 1px solid rgba(120, 131, 196, 0.24);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 14%, rgba(255, 201, 132, 0.14), transparent 44%),
+    radial-gradient(circle at 14% 88%, rgba(108, 79, 174, 0.24), transparent 42%),
+    linear-gradient(180deg, rgba(15, 20, 34, 0.97), rgba(8, 11, 18, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 26px 48px rgba(2, 4, 11, 0.42);
+  isolation: isolate;
+}
+
+.music-equip-grid::before {
+  content: "";
+  grid-area: kit;
+  z-index: 0;
+  border-radius: 16px;
+  border: 1px dashed rgba(151, 123, 201, 0.3);
+  background:
+    radial-gradient(circle at 50% 25%, rgba(180, 133, 230, 0.26), transparent 45%),
+    linear-gradient(180deg, rgba(34, 26, 46, 0.3), rgba(15, 18, 31, 0.2));
+}
+
+.music-equip-slot {
+  appearance: none;
+  border: 1px solid rgba(149, 112, 160, 0.32);
+  border-radius: 14px;
+  padding: 0.55rem;
+  margin: 0;
+  width: 100%;
+  min-height: 110px;
+  text-align: left;
+  background:
+    linear-gradient(180deg, rgba(24, 20, 33, 0.95), rgba(10, 13, 23, 0.98)),
+    linear-gradient(140deg, rgba(129, 66, 117, 0.16), transparent 50%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 12px 26px rgba(2, 4, 11, 0.34);
+  display: grid;
+  gap: 0.45rem;
+  align-content: start;
+  position: relative;
+  z-index: 1;
+  cursor: default;
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.music-equip-slot:focus-visible {
+  outline: 3px solid rgba(255, 187, 111, 0.5);
+  outline-offset: 2px;
+}
+
+.music-equip-slot--snare { grid-area: snare; }
+.music-equip-slot--kit { grid-area: kit; }
+.music-equip-slot--hats { grid-area: hats; }
+.music-equip-slot--crashes { grid-area: crashes; }
+.music-equip-slot--ride { grid-area: ride; }
+.music-equip-slot--sticks { grid-area: sticks; }
+
+.music-equip-slot--kit {
+  min-height: 232px;
+}
+
+.music-equip-slot__label {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  padding: 0.16rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(244, 191, 120, 0.36);
+  background: rgba(171, 118, 54, 0.16);
+  color: #f8d7aa;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.music-equip-slot__icon {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.music-equip-slot__icon img {
+  width: 100%;
+  max-width: 146px;
+  max-height: 74px;
+  object-fit: contain;
+  filter: drop-shadow(0 11px 16px rgba(0, 0, 0, 0.38));
+}
+
+.music-equip-slot--kit .music-equip-slot__icon {
+  min-height: 150px;
+}
+
+.music-equip-slot--kit .music-equip-slot__icon img {
+  max-width: 218px;
+  max-height: 146px;
+}
+
+.music-equip-slot__tooltip {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 0.65rem);
+  transform: translateY(-50%) translateX(-6px);
+  width: min(280px, 48vw);
+  padding: 0.72rem 0.78rem;
+  border: 1px solid rgba(255, 201, 132, 0.38);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(14, 13, 23, 0.97), rgba(8, 10, 16, 0.98)),
+    linear-gradient(145deg, rgba(195, 151, 92, 0.15), transparent 50%);
+  box-shadow: 0 16px 32px rgba(2, 4, 11, 0.58);
+  display: grid;
+  gap: 0.35rem;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease;
+  z-index: 6;
+}
+
+.music-equip-slot:nth-child(4) .music-equip-slot__tooltip,
+.music-equip-slot:nth-child(5) .music-equip-slot__tooltip {
+  left: auto;
+  right: calc(100% + 0.65rem);
+  transform: translateY(-50%) translateX(6px);
+}
+
+.music-equip-slot__name {
+  color: #ffe1b6;
+  font-size: 0.96rem;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.music-equip-slot__spec {
+  color: #c5cff8;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.music-equip-slot__note {
+  color: #d9d5e8;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  padding-top: 0.34rem;
+  border-top: 1px solid rgba(147, 127, 187, 0.24);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .music-equip-slot:hover,
+  .music-equip-slot:focus-visible {
+    transform: translateY(-2px);
+    border-color: rgba(255, 196, 110, 0.52);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 18px 34px rgba(2, 4, 11, 0.44);
+  }
+
+  .music-equip-slot:hover .music-equip-slot__tooltip,
+  .music-equip-slot:focus-visible .music-equip-slot__tooltip,
+  .music-equip-slot:focus-within .music-equip-slot__tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-50%) translateX(0);
+  }
+
+  .music-equip-slot:nth-child(4):hover .music-equip-slot__tooltip,
+  .music-equip-slot:nth-child(5):hover .music-equip-slot__tooltip,
+  .music-equip-slot:nth-child(4):focus-visible .music-equip-slot__tooltip,
+  .music-equip-slot:nth-child(5):focus-visible .music-equip-slot__tooltip,
+  .music-equip-slot:nth-child(4):focus-within .music-equip-slot__tooltip,
+  .music-equip-slot:nth-child(5):focus-within .music-equip-slot__tooltip {
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
 .music-item__slot {
 display: inline-flex;
 align-items: center;
@@ -906,6 +1111,37 @@ body.music-page form.music-form {
     padding: 1.15rem;
   }
 
+  .music-equip-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "kit kit"
+      "snare crashes"
+      "hats ride"
+      "sticks sticks";
+    padding: 0.8rem;
+  }
+
+  .music-equip-slot,
+  .music-equip-slot--kit {
+    min-height: 122px;
+  }
+
+  .music-equip-slot--kit .music-equip-slot__icon {
+    min-height: 84px;
+  }
+
+  .music-equip-slot__tooltip,
+  .music-equip-slot:nth-child(4) .music-equip-slot__tooltip,
+  .music-equip-slot:nth-child(5) .music-equip-slot__tooltip {
+    position: static;
+    width: 100%;
+    margin-top: 0.15rem;
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
   .music-item__summary {
     padding: 0.9rem;
   }
@@ -921,6 +1157,8 @@ body.music-page form.music-form {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .music-equip-slot,
+  .music-equip-slot__tooltip,
   .music-item,
   .music-item__media img,
   .music-item__chevron {
