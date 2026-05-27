@@ -8,16 +8,20 @@ excerpt: "A Pokémon-themed SQL tutorial teaching window functions with SUM() OV
 
 Window functions let you compute aggregates and comparisons across rows — without collapsing your result set the way `GROUP BY` does. The syntax looks unfamiliar at first: `FUNCTION() OVER (ORDER BY ...)` is not something you encounter in basic SQL, and the frame clause (`ROWS BETWEEN ...`) can feel arbitrary until you see it in action.
 
-This tutorial works through two of the most useful window functions using a single dataset: Ash Ketchum’s Kanto gym run. Every query runs against the same table, and every query includes the actual output so you can see exactly what each clause is doing.
+This tutorial works through two of the most useful window functions using a single dataset. Every query runs against the same table, and every query shows the actual output so you can see exactly what each clause is doing.
 
 The two functions covered:
 
 1. `SUM() OVER` — running totals
 2. `LAG()` — comparing each row to the previous one
 
-## The dataset
+---
 
-The table tracks each of Ash’s significant battles in order — eight gym wins followed by his Indigo League loss to Ritchie.
+## The dataset: Ash’s Kanto gym run
+
+*Not a Pokémon fan? Here’s what you need to know:* Pokémon is a long-running Nintendo franchise. In the original anime, a ten-year-old kid named Ash Ketchum leaves his hometown with his partner Pokémon (Pikachu) and travels the Kanto region. To qualify for the regional championship (the Indigo League), he has to defeat eight Gym Leaders — each one a specialist trainer controlling a specific gym. He wins all eight badges, goes to the Indigo League, and loses to a rival named Ritchie in a match where his own Pokémon, Charizard, refuses to battle.
+
+That arc — eight straight wins followed by one loss at the worst possible moment — is the dataset.
 
 ```sql
 WITH kanto_battles AS (
@@ -37,19 +41,21 @@ WITH kanto_battles AS (
 SELECT * FROM kanto_battles;
 ```
 
-**Result:**
+| # | event_name    | opponent  | result | win_flag |
+|---|---------------|-----------|--------|----------|
+| 1 | Pewter Gym    | Brock     | W      | 1        |
+| 2 | Cerulean Gym  | Misty     | W      | 1        |
+| 3 | Vermilion Gym | Lt. Surge | W      | 1        |
+| 4 | Celadon Gym   | Erika     | W      | 1        |
+| 5 | Fuchsia Gym   | Koga      | W      | 1        |
+| 6 | Saffron Gym   | Sabrina   | W      | 1        |
+| 7 | Cinnabar Gym  | Blaine    | W      | 1        |
+| 8 | Viridian Gym  | Giovanni  | W      | 1        |
+| 9 | Indigo League | Ritchie   | L      | 0        |
 
-| event_order | episode_id | event_name    | opponent  | result | win_flag |
-|-------------|------------|---------------|-----------|--------|----------|
-| 1           | EP005      | Pewter Gym    | Brock     | W      | 1        |
-| 2           | EP007      | Cerulean Gym  | Misty     | W      | 1        |
-| 3           | EP014      | Vermilion Gym | Lt. Surge | W      | 1        |
-| 4           | EP024      | Celadon Gym   | Erika     | W      | 1        |
-| 5           | EP032      | Fuchsia Gym   | Koga      | W      | 1        |
-| 6           | EP059      | Saffron Gym   | Sabrina   | W      | 1        |
-| 7           | EP063      | Cinnabar Gym  | Blaine    | W      | 1        |
-| 8           | EP067      | Viridian Gym  | Giovanni  | W      | 1        |
-| 9           | EP076      | Indigo League | Ritchie   | L      | 0        |
+Nine rows. Each represents one meaningful battle. `win_flag` is 1 for a win and 0 for a loss — that’s the column the window functions will operate on.
+
+---
 
 ## 1) Running total with `SUM() OVER`
 
@@ -60,9 +66,7 @@ The key syntax is `OVER (ORDER BY ... ROWS BETWEEN UNBOUNDED PRECEDING AND CURRE
 ```sql
 SELECT
   event_order,
-  episode_id,
   event_name,
-  opponent,
   result,
   SUM(win_flag) OVER (
     ORDER BY event_order
@@ -76,21 +80,21 @@ FROM kanto_battles
 ORDER BY event_order;
 ```
 
-**Result:**
+| # | event_name    | result | running_wins | badges_collected |
+|---|---------------|--------|--------------|-----------------|
+| 1 | Pewter Gym    | W      | 1            | 1               |
+| 2 | Cerulean Gym  | W      | 2            | 2               |
+| 3 | Vermilion Gym | W      | 3            | 3               |
+| 4 | Celadon Gym   | W      | 4            | 4               |
+| 5 | Fuchsia Gym   | W      | 5            | 5               |
+| 6 | Saffron Gym   | W      | 6            | 6               |
+| 7 | Cinnabar Gym  | W      | 7            | 7               |
+| 8 | Viridian Gym  | W      | 8            | 8               |
+| 9 | Indigo League | L      | 8            | 8               |
 
-| event_order | episode_id | event_name    | opponent  | result | running_wins | badges_collected |
-|-------------|------------|---------------|-----------|--------|--------------|-----------------|
-| 1           | EP005      | Pewter Gym    | Brock     | W      | 1            | 1               |
-| 2           | EP007      | Cerulean Gym  | Misty     | W      | 2            | 2               |
-| 3           | EP014      | Vermilion Gym | Lt. Surge | W      | 3            | 3               |
-| 4           | EP024      | Celadon Gym   | Erika     | W      | 4            | 4               |
-| 5           | EP032      | Fuchsia Gym   | Koga      | W      | 5            | 5               |
-| 6           | EP059      | Saffron Gym   | Sabrina   | W      | 6            | 6               |
-| 7           | EP063      | Cinnabar Gym  | Blaine    | W      | 7            | 7               |
-| 8           | EP067      | Viridian Gym  | Giovanni  | W      | 8            | 8               |
-| 9           | EP076      | Indigo League | Ritchie   | L      | 8            | 8               |
+Row 9 is the one to look at: the loss does not decrement `running_wins` — it stays at 8 because `win_flag` is 0 for that row, so it contributes nothing to the sum. Each row keeps its full detail while the cumulative column reflects everything up to that point. Compare this to `GROUP BY`: you would get a single row with a total, and all per-event detail would be gone.
 
-Row 9 is the key one to look at: the loss does not decrement `running_wins` — it stays at 8 because `win_flag` is 0 for that row. Each row keeps its full episode detail while the cumulative column reflects all prior rows. Compare this to `GROUP BY`: you would get a single row with a total, and all per-episode context would be gone.
+---
 
 ## 2) Row comparison with `LAG()`
 
@@ -101,34 +105,28 @@ This is useful any time you want to compare a current value to what came immedia
 ```sql
 SELECT
   event_order,
-  episode_id,
   event_name,
-  opponent,
   result,
-  LAG(result) OVER (
-    ORDER BY event_order
-  ) AS previous_result,
+  LAG(result) OVER (ORDER BY event_order) AS prev_result,
   CASE
     WHEN LAG(result) OVER (ORDER BY event_order) = 'W' AND result = 'L' THEN 'Momentum Broken'
-    WHEN LAG(result) OVER (ORDER BY event_order) = result THEN 'Steady'
+    WHEN LAG(result) OVER (ORDER BY event_order) = result          THEN 'Steady'
     ELSE 'Shift'
   END AS momentum_state
 FROM kanto_battles
 ORDER BY event_order;
 ```
 
-**Result:**
+| # | event_name    | result | prev_result | momentum_state  |
+|---|---------------|--------|-------------|-----------------|
+| 1 | Pewter Gym    | W      | NULL        | Shift           |
+| 2 | Cerulean Gym  | W      | W           | Steady          |
+| 3 | Vermilion Gym | W      | W           | Steady          |
+| 4 | Celadon Gym   | W      | W           | Steady          |
+| 5 | Fuchsia Gym   | W      | W           | Steady          |
+| 6 | Saffron Gym   | W      | W           | Steady          |
+| 7 | Cinnabar Gym  | W      | W           | Steady          |
+| 8 | Viridian Gym  | W      | W           | Steady          |
+| 9 | Indigo League | L      | W           | Momentum Broken |
 
-| event_order | episode_id | event_name    | opponent  | result | previous_result | momentum_state  |
-|-------------|------------|---------------|-----------|--------|-----------------|-----------------|
-| 1           | EP005      | Pewter Gym    | Brock     | W      | NULL            | Shift           |
-| 2           | EP007      | Cerulean Gym  | Misty     | W      | W               | Steady          |
-| 3           | EP014      | Vermilion Gym | Lt. Surge | W      | W               | Steady          |
-| 4           | EP024      | Celadon Gym   | Erika     | W      | W               | Steady          |
-| 5           | EP032      | Fuchsia Gym   | Koga      | W      | W               | Steady          |
-| 6           | EP059      | Saffron Gym   | Sabrina   | W      | W               | Steady          |
-| 7           | EP063      | Cinnabar Gym  | Blaine    | W      | W               | Steady          |
-| 8           | EP067      | Viridian Gym  | Giovanni  | W      | W               | Steady          |
-| 9           | EP076      | Indigo League | Ritchie   | L      | W               | Momentum Broken |
-
-Row 1 has `NULL` for `previous_result` — there is no prior row to look back at. Rows 2–8 all show `Steady` because the result matches the previous result. Row 9 shows `Momentum Broken`: `LAG()` pulled the prior `W`, and the `CASE` statement detected the W→L transition.
+Row 1 has `NULL` for `prev_result` — there is no prior row. Rows 2–8 are all `Steady`: the result matches the previous result. Row 9 is the break: `LAG()` pulled the prior `W`, and the `CASE` detected the W→L transition. This is the Charizard problem in a column — eight battles of upward trend, then a disobedient Pokémon ends the run at the worst possible moment.
