@@ -19,7 +19,12 @@ The two functions covered:
 
 ## The dataset: Ash’s Kanto gym run
 
-*Not a Pokémon fan? Here’s what you need to know:* Pokémon is a long-running Nintendo franchise. In the original anime, a ten-year-old kid named Ash Ketchum leaves his hometown with his partner Pokémon (Pikachu) and travels the Kanto region. To qualify for the regional championship (the Indigo League), he has to defeat eight Gym Leaders — each one a specialist trainer controlling a specific gym. He wins all eight badges, goes to the Indigo League, and loses to a rival named Ritchie in a match where his own Pokémon, Charizard, refuses to battle.
+*Not a Pokémon fan? Here’s what you need to know:* Pokémon is a long-running Nintendo franchise. In the original anime, a ten-year-old kid named Ash Ketchum leaves his hometown with his partner Pokémon (Pikachu) and travels the Kanto region. To qualify for the regional championship (the Indigo League), he has to defeat eight Gym Leaders — each one a specialist trainer controlling a specific gym.
+
+<details>
+  <summary>Spoiler details for the Indigo League arc</summary>
+  He wins all eight badges, goes to the Indigo League, and loses to a rival named Ritchie in a match where his own Pokémon, Charizard, refuses to battle.
+</details>
 
 That arc — eight straight wins followed by one loss at the worst possible moment — is the dataset.
 
@@ -129,4 +134,4 @@ ORDER BY event_order;
 | 8 | Viridian Gym  | W      | W           | Steady          |
 | 9 | Indigo League | L      | W           | Momentum Broken |
 
-Row 1 has `NULL` for `prev_result` — there is no prior row. Rows 2–8 are all `Steady`: the result matches the previous result. Row 9 is the break: `LAG()` pulled the prior `W`, and the `CASE` detected the W→L transition. This is the Charizard problem in a column — eight battles of upward trend, then a disobedient Pokémon ends the run at the worst possible moment.
+Row 1 has `NULL` for `prev_result` — there is no prior row. Rows 2–8 are all `Steady`: the result matches the previous result. Row 9 is the break: `LAG()` pulled the prior `W`, and the `CASE` detected the W→L transition. This is the trend break in a column — eight battles of upward momentum ending at the worst possible moment.
