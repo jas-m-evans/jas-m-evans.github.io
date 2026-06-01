@@ -206,6 +206,10 @@ print(f"Filter RMSE: {filt_rmse:.3f}")
 print(f"Accuracy improvement: {improvement:.1f}%")
 ```
 
+Rendered output from the sample run:
+
+![Kalman filter demo graph](/assets/images/projects/kalman-filter-visualization.png)
+
 Notice how the red confidence region compresses as the filter gains confidence from multiple consistent measurements, then expands when predictions become unreliable. This is adaptive uncertainty in action.
 
 ### What's Happening in Practice
@@ -231,6 +235,8 @@ This generates publication-quality 2-panel visualizations with:
 - Error reduction comparison
 - Saved PNG output
 
+[Download public sample script (full-featured)](/assets/downloads/kalman_filter_sample.py){: download}
+
 **Version 2: Pure Python (no dependencies - runs anywhere)**
 ```bash
 python3 kalman_filter_simple.py
@@ -240,6 +246,8 @@ This uses only Python's built-in `math` and `random` libraries:
 - ASCII visualization of filter convergence
 - Educational output explaining key insights
 - Works on any system with Python 3 installed
+
+[Download public sample script (pure Python)](/kalman_filter_simple.py){: download}
 
 Both scripts include extensive comments explaining each step of the predict-update cycle. The pure Python version is ideal for learning, while the full-featured version produces publication-quality visualizations.
 
