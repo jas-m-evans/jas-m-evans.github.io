@@ -29,6 +29,8 @@ The five concepts covered:
 
 ## The dataset: Ash’s Kanto journey
 
+> **⚠️ Spoiler warning:** the data below reveals how Ash’s season ends. If you care about that sort of thing, consider yourself warned.
+
 <details>
   <summary>Not a Pokémon fan? Quick context (spoilers)</summary>
   Ash Ketchum is a ten-year-old trainer who travels the Kanto region with his partner Pikachu. To qualify for the regional championship — the Indigo League — he has to defeat eight Gym Leaders and earn their badges. He wins all eight, makes it to the Indigo League, and loses to a rival named Ritchie when his own Pokémon, Charizard, refuses to battle.
