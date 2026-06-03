@@ -580,3 +580,225 @@ Read it in this order:
 2. What order within the group? (`ORDER BY`)
 3. How much of that order can this row see? (`ROWS BETWEEN` / `RANGE BETWEEN`)
 4. What calculation on that visible slice? (`FUNCTION`)
+
+---
+
+## Practice problems
+
+These use the same `kanto_battles` CTE from above. All assume it is already defined. Try each one before opening the answer.
+
+---
+
+### Q1 ( First battle to reach 5 winsMedium) 
+
+> Return the first battle at which Ash's cumulative win total reached exactly 5.
+
+**How to reason through it:**
+
+You need a running  that's `SUM(win_flag) OVER (ORDER BY event_order)`. But you can't filter on a window function alias in `WHERE` in the same query. So: compute the running total in a CTE, then filter in the outer query. Take the earliest row where `running_wins >= 5`.total 
+
+<details>
+<summary>Answer</summary>
+
+```sql
+WITH running AS (
+  SELECT
+    event_order,
+    event_name,
+    result,
+    SUM(win_flag) OVER (
+      ORDER BY event_order
+      ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) AS running_wins
+  FROM kanto_battles
+)
+SELECT event_order, event_name, result, running_wins
+FROM running
+WHERE running_wins >= 5
+ORDER BY event_order
+LIMIT 1;
+```
+
+**Result:**
+
+| # | event_name   | result | running_wins |
+|---|--------------|--------|--------------|
+| 5 | Fuchsia Gym  | W      | 5            |
+
+Battle 5 is the first time the running total hits 5. The CTE chaining rule is what makes this  compute first, filter second.work 
+
+</details>
+
+---
+
+### Q2 ( Running win rateMedium) 
+
+> For each battle, show the cumulative win rate as a percentage, rounded to 1 decimal place (e.g. `88.9`).
+
+**How to reason through it:**
+
+Win rate = wins so far        total battles so far. You have two running counts to compute: `SUM(win_flag)` for wins, and `COUNT(*) OVER (...)` for total battles. Divide them and multiply by 100. Make sure to cast to a  integer division will return 0 or 1.decimal 
+
+<details>
+<summary>Answer</summary>
+
+```sql
+SELECT
+  event_order,
+  event_name,
+  result,
+  ROUND(
+    100.0
+      * SUM(win_flag) OVER (ORDER BY event_order ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+      / COUNT(*)      OVER (ORDER BY event_order ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW),
+    1
+  ) AS win_rate_pct
+FROM kanto_battles
+ORDER BY event_order;
+```
+
+**Result:**
+
+| # | event_name    | result | win_rate_pct |
+|---|---------------|--------|--------------|
+| 1 | Pewter Gym    | W      | 100.0        |
+| 2 | Cerulean Gym  | W      | 100.0        |
+| 3 | Vermilion Gym | W      | 100.0        |
+| 4 | Celadon Gym   | W      | 100.0        |
+| 5 | Fuchsia Gym   | W      | 100.0        |
+| 6 | Saffron Gym   | W      | 100.0        |
+| 7 | Cinnabar Gym  | W      | 100.0        |
+| 8 | Viridian Gym  | W      | 100.0        |
+| 9 | Indigo League | L      | 88.9         |
+
+100% through battle 8, then drops to 88.9% (8 wins / 9 battles) after the loss. Two window functions in one ` each with the same `OVER()` definition, just different aggregation functions.SELECT` 
+
+</details>
+
+---
+
+### Q3 (Medium- Battles where the result changedHard) 
+
+> Return all battles where the result was different from the previous battle's result. Include the previous result in the output.
+
+**How to reason through it:**
+
+You need `LAG(result)` to get the previous result. Then you want to filter where `result != prev_result`. The trap: you can't put a window function in `WHERE`. Wrap in a CTE, filter in the outer query. Also exclude the first row where `prev_result IS NULL`.
+
+<details>
+<summary>Answer</summary>
+
+```sql
+WITH lagged AS (
+  SELECT
+    event_order,
+    event_name,
+    result,
+    LAG(result) OVER (ORDER BY event_order) AS prev_result
+  FROM kanto_battles
+)
+SELECT event_order, event_name, result, prev_result
+FROM lagged
+WHERE prev_result IS NOT NULL
+  AND result != prev_result;
+```
+
+**Result:**
+
+| # | event_name    | result | prev_result |
+|---|---------------|--------|-------------|
+| 9 | Indigo League | L      | W           |
+
+Only one  the Indigo League loss is the only result change in the entire dataset. Every other battle was a win following a win. This is exactly the kind of query used in retention analysis: find the sessions where a user's behavior shifted.row 
+
+</details>
+
+---
+
+### Q4 ( Longest training streakHard) 
+
+> Using the `training_days` dataset from section 10, return each training streak ordered by streak length descending, then by start day.
+
+**How to reason through it:**
+
+This is the islands-and-gaps pattern. Step 1: compute `day_num - ROW_NUMBER() OVER (ORDER BY day_num)` to create a constant `group_id` for each consecutive run. Step 2: aggregate by `group_id` to get streak start, end, and length. You need two CTEs: one to compute `group_id`, one to aggregate.
+
+<details>
+<summary>Answer</summary>
+
+```sql
+WITH training_days AS (
+  SELECT * FROM (
+    VALUES (1), (2), (3), (5), (6), (10), (11), (12)
+  ) AS t(day_num)
+),
+grouped AS (
+  SELECT
+    day_num,
+    day_num - ROW_NUMBER() OVER (ORDER BY day_num) AS group_id
+  FROM training_days
+)
+SELECT
+  MIN(day_num) AS streak_start,
+  MAX(day_num) AS streak_end,
+  COUNT(*)     AS streak_length
+FROM grouped
+GROUP BY group_id
+ORDER BY streak_length DESC, streak_start;
+```
+
+**Result:**
+
+| streak_start | streak_end | streak_length |
+|--------------|------------|---------------|
+| 1            | 3          | 3             |
+| 10           | 12         | 3             |
+| 5            | 6          | 2             |
+
+Two streaks of length 3 tied at the top, ordered by start day. The two-day streak comes last. If you only needed the single longest streak, wrap this in another CTE and `LIMIT 1`.
+
+</details>
+
+---
+
+### Q5 ( Win rate by season tierHard) 
+
+> Divide the nine battles into three equal tiers (early, mid, late season) using `NTILE(3)`. For each tier, return the tier number, battle count, win count, and win rate percentage rounded to 1 decimal.
+
+**How to reason through it:**
+
+`NTILE(3)` assigns a tier to each  that's a window function, so it goes in a CTE. Then the outer query does a plain `GROUP BY tier` with `COUNT`, `SUM`, and division. Two-step: window to assign tiers, aggregate to summarize them.row 
+
+<details>
+<summary>Answer</summary>
+
+```sql
+WITH tiered AS (
+  SELECT
+    event_order,
+    event_name,
+    win_flag,
+    NTILE(3) OVER (ORDER BY event_order) AS tier
+  FROM kanto_battles
+)
+SELECT
+  tier,
+  COUNT(*)                                     AS battles,
+  SUM(win_flag)                                AS wins,
+  ROUND(100.0 * SUM(win_flag) / COUNT(*), 1)  AS win_rate_pct
+FROM tiered
+GROUP BY tier
+ORDER BY tier;
+```
+
+**Result:**
+
+| tier | battles | wins | win_rate_pct |
+|------|---------|------|--------------|
+| 1    | 3       | 3    | 100.0        |
+| 2    | 3       | 3    | 100.0        |
+| 3    | 3       | 2    | 66.7         |
+
+Tier 3 (battles 9: Cinnabar, Viridian, Indigo League) is the only tier with a loss. Tier 1 and 2 are both perfect. The two-step CTE + GROUP BY pattern here is the standard approach any time you need to aggregate over window-function-assigned groups.7
+
+</details>
