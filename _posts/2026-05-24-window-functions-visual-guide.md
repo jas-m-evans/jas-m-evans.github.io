@@ -29,11 +29,9 @@ The five concepts covered:
 
 ## The dataset: Ash’s Kanto journey
 
-*Not a Pokémon fan? Quick context:* Ash travels Kanto and earns eight Gym badges, then loses at the Indigo League.
-
 <details>
-  <summary>Spoiler details for the Indigo League arc</summary>
-  He wins all eight badges, reaches the Indigo League, and loses to Ritchie when Charizard refuses to battle.
+  <summary>Not a Pokémon fan? Quick context (spoilers)</summary>
+  Ash Ketchum is a ten-year-old trainer who travels the Kanto region with his partner Pikachu. To qualify for the regional championship — the Indigo League — he has to defeat eight Gym Leaders and earn their badges. He wins all eight, makes it to the Indigo League, and loses to a rival named Ritchie when his own Pokémon, Charizard, refuses to battle.
 </details>
 
 That story gives us nine battles in order.
