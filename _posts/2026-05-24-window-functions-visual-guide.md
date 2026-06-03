@@ -1,9 +1,9 @@
 ---
 layout: single
-title: "Professor Oak’s SQL Notebook: Ash’s Kanto Run in 5 Window Functions"
+title: "Professor Oak’s SQL Notebook: Ash’s Kanto Run in 6 Window Functions"
 date: 2026-05-24 09:00:00 +0000
 categories: [data-engineering]
-excerpt: "A Pokémon-themed SQL tutorial teaching window functions with SUM(), LAG(), PARTITION BY, frames, and ranking on one dataset."
+excerpt: "A Pokémon-themed SQL tutorial teaching window functions with SUM(), PARTITION BY, frames, ranking, LAG(), and LEAD() on one dataset."
 ---
 
 Window functions let you compute aggregates and comparisons across rows while keeping each row visible. `GROUP BY` collapses rows. Window functions do not.
@@ -11,19 +11,20 @@ Window functions let you compute aggregates and comparisons across rows while ke
 The syntax can feel strange at first, so think of it like this:
 
 - `OVER (...)`: your battle rules
-- `PARTITION BY ...`: split matches into separate mini tournaments
+- `PARTITION BY ...`: split rows into separate mini-tournaments
 - `ORDER BY ...`: the timeline inside each tournament
-- `ROWS BETWEEN ...`: how many nearby matches you want to include
+- `ROWS BETWEEN ...`: how many nearby rows each row can see
 
-This tutorial uses one Pokémon dataset all the way through, so each new concept feels like a new lens on the same story.
+This tutorial uses one Pokémon dataset all the way through, so each new concept is a new lens on the same story.
 
-The five concepts covered:
+The six concepts covered:
 
-1. `SUM() OVER` for running totals
-2. `PARTITION BY` for reset points
-3. Window frames (`ROWS BETWEEN ...`) for rolling windows
-4. `ROW_NUMBER()`, `RANK()`, `DENSE_RANK()` for leaderboard behavior
-5. `LAG()` for row to row comparison
+1. `SUM() OVER` — running totals
+2. `PARTITION BY` — reset points
+3. Window frames (`ROWS BETWEEN`) — rolling windows
+4. `ROW_NUMBER()`, `RANK()`, `DENSE_RANK()` — tie behavior
+5. `LAG()` — look back one row
+6. `LEAD()` — look forward one row
 
 ---
 
@@ -72,7 +73,7 @@ SELECT * FROM kanto_battles;
 
 ## 1) Running total with `SUM() OVER`
 
-Think of this as Professor Oak updating Ash’s badge notebook after every battle.
+A regular `SUM()` with `GROUP BY` collapses everything into one row. A window function keeps every row and adds a cumulative column alongside it.
 
 ```sql
 SELECT
@@ -87,20 +88,31 @@ FROM kanto_battles
 ORDER BY event_order;
 ```
 
-`UNBOUNDED PRECEDING` means start from Ash’s first battle. `CURRENT ROW` means stop at this battle.
+`UNBOUNDED PRECEDING` means start from the very first row. `CURRENT ROW` means stop here.
 
-So at battle 9, `running_wins` stays 8, because the league loss adds 0.
+**Result:**
+
+| # | event_name    | result | running_wins |
+|---|---------------|--------|--------------|
+| 1 | Pewter Gym    | W      | 1            |
+| 2 | Cerulean Gym  | W      | 2            |
+| 3 | Vermilion Gym | W      | 3            |
+| 4 | Celadon Gym   | W      | 4            |
+| 5 | Fuchsia Gym   | W      | 5            |
+| 6 | Saffron Gym   | W      | 6            |
+| 7 | Cinnabar Gym  | W      | 7            |
+| 8 | Viridian Gym  | W      | 8            |
+| 9 | Indigo League | L      | 8            |
+
+Row 9 stays at 8 — the loss contributes `win_flag = 0`, so it adds nothing. Each row keeps its detail while the cumulative reflects everything up to that point.
 
 ---
 
-## 2) `PARTITION BY`: split one table into mini tournaments
+## 2) `PARTITION BY`: separate scoreboards inside one result
 
-`PARTITION BY` is the clause people usually find weird. Simple version: it creates separate scoreboards inside one result set.
+`PARTITION BY` resets the window calculation for each group. Without it, the window spans the entire table. With it, each partition gets its own independent calculation.
 
-In this story, we can split battles into:
-
-- Gym Circuit
-- League Stage
+Here we split battles into two stages — Gym Circuit and League Stage — and run a separate cumulative win count inside each one.
 
 ```sql
 SELECT
@@ -109,31 +121,40 @@ SELECT
   CASE
     WHEN event_name LIKE '%Gym%' THEN 'Gym Circuit'
     ELSE 'League Stage'
-  END AS battle_stage,
+  END AS stage,
   win_flag,
   SUM(win_flag) OVER (
     PARTITION BY CASE WHEN event_name LIKE '%Gym%' THEN 'Gym Circuit' ELSE 'League Stage' END
     ORDER BY event_order
     ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-  ) AS stage_running_wins
+  ) AS stage_wins
 FROM kanto_battles
 ORDER BY event_order;
 ```
 
-What happens:
+**Result:**
 
-- Rows 1 to 8 are in one partition, so that total climbs from 1 to 8
-- Row 9 is in a different partition, so its running total starts fresh and is 0
+| # | event_name    | stage        | win_flag | stage_wins |
+|---|---------------|--------------|----------|------------|
+| 1 | Pewter Gym    | Gym Circuit  | 1        | 1          |
+| 2 | Cerulean Gym  | Gym Circuit  | 1        | 2          |
+| 3 | Vermilion Gym | Gym Circuit  | 1        | 3          |
+| 4 | Celadon Gym   | Gym Circuit  | 1        | 4          |
+| 5 | Fuchsia Gym   | Gym Circuit  | 1        | 5          |
+| 6 | Saffron Gym   | Gym Circuit  | 1        | 6          |
+| 7 | Cinnabar Gym  | Gym Circuit  | 1        | 7          |
+| 8 | Viridian Gym  | Gym Circuit  | 1        | 8          |
+| 9 | Indigo League | League Stage | 0        | 0          |
 
-Memory trick: `PARTITION BY` is like Nurse Joy opening separate boxes in the PC. Same table, separate storage boxes.
+Row 9 resets to 0 because it’s in a different partition. The Gym Circuit total of 8 is unaffected — it belongs to a completely separate calculation.
 
 ---
 
-## 3) Window frame: local momentum instead of full history
+## 3) Window frames: controlling how much each row can see
 
-You mentioned "quorum or something." In window function land, people often mean the frame clause, which decides how much of the timeline each row can see.
+By default, `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` means every row sees everything from the start. A frame clause lets you narrow that window to just the nearby rows.
 
-This query tracks Ash’s momentum over only the latest three battles.
+This query tracks wins over only the last three battles instead of the full history.
 
 ```sql
 SELECT
@@ -143,54 +164,78 @@ SELECT
   SUM(win_flag) OVER (
     ORDER BY event_order
     ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
-  ) AS wins_last_3_battles
+  ) AS wins_last_3
 FROM kanto_battles
 ORDER BY event_order;
 ```
 
-`2 PRECEDING` + `CURRENT ROW` means a 3-battle window.
+`2 PRECEDING` + `CURRENT ROW` = a 3-row window. At each row, SQL looks back at most 2 rows and includes the current one.
 
-At battle 9, SQL looks at battles 7, 8, and 9 only. Output is 2.
+**Result:**
 
-Memory trick: this is like a commentator saying, "Forget old seasons. Show me current form."
+| # | event_name    | result | wins_last_3 |
+|---|---------------|--------|-------------|
+| 1 | Pewter Gym    | W      | 1           |
+| 2 | Cerulean Gym  | W      | 2           |
+| 3 | Vermilion Gym | W      | 3           |
+| 4 | Celadon Gym   | W      | 3           |
+| 5 | Fuchsia Gym   | W      | 3           |
+| 6 | Saffron Gym   | W      | 3           |
+| 7 | Cinnabar Gym  | W      | 3           |
+| 8 | Viridian Gym  | W      | 3           |
+| 9 | Indigo League | L      | 2           |
+
+Rows 1 and 2 have fewer than 3 prior rows available, so the frame shrinks to fit. Row 9 looks at battles 7, 8, 9: two wins and one loss = 2.
+
+The difference from section 1: section 1 is total career wins. This is current form over the last three outings. A commentator stat, not a career stat.
 
 ---
 
 ## 4) Ranking functions: tie behavior matters
 
-A lot of harder SQL questions test tie handling. These three functions look similar but produce different ranks.
+Three functions look nearly identical but handle ties differently. This trips people up on SQL interviews.
+
+To make the tie behavior visible, we order by `win_flag DESC` — which puts all 8 wins at the top tied together, and the one loss at the bottom.
 
 ```sql
 SELECT
   event_order,
   event_name,
-  CASE WHEN event_name LIKE '%Gym%' THEN 1 ELSE 3 END AS stakes_level,
-  ROW_NUMBER() OVER (
-    ORDER BY CASE WHEN event_name LIKE '%Gym%' THEN 1 ELSE 3 END DESC, event_order
-  ) AS row_num,
-  RANK() OVER (
-    ORDER BY CASE WHEN event_name LIKE '%Gym%' THEN 1 ELSE 3 END DESC
-  ) AS rank_with_gaps,
-  DENSE_RANK() OVER (
-    ORDER BY CASE WHEN event_name LIKE '%Gym%' THEN 1 ELSE 3 END DESC
-  ) AS dense_rank_no_gaps
+  win_flag,
+  ROW_NUMBER() OVER (ORDER BY win_flag DESC, event_order) AS row_num,
+  RANK()       OVER (ORDER BY win_flag DESC)              AS rnk,
+  DENSE_RANK() OVER (ORDER BY win_flag DESC)              AS dense_rnk
 FROM kanto_battles
 ORDER BY event_order;
 ```
 
-How to remember:
+**Result:**
 
-- `ROW_NUMBER()`: every row gets a unique jersey number
-- `RANK()`: tied trainers share a place, next place skips a number
-- `DENSE_RANK()`: tied trainers share a place, next place does not skip
+| # | event_name    | win_flag | row_num | rnk | dense_rnk |
+|---|---------------|----------|---------|-----|-----------|
+| 1 | Pewter Gym    | 1        | 1       | 1   | 1         |
+| 2 | Cerulean Gym  | 1        | 2       | 1   | 1         |
+| 3 | Vermilion Gym | 1        | 3       | 1   | 1         |
+| 4 | Celadon Gym   | 1        | 4       | 1   | 1         |
+| 5 | Fuchsia Gym   | 1        | 5       | 1   | 1         |
+| 6 | Saffron Gym   | 1        | 6       | 1   | 1         |
+| 7 | Cinnabar Gym  | 1        | 7       | 1   | 1         |
+| 8 | Viridian Gym  | 1        | 8       | 1   | 1         |
+| 9 | Indigo League | 0        | 9       | 9   | 2         |
 
-Anime memory: tournament podium rules. If two trainers tie for second, `RANK()` jumps to fourth. `DENSE_RANK()` goes to third.
+The difference shows up on row 9:
+
+- `ROW_NUMBER`: always unique — gives every row a distinct number (1–9), ties broken by `event_order`
+- `RANK`: 8 rows tie for rank 1, so the next rank jumps to 9 (skips 2–8)
+- `DENSE_RANK`: 8 rows tie for rank 1, next rank is 2 (no gap)
+
+Interview rule of thumb: if the prompt says “top N per group” and ties matter, the choice between `RANK` and `DENSE_RANK` changes your output.
 
 ---
 
-## 5) `LAG()`: compare this battle to the previous one
+## 5) `LAG()`: look at the previous row
 
-`LAG()` pulls data from the previous row in the same ordered window.
+`LAG(column)` returns the value of that column from the row immediately before the current one (by your `ORDER BY`). The first row gets `NULL` — nothing comes before it.
 
 ```sql
 SELECT
@@ -200,22 +245,72 @@ SELECT
   LAG(result) OVER (ORDER BY event_order) AS prev_result,
   CASE
     WHEN LAG(result) OVER (ORDER BY event_order) = 'W' AND result = 'L' THEN 'Momentum Broken'
-    WHEN LAG(result) OVER (ORDER BY event_order) = result THEN 'Steady'
+    WHEN LAG(result) OVER (ORDER BY event_order) = result                  THEN 'Steady'
     ELSE 'Shift'
   END AS momentum_state
 FROM kanto_battles
 ORDER BY event_order;
 ```
 
-Battle 1 has no previous row, so `prev_result` is `NULL`. Battle 9 becomes `Momentum Broken`.
+**Result:**
 
-Memory trick: `LAG()` is Brock walking behind Ash and reporting, "Last battle result was W."
+| # | event_name    | result | prev_result | momentum_state  |
+|---|---------------|--------|-------------|-----------------|
+| 1 | Pewter Gym    | W      | NULL        | Shift           |
+| 2 | Cerulean Gym  | W      | W           | Steady          |
+| 3 | Vermilion Gym | W      | W           | Steady          |
+| 4 | Celadon Gym   | W      | W           | Steady          |
+| 5 | Fuchsia Gym   | W      | W           | Steady          |
+| 6 | Saffron Gym   | W      | W           | Steady          |
+| 7 | Cinnabar Gym  | W      | W           | Steady          |
+| 8 | Viridian Gym  | W      | W           | Steady          |
+| 9 | Indigo League | L      | W           | Momentum Broken |
+
+Row 1 has `NULL` — no prior row exists. Rows 2–8 match the previous result so they’re `Steady`. Row 9 gets `Momentum Broken`: `LAG()` pulled the prior `W`, and the `CASE` caught the W→L flip.
 
 ---
 
-## Fast syntax decoder for `OVER (...)`
+## 6) `LEAD()`: look at the next row
 
-When you see this in a problem:
+`LEAD(column)` is the forward-looking complement to `LAG()`. Instead of looking back one row, it looks ahead. The last row gets `NULL` — nothing comes after it.
+
+A practical use: knowing what’s coming next lets you flag transitions before they happen. Here we use it to show Ash what opponent is coming up.
+
+```sql
+SELECT
+  event_order,
+  event_name,
+  opponent,
+  result,
+  LEAD(opponent) OVER (ORDER BY event_order) AS next_opponent,
+  LEAD(event_name) OVER (ORDER BY event_order) AS next_event
+FROM kanto_battles
+ORDER BY event_order;
+```
+
+**Result:**
+
+| # | event_name    | opponent  | result | next_opponent | next_event    |
+|---|---------------|-----------|--------|---------------|---------------|
+| 1 | Pewter Gym    | Brock     | W      | Misty         | Cerulean Gym  |
+| 2 | Cerulean Gym  | Misty     | W      | Lt. Surge     | Vermilion Gym |
+| 3 | Vermilion Gym | Lt. Surge | W      | Erika         | Celadon Gym   |
+| 4 | Celadon Gym   | Erika     | W      | Koga          | Fuchsia Gym   |
+| 5 | Fuchsia Gym   | Koga      | W      | Sabrina       | Saffron Gym   |
+| 6 | Saffron Gym   | Sabrina   | W      | Blaine        | Cinnabar Gym  |
+| 7 | Cinnabar Gym  | Blaine    | W      | Giovanni      | Viridian Gym  |
+| 8 | Viridian Gym  | Giovanni  | W      | Ritchie       | Indigo League |
+| 9 | Indigo League | Ritchie   | L      | NULL          | NULL          |
+
+Row 9 has `NULL` for both forward-looking columns — the season is over, there is no next event.
+
+`LEAD()` and `LAG()` take the same arguments and work identically, just in opposite directions. You can also pass an offset: `LAG(result, 2)` looks back two rows, `LEAD(result, 2)` looks forward two.
+
+---
+
+## Quick syntax decoder
+
+When you see a window function in the wild:
 
 ```sql
 FUNCTION(col) OVER (
@@ -227,9 +322,7 @@ FUNCTION(col) OVER (
 
 Read it in this order:
 
-1. Which mini tournament? (`PARTITION BY`)
-2. What timeline? (`ORDER BY`)
-3. How much of that timeline can this row see? (`ROWS BETWEEN ...`)
-4. What math should we do on that visible slice? (`FUNCTION`)
-
-If you decode in that order, scary window syntax becomes a repeatable checklist.
+1. Which group? (`PARTITION BY`)
+2. What order? (`ORDER BY`)
+3. How much of that order can this row see? (`ROWS BETWEEN`)
+4. What calculation on that slice? (`FUNCTION`)
