@@ -15,439 +15,619 @@ The syntax can feel strange at first:
 - `ORDER BY` — sets the sequence inside each group
 - `ROWS BETWEEN` / `RANGE BETWEEN` — controls how much of the sequence each row can see
 
-This tutorial uses one Pokémon dataset all the way through. Each section is a new lens on the same data.
+Each section below uses a **different dataset** pulled from Ash’s Kanto journey. Same story, ten different lenses.
 
 **10 concepts covered:**
 
-1. `SUM() OVER` — running totals
-2. `PARTITION BY` — independent group calculations
-3. `ROWS BETWEEN` — rolling windows
-4. `RANGE BETWEEN` vs `ROWS BETWEEN` — value-based vs row-count-based frames
-5. `ROW_NUMBER()`, `RANK()`, `DENSE_RANK()` — tie behavior
-6. `LAG()` — look back one row
-7. `LEAD()` — look forward one row
-8. `FIRST_VALUE()` / `LAST_VALUE()` — partition anchors (and a common trap)
-9. `NTILE(n)` — bucketing into equal groups
-10. Islands-and-gaps — detecting consecutive sequences
+1. `SUM() OVER` — running totals (`badge_journey`)
+2. `PARTITION BY` — independent group calculations (`team_battles`)
+3. `ROWS BETWEEN` — rolling windows (`road_encounters`)
+4. `RANGE BETWEEN` vs `ROWS BETWEEN` — value vs row-count frames (`gym_tiers`)
+5. `ROW_NUMBER()`, `RANK()`, `DENSE_RANK()` — tie behavior (`gym_rankings`)
+6. `LAG()` — look back one row (`pikachu_battles`)
+7. `LEAD()` — look forward one row (`kanto_route`)
+8. `FIRST_VALUE()` / `LAST_VALUE()` — partition anchors (`pokemon_team`)
+9. `NTILE(n)` — bucketing into equal groups (`team_power`)
+10. Islands and gaps — detecting consecutive sequences (`training_sessions`)
 
 ---
 
-## The dataset: Ash’s Kanto journey
-
-> **⚠️ Spoiler warning:** the data below reveals how Ash’s season ends. If you care about that sort of thing, consider yourself warned.
+> **⚠️ Spoiler warning:** the datasets below reveal how Ash’s Kanto season ends.
 
 <details>
   <summary>Not a Pokémon fan? Quick context (spoilers)</summary>
   Ash Ketchum is a ten-year-old trainer who travels the Kanto region with his partner Pikachu. To qualify for the regional championship — the Indigo League — he has to defeat eight Gym Leaders and earn their badges. He wins all eight, makes it to the Indigo League, and loses to a rival named Ritchie when his own Pokémon, Charizard, refuses to battle.
 </details>
 
-That story gives us nine battles in order.
-
-```sql
-WITH kanto_battles AS (
-  SELECT * FROM (
-    VALUES
-      (1,  'EP005', 'Pewter Gym',    'Brock',     'W', 1),
-      (2,  'EP007', 'Cerulean Gym',  'Misty',     'W', 1),
-      (3,  'EP014', 'Vermilion Gym', 'Lt. Surge', 'W', 1),
-      (4,  'EP024', 'Celadon Gym',   'Erika',     'W', 1),
-      (5,  'EP032', 'Fuchsia Gym',   'Koga',      'W', 1),
-      (6,  'EP059', 'Saffron Gym',   'Sabrina',   'W', 1),
-      (7,  'EP063', 'Cinnabar Gym',  'Blaine',    'W', 1),
-      (8,  'EP067', 'Viridian Gym',  'Giovanni',  'W', 1),
-      (9,  'EP076', 'Indigo League', 'Ritchie',   'L', 0)
-  ) AS t(event_order, episode_id, event_name, opponent, result, win_flag)
-)
-SELECT * FROM kanto_battles;
-```
-
-| # | event_name    | opponent  | result | win_flag |
-|---|---------------|-----------|--------|----------|
-| 1 | Pewter Gym    | Brock     | W      | 1        |
-| 2 | Cerulean Gym  | Misty     | W      | 1        |
-| 3 | Vermilion Gym | Lt. Surge | W      | 1        |
-| 4 | Celadon Gym   | Erika     | W      | 1        |
-| 5 | Fuchsia Gym   | Koga      | W      | 1        |
-| 6 | Saffron Gym   | Sabrina   | W      | 1        |
-| 7 | Cinnabar Gym  | Blaine    | W      | 1        |
-| 8 | Viridian Gym  | Giovanni  | W      | 1        |
-| 9 | Indigo League | Ritchie   | L      | 0        |
-
 ---
 
 ## 1) Running total with `SUM() OVER`
 
-A regular `SUM()` with `GROUP BY` collapses everything to one row. A window function keeps every row and adds a cumulative column alongside it.
+**Dataset: `badge_journey`** — Ash’s eight gym battles plus the Indigo League final. One row per match.
+
+```sql
+WITH badge_journey AS (
+  SELECT * FROM (
+    VALUES
+      (1, 'EP005', 'Pewter Gym',    'Brock',    'Boulder Badge', 1),
+      (2, 'EP007', 'Cerulean Gym',  'Misty',    'Cascade Badge', 1),
+      (3, 'EP014', 'Vermilion Gym', 'Lt. Surge','Thunder Badge', 1),
+      (4, 'EP024', 'Celadon Gym',   'Erika',    'Rainbow Badge', 1),
+      (5, 'EP032', 'Fuchsia Gym',   'Koga',     'Soul Badge',    1),
+      (6, 'EP059', 'Saffron Gym',   'Sabrina',  'Marsh Badge',   1),
+      (7, 'EP063', 'Cinnabar Gym',  'Blaine',   'Volcano Badge', 1),
+      (8, 'EP067', 'Viridian Gym',  'Giovanni', 'Earth Badge',   1),
+      (9, 'EP079', 'Indigo League', 'Ritchie',  NULL,             0)
+  ) AS t(battle_id, episode, venue, opponent, badge_earned, win_flag)
+)
+SELECT * FROM badge_journey;
+```
+
+| # | venue          | opponent  | badge_earned  | win_flag |
+|---|----------------|-----------|---------------|----------|
+| 1 | Pewter Gym     | Brock     | Boulder Badge | 1        |
+| 2 | Cerulean Gym   | Misty     | Cascade Badge | 1        |
+| 3 | Vermilion Gym  | Lt. Surge | Thunder Badge | 1        |
+| 4 | Celadon Gym    | Erika     | Rainbow Badge | 1        |
+| 5 | Fuchsia Gym    | Koga      | Soul Badge    | 1        |
+| 6 | Saffron Gym    | Sabrina   | Marsh Badge   | 1        |
+| 7 | Cinnabar Gym   | Blaine    | Volcano Badge | 1        |
+| 8 | Viridian Gym   | Giovanni  | Earth Badge   | 1        |
+| 9 | Indigo League  | Ritchie   | NULL          | 0        |
+
+A regular `SUM()` with `GROUP BY` collapses all rows into one total. A window function keeps every row and adds a cumulative column alongside it.
 
 ```sql
 SELECT
-  event_order,
-  event_name,
+  battle_id,
+  venue,
+  opponent,
   result,
   SUM(win_flag) OVER (
-    ORDER BY event_order
+    ORDER BY battle_id
     ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-  ) AS running_wins
-FROM kanto_battles
-ORDER BY event_order;
+  ) AS badges_so_far
+FROM badge_journey
+ORDER BY battle_id;
 ```
 
-`UNBOUNDED PRECEDING` means start from the very first row. `CURRENT ROW` means stop here.
+`UNBOUNDED PRECEDING` means start from the very first row. `CURRENT ROW` means stop here. For every row, SQL sums `win_flag` from row 1 up to and including the current row.
 
 **Result:**
 
-| # | event_name    | result | running_wins |
-|---|---------------|--------|--------------|
-| 1 | Pewter Gym    | W      | 1            |
-| 2 | Cerulean Gym  | W      | 2            |
-| 3 | Vermilion Gym | W      | 3            |
-| 4 | Celadon Gym   | W      | 4            |
-| 5 | Fuchsia Gym   | W      | 5            |
-| 6 | Saffron Gym   | W      | 6            |
-| 7 | Cinnabar Gym  | W      | 7            |
-| 8 | Viridian Gym  | W      | 8            |
-| 9 | Indigo League | L      | 8            |
+| # | venue          | opponent  | result | badges_so_far |
+|---|----------------|-----------|--------|---------------|
+| 1 | Pewter Gym     | Brock     | W      | 1             |
+| 2 | Cerulean Gym   | Misty     | W      | 2             |
+| 3 | Vermilion Gym  | Lt. Surge | W      | 3             |
+| 4 | Celadon Gym    | Erika     | W      | 4             |
+| 5 | Fuchsia Gym    | Koga      | W      | 5             |
+| 6 | Saffron Gym    | Sabrina   | W      | 6             |
+| 7 | Cinnabar Gym   | Blaine    | W      | 7             |
+| 8 | Viridian Gym   | Giovanni  | W      | 8             |
+| 9 | Indigo League  | Ritchie   | L      | 8             |
 
-Row 9 stays at 8 — the loss contributes `win_flag = 0` so it adds nothing. Compare to `GROUP BY`: you’d get one row with `total = 8`, and all per-battle detail would be gone.
+Row 9: the Indigo League loss adds `win_flag = 0` so `badges_so_far` stays at 8. Every row keeps its full context — you can see the badge name, the opponent, and the running total all on the same row.
 
 ---
 
 ## 2) `PARTITION BY`: independent calculations per group
 
-`PARTITION BY` resets the window for each group. Without it, the window spans the whole table. With it, each partition runs its own independent calculation.
+**Dataset: `team_battles`** — selected battles from Ash’s four main Pokémon across the journey, ordered by episode.
 
-Here we split battles into two stages — Gym Circuit and League Stage — and track cumulative wins separately inside each one.
+```sql
+WITH team_battles AS (
+  SELECT * FROM (
+    VALUES
+      (1,  'EP001', 'Pikachu',   'Spearow', 'W', 1),
+      (2,  'EP005', 'Pikachu',   'Onix',    'W', 1),
+      (3,  'EP007', 'Bulbasaur', 'Staryu',  'W', 1),
+      (4,  'EP011', 'Pikachu',   'Rhyhorn', 'W', 1),
+      (5,  'EP014', 'Pikachu',   'Raichu',  'W', 1),
+      (6,  'EP024', 'Bulbasaur', 'Gloom',   'W', 1),
+      (7,  'EP032', 'Bulbasaur', 'Koffing', 'W', 1),
+      (8,  'EP059', 'Squirtle',  'Haunter', 'W', 1),
+      (9,  'EP063', 'Charizard', 'Magmar',  'W', 1),
+      (10, 'EP067', 'Squirtle',  'Rhyhorn', 'W', 1),
+      (11, 'EP079', 'Pikachu',   'Sparky',  'W', 1),
+      (12, 'EP079', 'Charizard', 'Zippo',   'L', 0)
+  ) AS t(battle_id, episode, pokemon, opponent, result, win_flag)
+)
+SELECT * FROM team_battles;
+```
+
+`PARTITION BY` resets the window calculation for each group. Without it, a running total spans the whole table. With it, each Pokémon gets its own independent count.
 
 ```sql
 SELECT
-  event_order,
-  event_name,
-  CASE
-    WHEN event_name LIKE '%Gym%' THEN 'Gym Circuit'
-    ELSE 'League Stage'
-  END AS stage,
-  win_flag,
+  battle_id,
+  pokemon,
+  opponent,
+  result,
   SUM(win_flag) OVER (
-    PARTITION BY CASE WHEN event_name LIKE '%Gym%' THEN 'Gym Circuit' ELSE 'League Stage' END
-    ORDER BY event_order
+    PARTITION BY pokemon
+    ORDER BY battle_id
     ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-  ) AS stage_wins
-FROM kanto_battles
-ORDER BY event_order;
+  ) AS pokemon_wins
+FROM team_battles
+ORDER BY battle_id;
 ```
 
 **Result:**
 
-| # | event_name    | stage        | win_flag | stage_wins |
-|---|---------------|--------------|----------|------------|
-| 1 | Pewter Gym    | Gym Circuit  | 1        | 1          |
-| 2 | Cerulean Gym  | Gym Circuit  | 1        | 2          |
-| 3 | Vermilion Gym | Gym Circuit  | 1        | 3          |
-| 4 | Celadon Gym   | Gym Circuit  | 1        | 4          |
-| 5 | Fuchsia Gym   | Gym Circuit  | 1        | 5          |
-| 6 | Saffron Gym   | Gym Circuit  | 1        | 6          |
-| 7 | Cinnabar Gym  | Gym Circuit  | 1        | 7          |
-| 8 | Viridian Gym  | Gym Circuit  | 1        | 8          |
-| 9 | Indigo League | League Stage | 0        | 0          |
+| # | pokemon   | opponent | result | pokemon_wins |
+|---|-----------|----------|--------|--------------|
+| 1 | Pikachu   | Spearow  | W      | 1            |
+| 2 | Pikachu   | Onix     | W      | 2            |
+| 3 | Bulbasaur | Staryu   | W      | 1            |
+| 4 | Pikachu   | Rhyhorn  | W      | 3            |
+| 5 | Pikachu   | Raichu   | W      | 4            |
+| 6 | Bulbasaur | Gloom    | W      | 2            |
+| 7 | Bulbasaur | Koffing  | W      | 3            |
+| 8 | Squirtle  | Haunter  | W      | 1            |
+| 9 | Charizard | Magmar   | W      | 1            |
+| 10| Squirtle  | Rhyhorn  | W      | 2            |
+| 11| Pikachu   | Sparky   | W      | 5            |
+| 12| Charizard | Zippo    | L      | 1            |
 
-Row 9 resets to 0 because it belongs to a different partition. The Gym Circuit running total of 8 is untouched — it’s a completely separate calculation.
+Each Pokémon’s `pokemon_wins` counter resets independently. Pikachu climbs from 1 to 5. Bulbasaur goes 1–2–3. Charizard’s loss on row 12 adds nothing — it stays at 1. Without `PARTITION BY`, Charizard’s wins would be added to the global running total and you’d lose the per-Pokémon breakdown.
 
 ---
 
 ## 3) `ROWS BETWEEN`: rolling windows
 
-By default `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` makes every row look all the way back to the start. A frame clause lets you narrow that window to just the nearby rows.
+**Dataset: `road_encounters`** — Ash’s trainer battles on the roads between gyms, in episode order.
 
-This query tracks wins over only the last three battles — a "current form" stat rather than a career stat.
+```sql
+WITH road_encounters AS (
+  SELECT * FROM (
+    VALUES
+      (1,  'EP002', 'Route 1',       'Bug Catcher', 'W', 1),
+      (2,  'EP003', 'Viridian Forest','Youngster',   'W', 1),
+      (3,  'EP006', 'Mt. Moon',      'Rocket Grunt','W', 1),
+      (4,  'EP008', 'Route 3',       'Lass',        'L', 0),
+      (5,  'EP009', 'Route 3',       'Bug Catcher', 'W', 1),
+      (6,  'EP010', 'Route 4',       'Youngster',   'W', 1),
+      (7,  'EP016', 'Route 6',       'Hiker',       'L', 0),
+      (8,  'EP017', 'Route 7',       'Lass',        'W', 1),
+      (9,  'EP020', 'Route 8',       'Youngster',   'W', 1),
+      (10, 'EP025', 'Route 9',       'Hiker',       'W', 1),
+      (11, 'EP033', 'Route 15',      'Bird Keeper', 'L', 0),
+      (12, 'EP040', 'Route 16',      'Bug Catcher', 'W', 1)
+  ) AS t(enc_id, episode, route, trainer_class, result, win_flag)
+)
+SELECT * FROM road_encounters;
+```
+
+By default `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` makes every row look all the way back to the start. Changing the frame lets you narrow that to just the nearby rows — a “current form” stat rather than a career stat.
 
 ```sql
 SELECT
-  event_order,
-  event_name,
+  enc_id,
+  route,
+  trainer_class,
   result,
   SUM(win_flag) OVER (
-    ORDER BY event_order
+    ORDER BY enc_id
     ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
   ) AS wins_last_3
-FROM kanto_battles
-ORDER BY event_order;
+FROM road_encounters
+ORDER BY enc_id;
 ```
 
-`2 PRECEDING` + `CURRENT ROW` = a 3-row window. At each row, SQL looks back at most 2 rows and includes the current one.
+`2 PRECEDING` + `CURRENT ROW` = a 3-row window. At each row, SQL sums at most 2 rows back plus the current one.
 
 **Result:**
 
-| # | event_name    | result | wins_last_3 |
-|---|---------------|--------|-------------|
-| 1 | Pewter Gym    | W      | 1           |
-| 2 | Cerulean Gym  | W      | 2           |
-| 3 | Vermilion Gym | W      | 3           |
-| 4 | Celadon Gym   | W      | 3           |
-| 5 | Fuchsia Gym   | W      | 3           |
-| 6 | Saffron Gym   | W      | 3           |
-| 7 | Cinnabar Gym  | W      | 3           |
-| 8 | Viridian Gym  | W      | 3           |
-| 9 | Indigo League | L      | 2           |
+| # | route          | trainer_class | result | wins_last_3 |
+|---|----------------|---------------|--------|-------------|
+| 1 | Route 1        | Bug Catcher   | W      | 1           |
+| 2 | Viridian Forest| Youngster     | W      | 2           |
+| 3 | Mt. Moon       | Rocket Grunt  | W      | 3           |
+| 4 | Route 3        | Lass          | L      | 2           |
+| 5 | Route 3        | Bug Catcher   | W      | 2           |
+| 6 | Route 4        | Youngster     | W      | 2           |
+| 7 | Route 6        | Hiker         | L      | 2           |
+| 8 | Route 7        | Lass          | W      | 2           |
+| 9 | Route 8        | Youngster     | W      | 2           |
+| 10| Route 9        | Hiker         | W      | 3           |
+| 11| Route 15       | Bird Keeper   | L      | 2           |
+| 12| Route 16       | Bug Catcher   | W      | 2           |
 
-Rows 1 and 2 have fewer than 3 prior rows available so the frame shrinks to fit. Row 9 looks at battles 7, 8, 9: two wins and one loss = 2.
+Rows 1 and 2 have fewer than 3 prior rows so the frame shrinks to fit. Row 3 is the first to see a full 3-battle window (all wins = 3). Row 10 is the next clean 3 after the mid-journey slump. Row 11’s loss pulls `wins_last_3` back to 2.
 
 ---
 
 ## 4) `RANGE BETWEEN` vs `ROWS BETWEEN`
 
-These look similar but behave very differently when the `ORDER BY` column has duplicate values.
+**Dataset: `gym_tiers`** — the same nine battles as `badge_journey`, but now each battle has a `difficulty_tier` (1 = early Kanto, 2 = mid, 3 = late/final).
 
-- `ROWS BETWEEN` counts **physical rows** — always the exact number of rows you specify
-- `RANGE BETWEEN` counts **logical values** — it includes all rows whose `ORDER BY` value falls within the range you specify
+```sql
+WITH gym_tiers AS (
+  SELECT * FROM (
+    VALUES
+      (1, 'EP005', 'Brock',    1, 1),
+      (2, 'EP007', 'Misty',    1, 1),
+      (3, 'EP014', 'Lt. Surge',1, 1),
+      (4, 'EP024', 'Erika',    2, 1),
+      (5, 'EP032', 'Koga',     2, 1),
+      (6, 'EP059', 'Sabrina',  3, 1),
+      (7, 'EP063', 'Blaine',   3, 1),
+      (8, 'EP067', 'Giovanni', 3, 1),
+      (9, 'EP079', 'Ritchie',  3, 0)
+  ) AS t(battle_id, episode, opponent, difficulty_tier, win_flag)
+)
+SELECT * FROM gym_tiers;
+```
 
-To see the difference clearly, we order by `win_flag` which has duplicates (eight 1s and one 0):
+`ROWS BETWEEN` counts **physical rows**. `RANGE BETWEEN` counts **logical values** — it includes all rows whose `ORDER BY` value falls within a numeric range of the current row’s value. The difference is invisible when `ORDER BY` has no duplicates. When it does, they behave very differently.
 
 ```sql
 SELECT
-  event_order,
-  event_name,
+  opponent,
+  difficulty_tier,
   win_flag,
   SUM(win_flag) OVER (
-    ORDER BY win_flag
+    ORDER BY difficulty_tier
     ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING
   ) AS rows_sum,
   SUM(win_flag) OVER (
-    ORDER BY win_flag
+    ORDER BY difficulty_tier
     RANGE BETWEEN 1 PRECEDING AND 1 FOLLOWING
   ) AS range_sum
-FROM kanto_battles
-ORDER BY win_flag, event_order;
+FROM gym_tiers
+ORDER BY difficulty_tier, battle_id;
 ```
 
 **Result:**
 
-| # | event_name    | win_flag | rows_sum | range_sum |
-|---|---------------|----------|----------|-----------|
-| 9 | Indigo League | 0        | 1        | 8         |
-| 1 | Pewter Gym    | 1        | 2        | 8         |
-| 2 | Cerulean Gym  | 1        | 3        | 8         |
-| 3 | Vermilion Gym | 1        | 3        | 8         |
-| 4 | Celadon Gym   | 1        | 3        | 8         |
-| 5 | Fuchsia Gym   | 1        | 3        | 8         |
-| 6 | Saffron Gym   | 1        | 3        | 8         |
-| 7 | Cinnabar Gym  | 1        | 3        | 8         |
-| 8 | Viridian Gym  | 1        | 2        | 8         |
+| opponent  | difficulty_tier | win_flag | rows_sum | range_sum |
+|-----------|-----------------|----------|----------|-----------|
+| Brock     | 1               | 1        | 2        | 5         |
+| Misty     | 1               | 1        | 3        | 5         |
+| Lt. Surge | 1               | 1        | 3        | 5         |
+| Erika     | 2               | 1        | 3        | 8         |
+| Koga      | 2               | 1        | 3        | 8         |
+| Sabrina   | 3               | 1        | 3        | 5         |
+| Blaine    | 3               | 1        | 3        | 5         |
+| Giovanni  | 3               | 1        | 2        | 5         |
+| Ritchie   | 3               | 0        | 1        | 5         |
 
-For `ROWS`: row 9 (win_flag=0) sees itself plus 1 physical row forward = sum of 0+1 = 1. Row 1 sees 1 back + itself + 1 forward = 0+1+1 = 2. The window moves like a sliding physical frame.
+**`rows_sum`** moves like a sliding physical window of 3 rows. Brock has no preceding row so it starts at 2. Giovanni and Ritchie trail off at the end.
 
-For `RANGE`: every row with win_flag=1 uses the range "between 0 and 2" — which includes all 9 rows in the table. So every single row returns 8 (the sum of all win_flags). `RANGE` says "find all rows whose ORDER BY value is within 1 of mine," which sweeps in every row that shares a similar value.
+**`range_sum`** uses the difficulty_tier value itself. For a tier-2 row, `RANGE BETWEEN 1 PRECEDING AND 1 FOLLOWING` means: include all rows where `difficulty_tier` is between 1 and 3 — that’s every row in the table (9 rows, 8 wins). For a tier-1 row the range is 0–2, capturing tiers 1 and 2 (5 rows, all wins = 5). For tier-3, it’s 2–4, capturing tiers 2 and 3 (6 rows, one loss = 5).
 
-**When does this matter in practice?** When you’re computing a 7-day rolling window with `RANGE BETWEEN INTERVAL '6 DAYS' PRECEDING AND CURRENT ROW` on a date column — that’s a date-range frame, not a row-count frame, and it handles missing dates correctly. `ROWS BETWEEN 6 PRECEDING` always grabs exactly 7 physical rows regardless of what dates they represent.
+Notice `range_sum` is the same for every row **within the same tier** because they all share the same `ORDER BY` value. `rows_sum` varies by physical position. This is the core distinction: RANGE is group-aware, ROWS is position-aware.
+
+**When this matters in practice:** rolling 7-day windows on date columns. `RANGE BETWEEN INTERVAL '6 DAYS' PRECEDING AND CURRENT ROW` includes all rows within the past 6 calendar days regardless of gaps. `ROWS BETWEEN 6 PRECEDING` always grabs exactly 7 physical rows regardless of what dates they cover.
 
 ---
 
 ## 5) Ranking functions: tie behavior matters
 
-Three functions look nearly identical but handle ties differently. This is a frequent interview trap because the wrong choice silently produces wrong answers.
+**Dataset: `gym_rankings`** — the nine battles rated by `difficulty_score`, a subjective measure of how hard each fight was. Brock and Misty share a score of 4; Blaine and Ritchie share 7.
 
-To make the tie behavior visible, we rank by `win_flag DESC` — all 8 wins tie at the top, the one loss is at the bottom.
+```sql
+WITH gym_rankings AS (
+  SELECT * FROM (
+    VALUES
+      (1, 'EP005', 'Brock',     'Rock',     4, 1),
+      (2, 'EP007', 'Misty',     'Water',    4, 1),
+      (3, 'EP014', 'Lt. Surge', 'Electric', 5, 1),
+      (4, 'EP024', 'Erika',     'Grass',    3, 1),
+      (5, 'EP032', 'Koga',      'Poison',   6, 1),
+      (6, 'EP059', 'Sabrina',   'Psychic',  8, 1),
+      (7, 'EP063', 'Blaine',    'Fire',     7, 1),
+      (8, 'EP067', 'Giovanni',  'Ground',   9, 1),
+      (9, 'EP079', 'Ritchie',   'Mixed',    7, 0)
+  ) AS t(battle_id, episode, opponent, specialty, difficulty_score, win_flag)
+)
+SELECT * FROM gym_rankings;
+```
 
 ```sql
 SELECT
-  event_order,
-  event_name,
-  win_flag,
-  ROW_NUMBER() OVER (ORDER BY win_flag DESC, event_order) AS row_num,
-  RANK()       OVER (ORDER BY win_flag DESC)              AS rnk,
-  DENSE_RANK() OVER (ORDER BY win_flag DESC)              AS dense_rnk
-FROM kanto_battles
-ORDER BY event_order;
+  opponent,
+  specialty,
+  difficulty_score,
+  ROW_NUMBER() OVER (ORDER BY difficulty_score DESC, battle_id) AS row_num,
+  RANK()       OVER (ORDER BY difficulty_score DESC)            AS rnk,
+  DENSE_RANK() OVER (ORDER BY difficulty_score DESC)            AS dense_rnk
+FROM gym_rankings
+ORDER BY difficulty_score DESC, battle_id;
 ```
 
 **Result:**
 
-| # | event_name    | win_flag | row_num | rnk | dense_rnk |
-|---|---------------|----------|---------|-----|-----------|
-| 1 | Pewter Gym    | 1        | 1       | 1   | 1         |
-| 2 | Cerulean Gym  | 1        | 2       | 1   | 1         |
-| 3 | Vermilion Gym | 1        | 3       | 1   | 1         |
-| 4 | Celadon Gym   | 1        | 4       | 1   | 1         |
-| 5 | Fuchsia Gym   | 1        | 5       | 1   | 1         |
-| 6 | Saffron Gym   | 1        | 6       | 1   | 1         |
-| 7 | Cinnabar Gym  | 1        | 7       | 1   | 1         |
-| 8 | Viridian Gym  | 1        | 8       | 1   | 1         |
-| 9 | Indigo League | 0        | 9       | 9   | 2         |
+| opponent  | specialty | score | row_num | rnk | dense_rnk |
+|-----------|-----------|-------|---------|-----|-----------|
+| Giovanni  | Ground    | 9     | 1       | 1   | 1         |
+| Sabrina   | Psychic   | 8     | 2       | 2   | 2         |
+| Blaine    | Fire      | 7     | 3       | 3   | 3         |
+| Ritchie   | Mixed     | 7     | 4       | 3   | 3         |
+| Koga      | Poison    | 6     | 5       | 5   | 4         |
+| Lt. Surge | Electric  | 5     | 6       | 6   | 5         |
+| Brock     | Rock      | 4     | 7       | 7   | 6         |
+| Misty     | Water     | 4     | 8       | 7   | 6         |
+| Erika     | Grass     | 3     | 9       | 9   | 7         |
 
-Row 9 is where it diverges:
+Two sets of ties expose the difference clearly:
 
-- `ROW_NUMBER`: always unique — every row gets a distinct number regardless of ties. Tie-breaking is determined by the secondary `ORDER BY event_order`.
-- `RANK`: 8 rows tie for rank 1, so the next rank jumps to 9. Ranks 2–8 are skipped.
-- `DENSE_RANK`: 8 rows tie for rank 1, next rank is 2. No gaps.
+**Blaine and Ritchie (score=7):** `RANK` gives both a 3, then jumps to 5 for Koga (rank 4 is skipped). `DENSE_RANK` gives both a 3, then 4 for Koga (no gap).
 
-**Interview rule:** when a problem says "top N per group" and the dataset has ties, `RANK()` can return fewer than N results for a group if ties push the next unique rank past N. `DENSE_RANK()` is the safe default for top-N filtering.
+**Brock and Misty (score=4):** `RANK` gives both a 7, then jumps to 9 for Erika (rank 8 skipped). `DENSE_RANK` gives both a 6, then 7.
+
+`ROW_NUMBER` always produces a unique number — it uses the secondary `ORDER BY battle_id` to break ties, so Blaine (EP063) gets 3 and Ritchie (EP079) gets 4.
+
+**Interview rule:** when a problem says “top N per group,” the wrong choice silently produces wrong output. If two opponents tie for 3rd and the question asks for top-3, `RANK` may return no row at position 3 for some groups if ties push it past N. `DENSE_RANK` is the safe default.
 
 ---
 
 ## 6) `LAG()`: look at the previous row
 
-`LAG(column)` returns the value of that column from the row immediately before the current one. The first row gets `NULL` — nothing precedes it.
+**Dataset: `pikachu_battles`** — Pikachu’s key battles across the Kanto season, tracking HP remaining after each fight.
+
+```sql
+WITH pikachu_battles AS (
+  SELECT * FROM (
+    VALUES
+      (1, 'EP001', 'Route 1',      'Spearow flock','W', 45),
+      (2, 'EP005', 'Pewter Gym',   'Onix',         'W', 20),
+      (3, 'EP007', 'Cerulean Gym', 'Starmie',      'L',  0),
+      (4, 'EP014', 'Vermilion Gym','Raichu',       'W', 15),
+      (5, 'EP032', 'Fuchsia Gym',  'Electrode',    'W', 30),
+      (6, 'EP059', 'Saffron Gym',  'Kadabra',      'W', 25),
+      (7, 'EP067', 'Viridian Gym', 'Rhyhorn',      'W', 38),
+      (8, 'EP079', 'Indigo League','Sparky',       'W',  8)
+  ) AS t(battle_id, episode, location, opponent, result, hp_after)
+)
+SELECT * FROM pikachu_battles;
+```
+
+`LAG(column)` returns the value of that column from the previous row. The first row gets `NULL` — nothing precedes it.
 
 ```sql
 SELECT
-  event_order,
-  event_name,
+  battle_id,
+  location,
   result,
-  LAG(result) OVER (ORDER BY event_order) AS prev_result,
+  hp_after,
+  LAG(hp_after) OVER (ORDER BY battle_id)                   AS prev_hp,
+  hp_after - LAG(hp_after) OVER (ORDER BY battle_id)        AS hp_change,
   CASE
-    WHEN LAG(result) OVER (ORDER BY event_order) = 'W' AND result = 'L' THEN 'Momentum Broken'
-    WHEN LAG(result) OVER (ORDER BY event_order) = result               THEN 'Steady'
-    ELSE 'Shift'
-  END AS momentum_state
-FROM kanto_battles
-ORDER BY event_order;
+    WHEN LAG(hp_after) OVER (ORDER BY battle_id) IS NULL    THEN 'First Battle'
+    WHEN hp_after > LAG(hp_after) OVER (ORDER BY battle_id) THEN 'Recovered'
+    ELSE 'Drained'
+  END AS condition
+FROM pikachu_battles
+ORDER BY battle_id;
 ```
 
 **Result:**
 
-| # | event_name    | result | prev_result | momentum_state  |
-|---|---------------|--------|-------------|-----------------|
-| 1 | Pewter Gym    | W      | NULL        | Shift           |
-| 2 | Cerulean Gym  | W      | W           | Steady          |
-| 3 | Vermilion Gym | W      | W           | Steady          |
-| 4 | Celadon Gym   | W      | W           | Steady          |
-| 5 | Fuchsia Gym   | W      | W           | Steady          |
-| 6 | Saffron Gym   | W      | W           | Steady          |
-| 7 | Cinnabar Gym  | W      | W           | Steady          |
-| 8 | Viridian Gym  | W      | W           | Steady          |
-| 9 | Indigo League | L      | W           | Momentum Broken |
+| # | location      | result | hp_after | prev_hp | hp_change | condition   |
+|---|---------------|--------|----------|---------|-----------|-------------|
+| 1 | Route 1       | W      | 45       | NULL    | NULL      | First Battle|
+| 2 | Pewter Gym    | W      | 20       | 45      | -25       | Drained     |
+| 3 | Cerulean Gym  | L      | 0        | 20      | -20       | Drained     |
+| 4 | Vermilion Gym | W      | 15       | 0       | +15       | Recovered   |
+| 5 | Fuchsia Gym   | W      | 30       | 15      | +15       | Recovered   |
+| 6 | Saffron Gym   | W      | 25       | 30      | -5        | Drained     |
+| 7 | Viridian Gym  | W      | 38       | 25      | +13       | Recovered   |
+| 8 | Indigo League | W      | 8        | 38      | -26       | Drained     |
 
-Row 1 has `NULL` for `prev_result`. Rows 2–8 match the previous result so they’re `Steady`. Row 9 gets `Momentum Broken`: `LAG()` pulled the prior `W` and the `CASE` caught the W→L flip.
+Row 1 has `NULL` because there is no prior battle. The worst single-battle HP drop (-26) happens at the Indigo League final — the toughest fight even though Pikachu wins. Row 3 (Cerulean) drops to 0, the only loss.
 
-You can also offset further back: `LAG(result, 2)` looks back two rows. The second argument defaults to 1.
+`LAG()` also accepts an offset: `LAG(hp_after, 2)` looks back two rows. The second argument defaults to 1.
 
 ---
 
 ## 7) `LEAD()`: look at the next row
 
-`LEAD(column)` is the forward-looking complement to `LAG()`. The last row gets `NULL` — nothing follows it.
+**Dataset: `kanto_route`** — every major stop on Ash’s journey through Kanto, in travel order.
+
+```sql
+WITH kanto_route AS (
+  SELECT * FROM (
+    VALUES
+      (1,  'EP001', 'Pallet Town',    'Receives Pikachu from Prof. Oak'),
+      (2,  'EP001', 'Route 1',        'First wild Pokémon encounter'),
+      (3,  'EP003', 'Viridian Forest','Catches Caterpie and Pidgeotto'),
+      (4,  'EP005', 'Pewter City',    'Earns Boulder Badge from Brock'),
+      (5,  'EP006', 'Mt. Moon',       'Battles Team Rocket at Moon Stone'),
+      (6,  'EP007', 'Cerulean City',  'Earns Cascade Badge from Misty'),
+      (7,  'EP014', 'Vermilion City', 'Earns Thunder Badge from Lt. Surge'),
+      (8,  'EP024', 'Celadon City',   'Earns Rainbow Badge from Erika'),
+      (9,  'EP032', 'Fuchsia City',   'Earns Soul Badge from Koga'),
+      (10, 'EP059', 'Saffron City',   'Earns Marsh Badge from Sabrina'),
+      (11, 'EP063', 'Cinnabar Island','Earns Volcano Badge from Blaine'),
+      (12, 'EP067', 'Viridian City',  'Earns Earth Badge from Giovanni'),
+      (13, 'EP079', 'Indigo Plateau', 'Loses to Ritchie in Top 16')
+  ) AS t(stop_order, episode, location, key_event)
+)
+SELECT * FROM kanto_route;
+```
+
+`LEAD(column)` returns the value from the row immediately after the current one. The last row gets `NULL` — nothing follows it. It is the forward-looking complement to `LAG()`.
 
 ```sql
 SELECT
-  event_order,
-  event_name,
-  opponent,
-  result,
-  LEAD(opponent)   OVER (ORDER BY event_order) AS next_opponent,
-  LEAD(event_name) OVER (ORDER BY event_order) AS next_event
-FROM kanto_battles
-ORDER BY event_order;
+  stop_order,
+  location,
+  key_event,
+  LEAD(location)  OVER (ORDER BY stop_order) AS next_stop,
+  LEAD(episode)   OVER (ORDER BY stop_order) AS next_episode
+FROM kanto_route
+ORDER BY stop_order;
 ```
 
 **Result:**
 
-| # | event_name    | opponent  | result | next_opponent | next_event    |
-|---|---------------|-----------|--------|---------------|---------------|
-| 1 | Pewter Gym    | Brock     | W      | Misty         | Cerulean Gym  |
-| 2 | Cerulean Gym  | Misty     | W      | Lt. Surge     | Vermilion Gym |
-| 3 | Vermilion Gym | Lt. Surge | W      | Erika         | Celadon Gym   |
-| 4 | Celadon Gym   | Erika     | W      | Koga          | Fuchsia Gym   |
-| 5 | Fuchsia Gym   | Koga      | W      | Sabrina       | Saffron Gym   |
-| 6 | Saffron Gym   | Sabrina   | W      | Blaine        | Cinnabar Gym  |
-| 7 | Cinnabar Gym  | Blaine    | W      | Giovanni      | Viridian Gym  |
-| 8 | Viridian Gym  | Giovanni  | W      | Ritchie       | Indigo League |
-| 9 | Indigo League | Ritchie   | L      | NULL          | NULL          |
+| # | location       | key_event                         | next_stop       | next_episode |
+|---|----------------|-----------------------------------|-----------------|--------------|
+| 1 | Pallet Town    | Receives Pikachu from Prof. Oak   | Route 1         | EP001        |
+| 2 | Route 1        | First wild Pokémon encounter          | Viridian Forest | EP003        |
+| 3 | Viridian Forest| Catches Caterpie and Pidgeotto    | Pewter City     | EP005        |
+| 4 | Pewter City    | Earns Boulder Badge from Brock    | Mt. Moon        | EP006        |
+| 5 | Mt. Moon       | Battles Team Rocket at Moon Stone | Cerulean City   | EP007        |
+| 6 | Cerulean City  | Earns Cascade Badge from Misty    | Vermilion City  | EP014        |
+| 7 | Vermilion City | Earns Thunder Badge from Lt. Surge| Celadon City    | EP024        |
+| 8 | Celadon City   | Earns Rainbow Badge from Erika    | Fuchsia City    | EP032        |
+| 9 | Fuchsia City   | Earns Soul Badge from Koga        | Saffron City    | EP059        |
+| 10| Saffron City   | Earns Marsh Badge from Sabrina    | Cinnabar Island | EP063        |
+| 11| Cinnabar Island| Earns Volcano Badge from Blaine   | Viridian City   | EP067        |
+| 12| Viridian City  | Earns Earth Badge from Giovanni   | Indigo Plateau  | EP079        |
+| 13| Indigo Plateau | Loses to Ritchie in Top 16        | NULL            | NULL         |
 
-Row 9 gets `NULL` for both forward columns — the season is over.
-
-`LEAD()` and `LAG()` take identical arguments and work the same way in opposite directions. A common real-world use: retention analysis — `LEAD(event_date)` gives you each user’s next activity date, so you can check whether the gap to the next event is 1 day (retained) or much longer (churned).
+Row 13 gets `NULL` for both forward columns — the journey is over. `LEAD()` takes the same arguments as `LAG()`. `LEAD(location, 2)` would return the stop two rows ahead.
 
 ---
 
 ## 8) `FIRST_VALUE()` and `LAST_VALUE()`: partition anchors
 
-`FIRST_VALUE(column)` returns the first value of that column in the window. `LAST_VALUE(column)` returns the last. These are useful when you want every row to carry a reference point from the start or end of its group.
+**Dataset: `pokemon_team`** — every Pokémon Ash caught during Kanto, in the order he caught them.
+
+```sql
+WITH pokemon_team AS (
+  SELECT * FROM (
+    VALUES
+      (1, 'EP001', 'Pikachu',   'Pallet Town',     'Electric'),
+      (2, 'EP003', 'Caterpie',  'Viridian Forest', 'Bug'),
+      (3, 'EP003', 'Pidgeotto', 'Viridian Forest', 'Flying'),
+      (4, 'EP010', 'Bulbasaur', 'Melanie\'s Village','Grass'),
+      (5, 'EP011', 'Charmander','Route 24',         'Fire'),
+      (6, 'EP012', 'Squirtle',  'Vermilion City',  'Water'),
+      (7, 'EP029', 'Primeape',  'Route 23',         'Fighting'),
+      (8, 'EP031', 'Muk',       'Gringey City',     'Poison')
+  ) AS t(catch_order, episode, pokemon, location, type)
+)
+SELECT * FROM pokemon_team;
+```
+
+`FIRST_VALUE(column)` returns the first value of that column in the window. `LAST_VALUE(column)` returns the last.
 
 **The `LAST_VALUE` trap — the most common mistake with these functions:**
 
-By default, every window function uses the frame `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`. For `LAST_VALUE`, this means "the last value seen so far" — which is just the current row’s value. That’s almost never what you want.
+The default frame is `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`. For `LAST_VALUE` this means “the last value seen so far” which is always just the current row. That’s almost never what you want.
 
 ```sql
 SELECT
-  event_order,
-  event_name,
-  result,
-  FIRST_VALUE(opponent) OVER (ORDER BY event_order)                                                AS first_opponent,
-  LAST_VALUE(opponent)  OVER (ORDER BY event_order)                                                AS last_val_wrong,
-  LAST_VALUE(opponent)  OVER (ORDER BY event_order ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS last_val_correct
-FROM kanto_battles
-ORDER BY event_order;
+  catch_order,
+  pokemon,
+  location,
+  FIRST_VALUE(pokemon) OVER (ORDER BY catch_order)                                                    AS first_catch,
+  LAST_VALUE(pokemon)  OVER (ORDER BY catch_order)                                                    AS last_val_wrong,
+  LAST_VALUE(pokemon)  OVER (ORDER BY catch_order ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS last_val_correct
+FROM pokemon_team
+ORDER BY catch_order;
 ```
 
 **Result:**
 
-| # | event_name    | result | first_opponent | last_val_wrong | last_val_correct |
-|---|---------------|--------|----------------|----------------|------------------|
-| 1 | Pewter Gym    | W      | Brock          | Brock          | Ritchie          |
-| 2 | Cerulean Gym  | W      | Brock          | Misty          | Ritchie          |
-| 3 | Vermilion Gym | W      | Brock          | Lt. Surge      | Ritchie          |
-| 4 | Celadon Gym   | W      | Brock          | Erika          | Ritchie          |
-| 5 | Fuchsia Gym   | W      | Brock          | Koga           | Ritchie          |
-| 6 | Saffron Gym   | W      | Brock          | Sabrina        | Ritchie          |
-| 7 | Cinnabar Gym  | W      | Brock          | Blaine         | Ritchie          |
-| 8 | Viridian Gym  | W      | Brock          | Giovanni       | Ritchie          |
-| 9 | Indigo League | L      | Brock          | Ritchie        | Ritchie          |
+| # | pokemon    | location          | first_catch | last_val_wrong | last_val_correct |
+|---|------------|-------------------|-------------|----------------|------------------|
+| 1 | Pikachu    | Pallet Town       | Pikachu     | Pikachu        | Muk              |
+| 2 | Caterpie   | Viridian Forest   | Pikachu     | Caterpie       | Muk              |
+| 3 | Pidgeotto  | Viridian Forest   | Pikachu     | Pidgeotto      | Muk              |
+| 4 | Bulbasaur  | Melanie's Village| Pikachu     | Bulbasaur      | Muk              |
+| 5 | Charmander | Route 24          | Pikachu     | Charmander     | Muk              |
+| 6 | Squirtle   | Vermilion City    | Pikachu     | Squirtle       | Muk              |
+| 7 | Primeape   | Route 23          | Pikachu     | Primeape       | Muk              |
+| 8 | Muk        | Gringey City      | Pikachu     | Muk            | Muk              |
 
-`first_opponent` is always `Brock` — `FIRST_VALUE` works correctly with the default frame because it’s looking backward.
+`first_catch` is always `Pikachu` — `FIRST_VALUE` works correctly with the default frame because it’s anchored at the start.
 
-`last_val_wrong` just returns the current row’s opponent — it’s not looking at the last row in the partition, it’s looking at the last row *in the current frame*, which with the default frame is always the current row itself.
+`last_val_wrong` just returns the current row’s Pokémon — not the last in the partition but the last in the current frame, which with the default frame is always the current row itself.
 
-`last_val_correct` extends the frame to `UNBOUNDED FOLLOWING`, so every row can see to the end of the partition and correctly returns `Ritchie` everywhere.
+`last_val_correct` extends the frame to `UNBOUNDED FOLLOWING` so every row can see the entire partition and correctly returns `Muk` everywhere.
 
-**Practical alternative:** to avoid the trap entirely, many SQL practitioners use `FIRST_VALUE` with a reversed `ORDER BY DESC` instead of `LAST_VALUE`. Same result, no frame adjustment needed.
+**Practical alternative:** to avoid the trap, use `FIRST_VALUE` with a reversed `ORDER BY DESC` instead of `LAST_VALUE`. Same result, no frame adjustment needed.
 
 ---
 
 ## 9) `NTILE(n)`: divide rows into equal buckets
 
-`NTILE(n)` splits rows into n as-equal-as-possible buckets and assigns each row a bucket number. Common uses: quartile analysis, top/bottom X%, A/B test segmentation.
+**Dataset: `team_power`** — Ash’s eight Kanto Pokémon with their end-of-season battle records.
 
-Here we split the nine battles into three tiers — early, mid, and late season:
+```sql
+WITH team_power AS (
+  SELECT * FROM (
+    VALUES
+      ('Pikachu',   'Electric', 28, 21),
+      ('Charizard', 'Fire',     15, 10),
+      ('Bulbasaur', 'Grass',    12,  8),
+      ('Squirtle',  'Water',     9,  7),
+      ('Primeape',  'Fighting',  6,  5),
+      ('Pidgeotto', 'Flying',    8,  5),
+      ('Butterfree','Bug',       7,  4),
+      ('Muk',       'Poison',    5,  3)
+  ) AS t(pokemon, type, battles, wins)
+)
+SELECT * FROM team_power;
+```
+
+`NTILE(n)` splits rows into n as-equal-as-possible buckets and assigns each row a bucket number. Here we divide the team into four tiers by total wins.
 
 ```sql
 SELECT
-  event_order,
-  event_name,
-  result,
-  NTILE(3) OVER (ORDER BY event_order) AS season_tier
-FROM kanto_battles
-ORDER BY event_order;
+  pokemon,
+  type,
+  battles,
+  wins,
+  NTILE(4) OVER (ORDER BY wins DESC) AS power_tier
+FROM team_power
+ORDER BY wins DESC;
 ```
 
 **Result:**
 
-| # | event_name    | result | season_tier |
-|---|---------------|--------|-------------|
-| 1 | Pewter Gym    | W      | 1           |
-| 2 | Cerulean Gym  | W      | 1           |
-| 3 | Vermilion Gym | W      | 1           |
-| 4 | Celadon Gym   | W      | 2           |
-| 5 | Fuchsia Gym   | W      | 2           |
-| 6 | Saffron Gym   | W      | 2           |
-| 7 | Cinnabar Gym  | W      | 3           |
-| 8 | Viridian Gym  | W      | 3           |
-| 9 | Indigo League | L      | 3           |
+| pokemon    | type     | battles | wins | power_tier |
+|------------|----------|---------|------|------------|
+| Pikachu    | Electric | 28      | 21   | 1          |
+| Charizard  | Fire     | 15      | 10   | 1          |
+| Bulbasaur  | Grass    | 12      | 8    | 2          |
+| Squirtle   | Water    | 9       | 7    | 2          |
+| Primeape   | Fighting | 6       | 5    | 3          |
+| Pidgeotto  | Flying   | 8       | 5    | 3          |
+| Butterfree | Bug      | 7       | 4    | 4          |
+| Muk        | Poison   | 5       | 3    | 4          |
 
-9 rows into 3 buckets = 3 rows each, clean split. If the rows don’t divide evenly, the earlier buckets get the extra row.
+8 rows into 4 buckets = 2 per tier, clean split. Tier 1 is the carry duo (Pikachu and Charizard). Tier 4 is the support pair. Primeape and Pidgeotto tie at 5 wins but NTILE doesn’t care about ties the way `RANK` does — it just fills buckets evenly.
 
-A more common real-world use: `NTILE(4)` for quartiles or `NTILE(100)` as an approximation of percentile rank. If you want to filter to the top 25% of users by spend, wrap this in a CTE and `WHERE spend_quartile = 1`.
+If the rows don’t divide evenly, the earlier buckets get the extra row. A common real-world use: `NTILE(100)` as an approximation of percentile rank, or wrapping in a CTE and filtering `WHERE power_tier = 1` to get the top 25%.
 
 ---
 
 ## 10) Islands and gaps: detecting consecutive sequences
 
-This is the hardest and most-praised window function pattern in SQL interviews. It shows up in "find users active for N consecutive days" problems and is considered a separator between strong and weak SQL candidates.
-
-**The core trick:** for a sequence to be consecutive, the difference between the sequence value and its row number stays constant within the same consecutive run. When there’s a gap, that difference changes.
-
-To demonstrate, we use a training log dataset — the days in a month that Ash logged a training session:
+**Dataset: `training_sessions`** — the days in October that Ash logged a training session. Gaps represent travel days between towns where no formal training happened.
 
 ```sql
-WITH training_days AS (
+WITH training_sessions AS (
+  SELECT * FROM (
+    VALUES (1), (2), (3), (5), (6), (10), (11), (12)
+  ) AS t(day_num)
+)
+SELECT * FROM training_sessions;
+```
+
+| day_num |
+|---------|
+| 1       |
+| 2       |
+| 3       |
+| 5       |
+| 6       |
+| 10      |
+| 11      |
+| 12      |
+
+This is the hardest and most-praised window function pattern in SQL interviews. The question is: find each consecutive training streak.
+
+**The core trick:** for a sequence to be consecutive, the difference between the value and its row number stays constant within the same run. When there’s a gap, that constant changes.
+
+```sql
+WITH training_sessions AS (
   SELECT * FROM (
     VALUES (1), (2), (3), (5), (6), (10), (11), (12)
   ) AS t(day_num)
@@ -456,7 +636,7 @@ SELECT
   day_num,
   ROW_NUMBER() OVER (ORDER BY day_num)           AS rn,
   day_num - ROW_NUMBER() OVER (ORDER BY day_num) AS group_id
-FROM training_days;
+FROM training_sessions;
 ```
 
 **Result:**
@@ -472,12 +652,12 @@ FROM training_days;
 | 11      | 7  | 4        |
 | 12      | 8  | 4        |
 
-Days 1, 2, 3 all produce `group_id = 0` because they’re consecutive — each day increments by 1 and so does the row number. Day 5 jumps to `group_id = 1` because there was a gap (day 4 is missing). Days 5 and 6 share `group_id = 1`. Days 10–12 share `group_id = 4`.
+Days 1, 2, 3 all produce `group_id = 0` — consecutive days increment by 1 and so does the row number, so the difference stays constant. Day 5 jumps to `group_id = 1` because day 4 is missing. Days 10–12 share `group_id = 4`.
 
-Now wrap that in a CTE and aggregate by `group_id` to get each streak:
+Now aggregate by `group_id` to get each streak:
 
 ```sql
-WITH training_days AS (
+WITH training_sessions AS (
   SELECT * FROM (
     VALUES (1), (2), (3), (5), (6), (10), (11), (12)
   ) AS t(day_num)
@@ -486,7 +666,7 @@ grouped AS (
   SELECT
     day_num,
     day_num - ROW_NUMBER() OVER (ORDER BY day_num) AS group_id
-  FROM training_days
+  FROM training_sessions
 )
 SELECT
   MIN(day_num) AS streak_start,
@@ -505,60 +685,54 @@ ORDER BY streak_start;
 | 5            | 6          | 2             |
 | 10           | 12         | 3             |
 
-Three separate training streaks, their start and end days, and their lengths — all from a single subtraction trick.
-
-**Why this works:** consecutive integers always maintain a constant difference to a continuously incrementing row number. A gap in the sequence breaks that constant, creating a new group. This same pattern applies directly to dates: replace `day_num` with a `DATE` column and `ROW_NUMBER()` with a row number ordered by date, and you get consecutive-day streaks.
+Three separate training streaks. The same pattern applied to a `DATE` column with `ROW_NUMBER()` ordered by date gives you consecutive-day streaks per user — the exact query structure behind “N consecutive active days” interview problems.
 
 ---
 
 ## The CTE chaining rule
 
-There is one constraint that catches people off guard in interviews: **you cannot reference a window function result in a `WHERE` or `HAVING` clause in the same query.**
+**You cannot reference a window function result in a `WHERE` or `HAVING` clause in the same query.** This catches people off guard in interviews.
 
 This does not work:
 
 ```sql
--- INVALID: window function alias used directly in WHERE
+-- INVALID
 SELECT
-  event_order,
-  event_name,
-  DENSE_RANK() OVER (ORDER BY win_flag DESC) AS rnk
-FROM kanto_battles
-WHERE rnk = 1;  -- error: column "rnk" does not exist
+  battle_id,
+  opponent,
+  DENSE_RANK() OVER (ORDER BY difficulty_score DESC) AS rnk
+FROM gym_rankings
+WHERE rnk <= 3;  -- error: column "rnk" does not exist at this stage
 ```
 
 The reason: SQL evaluates `WHERE` before `SELECT`, so the window function alias hasn’t been computed yet when the filter runs.
 
-The fix is always a CTE (or subquery):
+The fix is always a CTE:
 
 ```sql
 WITH ranked AS (
   SELECT
-    event_order,
-    event_name,
-    win_flag,
-    DENSE_RANK() OVER (ORDER BY win_flag DESC) AS rnk
-  FROM kanto_battles
+    battle_id,
+    opponent,
+    difficulty_score,
+    DENSE_RANK() OVER (ORDER BY difficulty_score DESC) AS rnk
+  FROM gym_rankings
 )
-SELECT event_order, event_name, win_flag
+SELECT battle_id, opponent, difficulty_score
 FROM ranked
-WHERE rnk = 1;
+WHERE rnk <= 3;
 ```
 
 **Result:**
 
-| # | event_name    | win_flag |
-|---|---------------|----------|
-| 1 | Pewter Gym    | 1        |
-| 2 | Cerulean Gym  | 1        |
-| 3 | Vermilion Gym | 1        |
-| 4 | Celadon Gym   | 1        |
-| 5 | Fuchsia Gym   | 1        |
-| 6 | Saffron Gym   | 1        |
-| 7 | Cinnabar Gym  | 1        |
-| 8 | Viridian Gym  | 1        |
+| battle_id | opponent | difficulty_score |
+|-----------|----------|-----------------|
+| 8         | Giovanni | 9               |
+| 6         | Sabrina  | 8               |
+| 7         | Blaine   | 7               |
+| 9         | Ritchie  | 7               |
 
-The CTE materializes the window function result first, and then the outer query’s `WHERE` can filter on it. This pattern — compute window in CTE, filter in outer query — is the standard structure for any "top-N per group" or "filter by rank" problem.
+Four rows returned, not three — because Blaine and Ritchie both score 7 and both rank 3rd. `DENSE_RANK` does not skip a rank after a tie, so both qualify for `rnk <= 3`. This is the correct behavior for a “top-3 difficulty” query.
 
 ---
 
@@ -585,149 +759,257 @@ Read it in this order:
 
 ## Practice problems
 
-These use the same `kanto_battles` CTE from above. All assume it is already defined. Try each one before opening the answer.
+Each problem uses one of the datasets from above. Try it before opening the answer.
 
 ---
 
-### Q1 ( First battle to reach 5 winsMedium) 
+### Q1 (Medium) — First battle per Pokémon
 
-> Return the first battle at which Ash's cumulative win total reached exactly 5.
+> Using `team_battles`, return the first battle Ash had with each Pokémon. Return the Pokémon name, episode, opponent, and result.
 
 **How to reason through it:**
 
-You need a running  that's `SUM(win_flag) OVER (ORDER BY event_order)`. But you can't filter on a window function alias in `WHERE` in the same query. So: compute the running total in a CTE, then filter in the outer query. Take the earliest row where `running_wins >= 5`.total 
+You need “first row per group” — that’s `ROW_NUMBER() OVER (PARTITION BY pokemon ORDER BY battle_id)`. Filter to `rn = 1`. You can’t filter on a window function alias in `WHERE`, so wrap in a CTE first.
 
 <details>
 <summary>Answer</summary>
 
 ```sql
-WITH running AS (
+WITH team_battles AS (
+  SELECT * FROM (
+    VALUES
+      (1,  'EP001', 'Pikachu',   'Spearow', 'W', 1),
+      (2,  'EP005', 'Pikachu',   'Onix',    'W', 1),
+      (3,  'EP007', 'Bulbasaur', 'Staryu',  'W', 1),
+      (4,  'EP011', 'Pikachu',   'Rhyhorn', 'W', 1),
+      (5,  'EP014', 'Pikachu',   'Raichu',  'W', 1),
+      (6,  'EP024', 'Bulbasaur', 'Gloom',   'W', 1),
+      (7,  'EP032', 'Bulbasaur', 'Koffing', 'W', 1),
+      (8,  'EP059', 'Squirtle',  'Haunter', 'W', 1),
+      (9,  'EP063', 'Charizard', 'Magmar',  'W', 1),
+      (10, 'EP067', 'Squirtle',  'Rhyhorn', 'W', 1),
+      (11, 'EP079', 'Pikachu',   'Sparky',  'W', 1),
+      (12, 'EP079', 'Charizard', 'Zippo',   'L', 0)
+  ) AS t(battle_id, episode, pokemon, opponent, result, win_flag)
+),
+ranked AS (
   SELECT
-    event_order,
-    event_name,
-    result,
-    SUM(win_flag) OVER (
-      ORDER BY event_order
-      ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-    ) AS running_wins
-  FROM kanto_battles
+    pokemon, episode, opponent, result,
+    ROW_NUMBER() OVER (PARTITION BY pokemon ORDER BY battle_id) AS rn
+  FROM team_battles
 )
-SELECT event_order, event_name, result, running_wins
-FROM running
-WHERE running_wins >= 5
-ORDER BY event_order
-LIMIT 1;
+SELECT pokemon, episode, opponent, result
+FROM ranked
+WHERE rn = 1
+ORDER BY episode;
 ```
 
 **Result:**
 
-| # | event_name   | result | running_wins |
-|---|--------------|--------|--------------|
-| 5 | Fuchsia Gym  | W      | 5            |
+| pokemon   | episode | opponent | result |
+|-----------|---------|----------|--------|
+| Pikachu   | EP001   | Spearow  | W      |
+| Bulbasaur | EP007   | Staryu   | W      |
+| Squirtle  | EP059   | Haunter  | W      |
+| Charizard | EP063   | Magmar   | W      |
 
-Battle 5 is the first time the running total hits 5. The CTE chaining rule is what makes this  compute first, filter second.work 
+This is the “latest/earliest row per group” pattern. It appears in nearly every real data interview in some form: first purchase per customer, first login per user, first event per session.
 
 </details>
 
 ---
 
-### Q2 ( Running win rateMedium) 
+### Q2 (Medium) — Running win rate
 
-> For each battle, show the cumulative win rate as a percentage, rounded to 1 decimal place (e.g. `88.9`).
+> Using `badge_journey`, show the cumulative win rate as a percentage (rounded to 1 decimal) after each battle.
 
 **How to reason through it:**
 
-Win rate = wins so far        total battles so far. You have two running counts to compute: `SUM(win_flag)` for wins, and `COUNT(*) OVER (...)` for total battles. Divide them and multiply by 100. Make sure to cast to a  integer division will return 0 or 1.decimal 
+Win rate = wins so far ÷ battles so far. You need two running counts: `SUM(win_flag)` for wins and `COUNT(*)` for total battles. Both use the same `OVER()` clause. Divide and multiply by 100. Make sure to force decimal division.
 
 <details>
 <summary>Answer</summary>
 
 ```sql
+WITH badge_journey AS (
+  SELECT * FROM (
+    VALUES
+      (1, 'EP005', 'Pewter Gym',    'Brock',    'Boulder Badge', 1),
+      (2, 'EP007', 'Cerulean Gym',  'Misty',    'Cascade Badge', 1),
+      (3, 'EP014', 'Vermilion Gym', 'Lt. Surge','Thunder Badge', 1),
+      (4, 'EP024', 'Celadon Gym',   'Erika',    'Rainbow Badge', 1),
+      (5, 'EP032', 'Fuchsia Gym',   'Koga',     'Soul Badge',    1),
+      (6, 'EP059', 'Saffron Gym',   'Sabrina',  'Marsh Badge',   1),
+      (7, 'EP063', 'Cinnabar Gym',  'Blaine',   'Volcano Badge', 1),
+      (8, 'EP067', 'Viridian Gym',  'Giovanni', 'Earth Badge',   1),
+      (9, 'EP079', 'Indigo League', 'Ritchie',  NULL,             0)
+  ) AS t(battle_id, episode, venue, opponent, badge_earned, win_flag)
+)
 SELECT
-  event_order,
-  event_name,
-  result,
+  battle_id,
+  venue,
+  opponent,
   ROUND(
     100.0
-      * SUM(win_flag) OVER (ORDER BY event_order ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
-      / COUNT(*)      OVER (ORDER BY event_order ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW),
+      * SUM(win_flag) OVER (ORDER BY battle_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+      / COUNT(*)      OVER (ORDER BY battle_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW),
     1
   ) AS win_rate_pct
-FROM kanto_battles
-ORDER BY event_order;
+FROM badge_journey
+ORDER BY battle_id;
 ```
 
 **Result:**
 
-| # | event_name    | result | win_rate_pct |
-|---|---------------|--------|--------------|
-| 1 | Pewter Gym    | W      | 100.0        |
-| 2 | Cerulean Gym  | W      | 100.0        |
-| 3 | Vermilion Gym | W      | 100.0        |
-| 4 | Celadon Gym   | W      | 100.0        |
-| 5 | Fuchsia Gym   | W      | 100.0        |
-| 6 | Saffron Gym   | W      | 100.0        |
-| 7 | Cinnabar Gym  | W      | 100.0        |
-| 8 | Viridian Gym  | W      | 100.0        |
-| 9 | Indigo League | L      | 88.9         |
+| # | venue          | opponent  | win_rate_pct |
+|---|----------------|-----------|--------------|
+| 1 | Pewter Gym     | Brock     | 100.0        |
+| 2 | Cerulean Gym   | Misty     | 100.0        |
+| 3 | Vermilion Gym  | Lt. Surge | 100.0        |
+| 4 | Celadon Gym    | Erika     | 100.0        |
+| 5 | Fuchsia Gym    | Koga      | 100.0        |
+| 6 | Saffron Gym    | Sabrina   | 100.0        |
+| 7 | Cinnabar Gym   | Blaine    | 100.0        |
+| 8 | Viridian Gym   | Giovanni  | 100.0        |
+| 9 | Indigo League  | Ritchie   | 88.9         |
 
-100% through battle 8, then drops to 88.9% (8 wins / 9 battles) after the loss. Two window functions in one ` each with the same `OVER()` definition, just different aggregation functions.SELECT` 
+Two window functions in one `SELECT` using the same `OVER()` definition. The `100.0 *` cast forces float division — without it, integer division would return 0 or 1.
 
 </details>
 
 ---
 
-### Q3 (Medium- Battles where the result changedHard) 
+### Q3 (Medium) — Previous and next stop in one query
 
-> Return all battles where the result was different from the previous battle's result. Include the previous result in the output.
+> Using `kanto_route`, show each stop with both the location that came before it and the location coming up next, all in a single query.
 
 **How to reason through it:**
 
-You need `LAG(result)` to get the previous result. Then you want to filter where `result != prev_result`. The trap: you can't put a window function in `WHERE`. Wrap in a CTE, filter in the outer query. Also exclude the first row where `prev_result IS NULL`.
+`LAG(location)` for the previous stop, `LEAD(location)` for the next stop. Both use `ORDER BY stop_order`. Both can live in the same `SELECT`. The first row gets `NULL` for `prev_stop`, the last row gets `NULL` for `next_stop`.
 
 <details>
 <summary>Answer</summary>
 
 ```sql
-WITH lagged AS (
-  SELECT
-    event_order,
-    event_name,
-    result,
-    LAG(result) OVER (ORDER BY event_order) AS prev_result
-  FROM kanto_battles
+WITH kanto_route AS (
+  SELECT * FROM (
+    VALUES
+      (1,  'Pallet Town'),    (2,  'Route 1'),
+      (3,  'Viridian Forest'),(4,  'Pewter City'),
+      (5,  'Mt. Moon'),       (6,  'Cerulean City'),
+      (7,  'Vermilion City'), (8,  'Celadon City'),
+      (9,  'Fuchsia City'),   (10, 'Saffron City'),
+      (11, 'Cinnabar Island'),(12, 'Viridian City'),
+      (13, 'Indigo Plateau')
+  ) AS t(stop_order, location)
 )
-SELECT event_order, event_name, result, prev_result
-FROM lagged
-WHERE prev_result IS NOT NULL
-  AND result != prev_result;
+SELECT
+  stop_order,
+  LAG(location)  OVER (ORDER BY stop_order) AS prev_stop,
+  location                                   AS current_stop,
+  LEAD(location) OVER (ORDER BY stop_order) AS next_stop
+FROM kanto_route
+ORDER BY stop_order;
 ```
 
-**Result:**
+**Result (first 5 and last 3 rows shown):**
 
-| # | event_name    | result | prev_result |
-|---|---------------|--------|-------------|
-| 9 | Indigo League | L      | W           |
+| # | prev_stop       | current_stop    | next_stop       |
+|---|-----------------|-----------------|-----------------|
+| 1 | NULL            | Pallet Town     | Route 1         |
+| 2 | Pallet Town     | Route 1         | Viridian Forest |
+| 3 | Route 1         | Viridian Forest | Pewter City     |
+| 4 | Viridian Forest | Pewter City     | Mt. Moon        |
+| 5 | Pewter City     | Mt. Moon        | Cerulean City   |
+| 11| Saffron City    | Cinnabar Island | Viridian City   |
+| 12| Cinnabar Island | Viridian City   | Indigo Plateau  |
+| 13| Viridian City   | Indigo Plateau  | NULL            |
 
-Only one  the Indigo League loss is the only result change in the entire dataset. Every other battle was a win following a win. This is exactly the kind of query used in retention analysis: find the sessions where a user's behavior shifted.row 
+`LAG` and `LEAD` can both live in the same `SELECT` with no conflict. A real-world version of this query: show each user session alongside the session before it and the session after it.
 
 </details>
 
 ---
 
-### Q4 ( Longest training streakHard) 
+### Q4 (Hard) — Pikachu’s HP by battle within partition
 
-> Using the `training_days` dataset from section 10, return each training streak ordered by streak length descending, then by start day.
+> Using `pikachu_battles`, extend the LAG query: show the HP change from the previous battle AND classify it as `Recovered` (positive change), `Drained` (negative change), or `First Battle` (no prior data).
 
 **How to reason through it:**
 
-This is the islands-and-gaps pattern. Step 1: compute `day_num - ROW_NUMBER() OVER (ORDER BY day_num)` to create a constant `group_id` for each consecutive run. Step 2: aggregate by `group_id` to get streak start, end, and length. You need two CTEs: one to compute `group_id`, one to aggregate.
+`LAG(hp_after)` gives you the previous HP. Subtract to get the change. Use a `CASE` to classify. You need `LAG` twice in the same `SELECT` — or compute it once in a CTE and reuse the alias. Using a CTE avoids repeating the `LAG()` call in the `CASE`.
 
 <details>
 <summary>Answer</summary>
 
 ```sql
-WITH training_days AS (
+WITH pikachu_battles AS (
+  SELECT * FROM (
+    VALUES
+      (1, 'Route 1',       'Spearow flock','W', 45),
+      (2, 'Pewter Gym',    'Onix',          'W', 20),
+      (3, 'Cerulean Gym',  'Starmie',       'L',  0),
+      (4, 'Vermilion Gym', 'Raichu',        'W', 15),
+      (5, 'Fuchsia Gym',   'Electrode',     'W', 30),
+      (6, 'Saffron Gym',   'Kadabra',       'W', 25),
+      (7, 'Viridian Gym',  'Rhyhorn',       'W', 38),
+      (8, 'Indigo League', 'Sparky',        'W',  8)
+  ) AS t(battle_id, location, opponent, result, hp_after)
+),
+with_lag AS (
+  SELECT
+    battle_id, location, result, hp_after,
+    LAG(hp_after) OVER (ORDER BY battle_id) AS prev_hp
+  FROM pikachu_battles
+)
+SELECT
+  battle_id,
+  location,
+  result,
+  hp_after,
+  prev_hp,
+  hp_after - prev_hp AS hp_change,
+  CASE
+    WHEN prev_hp IS NULL          THEN 'First Battle'
+    WHEN hp_after > prev_hp       THEN 'Recovered'
+    ELSE 'Drained'
+  END AS condition
+FROM with_lag
+ORDER BY battle_id;
+```
+
+**Result:**
+
+| # | location      | result | hp_after | prev_hp | hp_change | condition   |
+|---|---------------|--------|----------|---------|-----------|-------------|
+| 1 | Route 1       | W      | 45       | NULL    | NULL      | First Battle|
+| 2 | Pewter Gym    | W      | 20       | 45      | -25       | Drained     |
+| 3 | Cerulean Gym  | L      | 0        | 20      | -20       | Drained     |
+| 4 | Vermilion Gym | W      | 15       | 0       | +15       | Recovered   |
+| 5 | Fuchsia Gym   | W      | 30       | 15      | +15       | Recovered   |
+| 6 | Saffron Gym   | W      | 25       | 30      | -5        | Drained     |
+| 7 | Viridian Gym  | W      | 38       | 25      | +13       | Recovered   |
+| 8 | Indigo League | W      | 8        | 38      | -26       | Drained     |
+
+The CTE computes `prev_hp` once. The outer query reuses it for both the arithmetic and the `CASE` without repeating the `LAG()` call. This is cleaner and avoids the risk of the two `LAG()` calls returning different results if the window definition ever changes.
+
+</details>
+
+---
+
+### Q5 (Hard) — Streaks of at least 2 consecutive training days
+
+> Using `training_sessions`, return each training streak that lasted at least 2 consecutive days. Show the start day, end day, and streak length.
+
+**How to reason through it:**
+
+Islands-and-gaps: compute `day_num - ROW_NUMBER() OVER (ORDER BY day_num)` as `group_id`. Rows in the same consecutive run share the same `group_id`. Then `GROUP BY group_id`, aggregate with `MIN`, `MAX`, `COUNT`. Filter with `HAVING COUNT(*) >= 2`.
+
+<details>
+<summary>Answer</summary>
+
+```sql
+WITH training_sessions AS (
   SELECT * FROM (
     VALUES (1), (2), (3), (5), (6), (10), (11), (12)
   ) AS t(day_num)
@@ -736,7 +1018,7 @@ grouped AS (
   SELECT
     day_num,
     day_num - ROW_NUMBER() OVER (ORDER BY day_num) AS group_id
-  FROM training_days
+  FROM training_sessions
 )
 SELECT
   MIN(day_num) AS streak_start,
@@ -744,7 +1026,8 @@ SELECT
   COUNT(*)     AS streak_length
 FROM grouped
 GROUP BY group_id
-ORDER BY streak_length DESC, streak_start;
+HAVING COUNT(*) >= 2
+ORDER BY streak_start;
 ```
 
 **Result:**
@@ -752,53 +1035,11 @@ ORDER BY streak_length DESC, streak_start;
 | streak_start | streak_end | streak_length |
 |--------------|------------|---------------|
 | 1            | 3          | 3             |
-| 10           | 12         | 3             |
 | 5            | 6          | 2             |
+| 10           | 12         | 3             |
 
-Two streaks of length 3 tied at the top, ordered by start day. The two-day streak comes last. If you only needed the single longest streak, wrap this in another CTE and `LIMIT 1`.
+All three streaks qualify — the minimum is 2 days. If the question asked for streaks of 3+ days, change `HAVING COUNT(*) >= 2` to `HAVING COUNT(*) >= 3`, which would exclude the 5–6 streak and return only rows 1 and 3.
 
-</details>
-
----
-
-### Q5 ( Win rate by season tierHard) 
-
-> Divide the nine battles into three equal tiers (early, mid, late season) using `NTILE(3)`. For each tier, return the tier number, battle count, win count, and win rate percentage rounded to 1 decimal.
-
-**How to reason through it:**
-
-`NTILE(3)` assigns a tier to each  that's a window function, so it goes in a CTE. Then the outer query does a plain `GROUP BY tier` with `COUNT`, `SUM`, and division. Two-step: window to assign tiers, aggregate to summarize them.row 
-
-<details>
-<summary>Answer</summary>
-
-```sql
-WITH tiered AS (
-  SELECT
-    event_order,
-    event_name,
-    win_flag,
-    NTILE(3) OVER (ORDER BY event_order) AS tier
-  FROM kanto_battles
-)
-SELECT
-  tier,
-  COUNT(*)                                     AS battles,
-  SUM(win_flag)                                AS wins,
-  ROUND(100.0 * SUM(win_flag) / COUNT(*), 1)  AS win_rate_pct
-FROM tiered
-GROUP BY tier
-ORDER BY tier;
-```
-
-**Result:**
-
-| tier | battles | wins | win_rate_pct |
-|------|---------|------|--------------|
-| 1    | 3       | 3    | 100.0        |
-| 2    | 3       | 3    | 100.0        |
-| 3    | 3       | 2    | 66.7         |
-
-Tier 3 (battles 9: Cinnabar, Viridian, Indigo League) is the only tier with a loss. Tier 1 and 2 are both perfect. The two-step CTE + GROUP BY pattern here is the standard approach any time you need to aggregate over window-function-assigned groups.7
+The `HAVING` filter runs after `GROUP BY` and after the aggregate functions are evaluated, so you can reference `COUNT(*)` there directly. This is why `HAVING` works here but `WHERE` would not.
 
 </details>
