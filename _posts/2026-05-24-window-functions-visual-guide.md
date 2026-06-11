@@ -34,7 +34,7 @@ Each section below uses a **different dataset** pulled from Ash’s Kanto journe
 
 > **⚠️ Spoiler warning:** the datasets below reveal how Ash’s Kanto season ends.
 
-<details>
+<details markdown="1">
   <summary>Not a Pokémon fan? Quick context (spoilers)</summary>
   Ash Ketchum is a ten-year-old trainer who travels the Kanto region with his partner Pikachu. To qualify for the regional championship — the Indigo League — he has to defeat eight Gym Leaders and earn their badges. He wins all eight, makes it to the Indigo League, and loses to a rival named Ritchie when his own Pokémon, Charizard, refuses to battle.
 </details>
@@ -771,7 +771,7 @@ Each problem uses one of the datasets from above. Try it before opening the answ
 
 You need “first row per group” — that’s `ROW_NUMBER() OVER (PARTITION BY pokemon ORDER BY battle_id)`. Filter to `rn = 1`. You can’t filter on a window function alias in `WHERE`, so wrap in a CTE first.
 
-<details>
+<details markdown="1">
 <summary>Answer</summary>
 
 ```sql
@@ -827,7 +827,7 @@ This is the “latest/earliest row per group” pattern. It appears in nearly ev
 
 Win rate = wins so far ÷ battles so far. You need two running counts: `SUM(win_flag)` for wins and `COUNT(*)` for total battles. Both use the same `OVER()` clause. Divide and multiply by 100. Make sure to force decimal division.
 
-<details>
+<details markdown="1">
 <summary>Answer</summary>
 
 ```sql
@@ -887,7 +887,7 @@ Two window functions in one `SELECT` using the same `OVER()` definition. The `10
 
 `LAG(location)` for the previous stop, `LEAD(location)` for the next stop. Both use `ORDER BY stop_order`. Both can live in the same `SELECT`. The first row gets `NULL` for `prev_stop`, the last row gets `NULL` for `next_stop`.
 
-<details>
+<details markdown="1">
 <summary>Answer</summary>
 
 ```sql
@@ -939,7 +939,7 @@ ORDER BY stop_order;
 
 `LAG(hp_after)` gives you the previous HP. Subtract to get the change. Use a `CASE` to classify. You need `LAG` twice in the same `SELECT` — or compute it once in a CTE and reuse the alias. Using a CTE avoids repeating the `LAG()` call in the `CASE`.
 
-<details>
+<details markdown="1">
 <summary>Answer</summary>
 
 ```sql
@@ -1005,7 +1005,7 @@ The CTE computes `prev_hp` once. The outer query reuses it for both the arithmet
 
 Islands-and-gaps: compute `day_num - ROW_NUMBER() OVER (ORDER BY day_num)` as `group_id`. Rows in the same consecutive run share the same `group_id`. Then `GROUP BY group_id`, aggregate with `MIN`, `MAX`, `COUNT`. Filter with `HAVING COUNT(*) >= 2`.
 
-<details>
+<details markdown="1">
 <summary>Answer</summary>
 
 ```sql
