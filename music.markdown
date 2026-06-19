@@ -98,6 +98,53 @@ classes: music-page
     </div>
   </section>
 
+  <section class="music-releases music-loadout">
+    <div class="music-section-heading">
+      <p class="music-kicker">Discography</p>
+      <h2>Bandcamp Releases</h2>
+      <p>Everything released to date, in order.</p>
+    </div>
+    <div class="music-release-grid">
+
+      <a class="music-release-card" href="https://deadpixelyyc.bandcamp.com/album/the-sounds-of-4th-place" target="_blank" rel="noopener noreferrer" aria-label="The Sounds of 4th Place by Dead Pixel on Bandcamp">
+        <img class="music-release-card__art" src="https://f4.bcbits.com/img/a0969199518_10.jpg" alt="The Sounds of 4th Place album art" loading="lazy" decoding="async" width="700" height="700">
+        <div class="music-release-card__meta">
+          <span class="music-release-card__band">Dead Pixel</span>
+          <span class="music-release-card__title">The Sounds of 4th Place</span>
+          <span class="music-release-card__year">2018</span>
+        </div>
+      </a>
+
+      <a class="music-release-card" href="https://deadpixelyyc.bandcamp.com/album/strut-your-stuff" target="_blank" rel="noopener noreferrer" aria-label="Strut Your Stuff by Dead Pixel on Bandcamp">
+        <img class="music-release-card__art" src="https://f4.bcbits.com/img/a0628584408_10.jpg" alt="Strut Your Stuff album art" loading="lazy" decoding="async" width="700" height="700">
+        <div class="music-release-card__meta">
+          <span class="music-release-card__band">Dead Pixel</span>
+          <span class="music-release-card__title">Strut Your Stuff</span>
+          <span class="music-release-card__year">2020</span>
+        </div>
+      </a>
+
+      <a class="music-release-card" href="https://plotting.bandcamp.com/album/ep" target="_blank" rel="noopener noreferrer" aria-label="EP by Plotting on Bandcamp">
+        <img class="music-release-card__art" src="https://f4.bcbits.com/img/a3566457750_10.jpg" alt="Plotting EP album art" loading="lazy" decoding="async" width="700" height="700">
+        <div class="music-release-card__meta">
+          <span class="music-release-card__band">Plotting</span>
+          <span class="music-release-card__title">EP</span>
+          <span class="music-release-card__year">2025</span>
+        </div>
+      </a>
+
+      <a class="music-release-card" href="https://plotting.bandcamp.com/album/ep-ii" target="_blank" rel="noopener noreferrer" aria-label="EP II by Plotting on Bandcamp">
+        <img class="music-release-card__art" src="https://f4.bcbits.com/img/a3043605884_10.jpg" alt="Plotting EP II album art" loading="lazy" decoding="async" width="700" height="700">
+        <div class="music-release-card__meta">
+          <span class="music-release-card__band">Plotting</span>
+          <span class="music-release-card__title">EP II</span>
+          <span class="music-release-card__year">2025</span>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
   <section class="music-lane">
     <section class="music-note music-contact" id="music-contact">
       <h2>Get in touch</h2>
