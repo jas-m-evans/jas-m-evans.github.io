@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" shape-rendering="crispEdges">
+  <!-- top rim -->
+  <rect x="3" y="2" width="9" height="1" fill="#b49ce8"/>
+  <!-- drum head rows 3-4 with side hoops -->
+  <rect x="2" y="3" width="1" height="2" fill="#b49ce8"/>
+  <rect x="3" y="3" width="9" height="2" fill="#e8e4f4"/>
+  <rect x="12" y="3" width="1" height="2" fill="#b49ce8"/>
+  <!-- upper shell hoop row 5 -->
+  <rect x="2" y="5" width="11" height="1" fill="#b49ce8"/>
+  <!-- shell rows 6-7 -->
+  <rect x="3" y="6" width="1" height="2" fill="#b49ce8"/>
+  <rect x="4" y="6" width="8" height="2" fill="#4a2e0d"/>
+  <rect x="12" y="6" width="1" height="2" fill="#b49ce8"/>
+  <!-- snare wires row 8: alternating wire / shell -->
+  <rect x="3"  y="8" width="1" height="1" fill="#b49ce8"/>
+  <rect x="4"  y="8" width="1" height="1" fill="#d0cce8"/>
+  <rect x="5"  y="8" width="1" height="1" fill="#4a2e0d"/>
+  <rect x="6"  y="8" width="1" height="1" fill="#d0cce8"/>
+  <rect x="7"  y="8" width="1" height="1" fill="#4a2e0d"/>
+  <rect x="8"  y="8" width="1" height="1" fill="#d0cce8"/>
+  <rect x="9"  y="8" width="1" height="1" fill="#4a2e0d"/>
+  <rect x="10" y="8" width="1" height="1" fill="#d0cce8"/>
+  <rect x="11" y="8" width="1" height="1" fill="#4a2e0d"/>
+  <rect x="12" y="8" width="1" height="1" fill="#b49ce8"/>
+  <!-- shell rows 9-10 -->
+  <rect x="3" y="9"  width="1" height="2" fill="#b49ce8"/>
+  <rect x="4" y="9"  width="8" height="2" fill="#4a2e0d"/>
+  <rect x="12" y="9" width="1" height="2" fill="#b49ce8"/>
+  <!-- bottom hoop row 11 -->
+  <rect x="2" y="11" width="12" height="1" fill="#b49ce8"/>
+</svg>

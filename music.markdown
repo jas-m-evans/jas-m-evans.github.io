@@ -102,7 +102,6 @@ classes: music-page
     <div class="music-section-heading">
       <p class="music-kicker">Discography</p>
       <h2>Bandcamp Releases</h2>
-      <p>Everything released to date, in order.</p>
     </div>
     <div class="music-release-grid">
 
