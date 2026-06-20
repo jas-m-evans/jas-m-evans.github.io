@@ -101,7 +101,7 @@ classes: music-page
   <section class="music-releases music-loadout">
     <div class="music-section-heading">
       <p class="music-kicker">Discography</p>
-      <h2>Bandcamp Releases</h2>
+      <h2>Releases</h2>
     </div>
     <div class="music-release-grid">
 
@@ -147,7 +147,7 @@ classes: music-page
   <section class="music-lane">
     <section class="music-note music-contact" id="music-contact">
       <h2>Get in touch</h2>
-      <p>Send a quick note and I will get back to you.</p>
+      <p>Need a drummer? Send a quick note and I will get back to you.</p>
       <form id="music-contact-form" class="music-form" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; border: 0 !important; box-shadow: none !important;" action="https://formsubmit.co/ajax/{{ site.email }}" method="post">
         <input type="hidden" name="_subject" value="Music Contact Form Submission">
         <input type="hidden" name="_captcha" value="false">
