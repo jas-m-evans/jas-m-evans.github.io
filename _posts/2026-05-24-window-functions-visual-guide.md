@@ -3,7 +3,7 @@ layout: single
 title: "Professor Oak’s SQL Notebook: A Window into Ash’s Kanto Season"
 date: 2026-05-24 09:00:00 +0000
 categories: [data-engineering]
-excerpt: "Professor Oak kept meticulous records of Ash Ketchum’s Kanto journey. Here are those records — and the ten window function queries that turn raw battle data into a complete story."
+excerpt: "Professor Oak kept meticulous records of Ash Ketchum’s Kanto journey. Here are those records, and the ten window function queries that turn raw battle data into a complete story."
 ---
 
 > **⚠️ Spoiler warning:** this post follows Ash’s Kanto journey from start to finish, including the Indigo League.
@@ -15,9 +15,9 @@ excerpt: "Professor Oak kept meticulous records of Ash Ketchum’s Kanto journey
 
   They don’t get along at first.
 
-  But Ash throws himself in front of a flock of Spearow to protect Pikachu, and that changes everything. From that moment forward, they travel Kanto together — through mountain passes and forest routes, through gym after gym, collecting eight badges that earn them a spot in the Indigo League.
+  But Ash throws himself in front of a flock of Spearow to protect Pikachu, and that changes everything. From that moment forward, they travel Kanto together, through mountain passes and forest routes, through gym after gym, collecting eight badges that earn them a spot in the Indigo League.
 
-  They make it all the way to the Top 16. And then Charizard — Ash’s most powerful Pokémon, and also his most difficult one — refuses to battle. Ash loses to a rival named Ritchie. The season ends not with a championship, but with a stubborn fire-type lying down in the middle of a battle.
+  They make it all the way to the Top 16. And then Charizard, Ash’s most powerful Pokémon and also his most difficult one, refuses to battle. Ash loses to a rival named Ritchie. The season ends not with a championship, but with a stubborn fire-type lying down in the middle of a battle.
 
   That’s the arc. Eight badges earned, one title lost. A journey worth every episode.
 
@@ -27,11 +27,11 @@ excerpt: "Professor Oak kept meticulous records of Ash Ketchum’s Kanto journey
 
 Professor Oak kept meticulous records.
 
-Every gym battle, every road encounter, every Pokémon caught — logged in a notebook that grew thicker with each passing episode. By the time Ash arrived at the Indigo Plateau, Oak had enough data to run a full season retrospective.
+Every gym battle, every road encounter, every Pokémon caught, logged in a notebook that grew thicker with each passing episode. By the time Ash arrived at the Indigo Plateau, Oak had enough data to run a full season retrospective.
 
 The problem wasn’t the data. It was the SQL.
 
-Standard aggregates kept collapsing the story. `GROUP BY` could tell you Ash won 8 of 9 major battles, but it couldn’t tell you *how* he won them — the streak, the momentum, the moment the tide turned. To keep the story alive inside the query results, Oak needed window functions.
+Standard aggregates kept collapsing the story. `GROUP BY` could tell you Ash won 8 of 9 major battles, but it couldn’t tell you *how* he won them: the streak, the momentum, the moment the tide turned. To keep the story alive inside the query results, Oak needed window functions.
 
 This is what he found.
 
@@ -39,7 +39,7 @@ This is what he found.
 
 ## Chapter 1: The Badge Climb
 
-*`SUM() OVER` — running totals*
+*`SUM() OVER`: running totals*
 
 Ash left Pallet Town with nothing but Pikachu and a backpack. Professor Oak’s first dataset was simple: one row per gym, in order.
 
@@ -104,7 +104,7 @@ ORDER BY battle_id;
 | 8 | Viridian Gym   | Giovanni  | 8             |
 | 9 | Indigo League  | Ritchie   | 8             |
 
-Row 9 is the one to watch. Ash lost to Ritchie, but `badges_so_far` doesn’t drop. It stays at 8 — because the loss contributes `win_flag = 0`, which adds nothing to the sum. The journey’s full arc is visible in a single column: a steady climb to 8, then silence.
+Row 9 is the one to watch. Ash lost to Ritchie, but `badges_so_far` doesn’t drop. It stays at 8, because the loss contributes `win_flag = 0`, which adds nothing to the sum. The journey’s full arc is visible in a single column: a steady climb to 8, then silence.
 
 That’s what running totals are for. Not a final score. A story unfolding row by row.
 
@@ -112,11 +112,11 @@ That’s what running totals are for. Not a final score. A story unfolding row b
 
 ## Chapter 2: The Team Behind the Badges
 
-*`PARTITION BY` — independent calculations per group*
+*`PARTITION BY`: independent calculations per group*
 
 Ash didn’t win those badges alone.
 
-By mid-Kanto, his team had grown to four main fighters: Pikachu, Bulbasaur, Squirtle, and Charizard. Oak wanted a win count for each Pokémon — not a single total, but separate tallies that climbed independently as each fighter added to their record.
+By mid-Kanto, his team had grown to four main fighters: Pikachu, Bulbasaur, Squirtle, and Charizard. Oak wanted a win count for each Pokémon, not a single total, but separate tallies that climbed independently as each fighter added to their record.
 
 ```sql
 WITH team_battles AS (
@@ -139,7 +139,7 @@ WITH team_battles AS (
 SELECT * FROM team_battles;
 ```
 
-Without `PARTITION BY`, a running total rolls across all twelve rows as one continuous count. With it, the window resets for each Pokémon — Pikachu’s tally starts at 0, Bulbasaur’s starts at 0, each one building independently.
+Without `PARTITION BY`, a running total rolls across all twelve rows as one continuous count. With it, the window resets for each Pokémon: Pikachu’s tally starts at 0, Bulbasaur’s starts at 0, each one building independently.
 
 ```sql
 SELECT
@@ -173,7 +173,7 @@ ORDER BY battle_id;
 | 11| Pikachu   | Sparky   | W      | 5            |
 | 12| Charizard | Zippo    | L      | 1            |
 
-Pikachu ends at 5. Bulbasaur at 3. Squirtle at 2. Charizard at 1 — one win, one loss, and that loss is the one that ends the season.
+Pikachu ends at 5. Bulbasaur at 3. Squirtle at 2. Charizard at 1: one win, one loss, and that loss is the one that ends the season.
 
 Row 12 is the quiet disaster in this dataset. Charizard fought Zippo at the Indigo League, disobeyed, and cost Ash the match. The `pokemon_wins` column stays at 1 because the loss adds nothing. But the story is there if you know where to look.
 
@@ -181,9 +181,9 @@ Row 12 is the quiet disaster in this dataset. Charizard fought Zippo at the Indi
 
 ## Chapter 3: The Roads In Between
 
-*`ROWS BETWEEN` — rolling windows*
+*`ROWS BETWEEN`: rolling windows*
 
-The gym badges get the headlines. But most of Ash’s growth happened on the roads between cities — scrappy encounters with random trainers on Route 3 and Route 7, where no badge was on the line and no one was watching.
+The gym badges get the headlines. But most of Ash’s growth happened on the roads between cities: scrappy encounters with random trainers on Route 3 and Route 7, where no badge was on the line and no one was watching.
 
 Oak logged those too.
 
@@ -208,7 +208,7 @@ WITH road_encounters AS (
 SELECT * FROM road_encounters;
 ```
 
-Oak wasn’t interested in Ash’s all-time road record. He wanted to know *current form* — the kind of stat a commentator uses: "How has he done in his last three fights?"
+Oak wasn’t interested in Ash’s all-time road record. He wanted to know *current form*, the kind of stat a commentator uses: "How has he done in his last three fights?"
 
 That’s a rolling window. `2 PRECEDING` + `CURRENT ROW` means: for each row, look at the two battles before it plus this one. A 3-battle moving snapshot.
 
@@ -243,11 +243,11 @@ ORDER BY enc_id;
 | 11| Route 15        | Bird Keeper   | L      | 2           |
 | 12| Route 16        | Bug Catcher   | W      | 2           |
 
-Ash opens strong — three wins, `wins_last_3` hits 3 at Mt. Moon. Then Route 3 brings his first road loss and the window slides to 2. He recovers, loses again to the Hiker on Route 6, bounces back. By Route 9 he’s back to 3 out of 3 for the first time since the start. Then Route 15 dips him again.
+Ash opens strong; three wins, `wins_last_3` hits 3 at Mt. Moon. Then Route 3 brings his first road loss and the window slides to 2. He recovers, loses again to the Hiker on Route 6, bounces back. By Route 9 he’s back to 3 out of 3 for the first time since the start. Then Route 15 dips him again.
 
 The career record is fine. The form graph tells a different story: Ash struggles in the middle of the journey, stabilizes, and arrives at the Indigo League on decent recent form. The frame clause is what makes that visible.
 
-Rows 1 and 2 have fewer than 3 prior rows available, so the window shrinks to fit. SQL doesn’t error out — it just uses what’s there.
+Rows 1 and 2 have fewer than 3 prior rows available, so the window shrinks to fit. SQL doesn’t error out; it just uses what’s there.
 
 ---
 
@@ -277,7 +277,7 @@ WITH gym_tiers AS (
 SELECT * FROM gym_tiers;
 ```
 
-Oak ran two versions of a neighborhood sum — one using `ROWS BETWEEN`, one using `RANGE BETWEEN` — to understand the difference. Both say "1 preceding, 1 following," but they measure that distance completely differently.
+Oak ran two versions of a neighborhood sum, one using `ROWS BETWEEN` and one using `RANGE BETWEEN`, to understand the difference. Both say "1 preceding, 1 following," but they measure that distance completely differently.
 
 ```sql
 SELECT
@@ -312,7 +312,7 @@ ORDER BY difficulty_tier, battle_id;
 
 **`rows_sum`** counts physical rows: Brock sits at the top with no preceding row, so his window only reaches 2. The frame slides down the table one row at a time regardless of what difficulty tier the rows belong to.
 
-**`range_sum`** counts logical values: for a tier-2 opponent like Erika, the range "1 preceding, 1 following" means "include all rows with `difficulty_tier` between 1 and 3" — every row in the table. All 9 rows, 8 wins. Hence `range_sum = 8` for every tier-2 row. For tier-1 opponents, the range is 0 to 2, capturing tiers 1 and 2 (5 wins). For tier-3, tiers 2 through 4 (one loss in the mix = 5 wins).
+**`range_sum`** counts logical values: for a tier-2 opponent like Erika, the range "1 preceding, 1 following" means "include all rows with `difficulty_tier` between 1 and 3", every row in the table. All 9 rows, 8 wins. Hence `range_sum = 8` for every tier-2 row. For tier-1 opponents, the range is 0 to 2, capturing tiers 1 and 2 (5 wins). For tier-3, tiers 2 through 4 (one loss in the mix = 5 wins).
 
 Every row within the same tier gets the same `range_sum` because they all share the same `ORDER BY` value. `rows_sum` varies by position even within a tier. This is the core distinction: **RANGE is value-aware, ROWS is position-aware.**
 
@@ -322,9 +322,9 @@ This matters most with date columns. `RANGE BETWEEN INTERVAL '6 DAYS' PRECEDING 
 
 ## Chapter 5: Who Was the Hardest Fight?
 
-*`ROW_NUMBER()`, `RANK()`, `DENSE_RANK()` — tie behavior*
+*`ROW_NUMBER()`, `RANK()`, `DENSE_RANK()`: tie behavior*
 
-Late in the season, Oak sat down to rank every gym leader and the Indigo League opponent by how hard Ash had to work to beat them. He scored each one — a subjective difficulty score from 3 to 9 — and immediately ran into the classic tie problem.
+Late in the season, Oak sat down to rank every gym leader and the Indigo League opponent by how hard Ash had to work to beat them. He scored each one, a subjective difficulty score from 3 to 9, and immediately ran into the classic tie problem.
 
 Blaine and Ritchie both scored 7. Brock and Misty both scored 4.
 
@@ -372,21 +372,21 @@ ORDER BY difficulty_score DESC, battle_id;
 | Misty     | Water     | 4     | 8       | 7   | 6         |
 | Erika     | Grass     | 3     | 9       | 9   | 7         |
 
-Giovanni is unchallengeable at the top. Sabrina second. Then Blaine and Ritchie share the third spot — and here’s where the three functions diverge.
+Giovanni is unchallengeable at the top. Sabrina second. Then Blaine and Ritchie share the third spot, and here’s where the three functions diverge.
 
 **`ROW_NUMBER`** breaks every tie with a secondary sort. Blaine gets 3, Ritchie gets 4. Always unique, never ambiguous.
 
-**`RANK`** lets them both be 3rd — but then jumps to 5 for Koga, skipping rank 4 entirely. Two trainers tied for third means nobody gets fourth.
+**`RANK`** lets them both be 3rd, but then jumps to 5 for Koga, skipping rank 4 entirely. Two trainers tied for third means nobody gets fourth.
 
 **`DENSE_RANK`** also puts them both at 3rd, but Koga becomes 4th instead of 5th. No gaps in the sequence.
 
-The interview trap: if the question asks for "top 3 hardest battles" and you use `RANK`, you might get no row at position 3 for some groups — because ties can push the next distinct rank past N. `DENSE_RANK` is the safe default any time ties should be allowed through the filter.
+Worth knowing: if the goal is "top 3 hardest battles" and you use `RANK`, you might get no row at position 3 for some groups, because ties can push the next distinct rank past N. `DENSE_RANK` is the safe default any time ties should be allowed through the filter.
 
 ---
 
 ## Chapter 6: The Toll on Pikachu
 
-*`LAG()` — look back one row*
+*`LAG()`: look back one row*
 
 Pikachu fought in almost every significant battle. Oak had been quietly logging his HP after each fight, and the numbers told a story no win/loss column could.
 
@@ -407,7 +407,7 @@ WITH pikachu_battles AS (
 SELECT * FROM pikachu_battles;
 ```
 
-`LAG(column)` returns the value of that column from the previous row — the battle that came just before this one. The first row gets `NULL` because there’s nothing before it. Every other row can look back one step and compare.
+`LAG(column)` returns the value of that column from the previous row: the battle that came just before this one. The first row gets `NULL` because there’s nothing before it. Every other row can look back one step and compare.
 
 ```sql
 SELECT
@@ -439,7 +439,7 @@ ORDER BY battle_id;
 | 7 | Viridian Gym  | W      | 38       | 25      | +13       | Recovered    |
 | 8 | Indigo League | W      | 8        | 38      | -26       | Drained      |
 
-Brock’s Onix hits Pikachu hard: -25 HP even in a winning battle. Cerulean drops him to zero — the only loss. He bounces back across Vermilion and Fuchsia, peaks at 38 HP after Giovanni, and then the Indigo League final against Ritchie’s Sparky costs him 26 HP in a single fight.
+Brock’s Onix hits Pikachu hard: -25 HP even in a winning battle. Cerulean drops him to zero, the only loss. He bounces back across Vermilion and Fuchsia, peaks at 38 HP after Giovanni, and then the Indigo League final against Ritchie’s Sparky costs him 26 HP in a single fight.
 
 He wins that one, barely. Row 8 is the worst HP drain of the season, and also a win.
 
@@ -449,9 +449,9 @@ He wins that one, barely. Row 8 is the worst HP drain of the season, and also a 
 
 ## Chapter 7: The Road Ahead
 
-*`LEAD()` — look forward one row*
+*`LEAD()`: look forward one row*
 
-While `LAG()` looks backward, `LEAD()` looks forward. Oak used it to map out the next stop on the journey — what was coming after each location, before Ash ever arrived.
+While `LAG()` looks backward, `LEAD()` looks forward. Oak used it to map out the next stop on the journey: what was coming after each location, before Ash ever arrived.
 
 ```sql
 WITH kanto_route AS (
@@ -475,7 +475,7 @@ WITH kanto_route AS (
 SELECT * FROM kanto_route;
 ```
 
-`LEAD(column)` returns the value from the row immediately after the current one. The last row — Indigo Plateau — gets `NULL` for both forward columns. There is no next stop. The journey ends there.
+`LEAD(column)` returns the value from the row immediately after the current one. The last row, Indigo Plateau, gets `NULL` for both forward columns. There is no next stop. The journey ends there.
 
 ```sql
 SELECT
@@ -506,7 +506,7 @@ ORDER BY stop_order;
 | 12| Viridian City   | Earns Earth Badge from Giovanni    | Indigo Plateau  | EP079   |
 | 13| Indigo Plateau  | Loses to Ritchie in Top 16         | NULL            | NULL    |
 
-Every stop carries knowledge of where it leads. Pallet Town already knows Route 1 is next. Viridian City already knows Indigo Plateau is coming. And Indigo Plateau knows nothing — because after the season ends, the data runs out.
+Every stop carries knowledge of where it leads. Pallet Town already knows Route 1 is next. Viridian City already knows Indigo Plateau is coming. And Indigo Plateau knows nothing, because after the season ends, the data runs out.
 
 `LEAD()` takes the same arguments as `LAG()`. `LEAD(location, 2)` returns the stop two rows ahead. The second argument defaults to 1.
 
@@ -514,7 +514,7 @@ Every stop carries knowledge of where it leads. Pallet Town already knows Route 
 
 ## Chapter 8: The First and the Last
 
-*`FIRST_VALUE()` / `LAST_VALUE()` — partition anchors*
+*`FIRST_VALUE()` / `LAST_VALUE()`: partition anchors*
 
 Oak wanted to track something specific: for every Pokémon on Ash’s team, which was caught first and which was caught last? He needed every row to carry those two reference points simultaneously.
 
@@ -535,11 +535,11 @@ WITH pokemon_team AS (
 SELECT * FROM pokemon_team;
 ```
 
-`FIRST_VALUE(pokemon)` returns the first Pokémon in the ordered window — Pikachu, always, anchored at the beginning. `LAST_VALUE(pokemon)` is trickier.
+`FIRST_VALUE(pokemon)` returns the first Pokémon in the ordered window: Pikachu, always, anchored at the beginning. `LAST_VALUE(pokemon)` is trickier.
 
-**The `LAST_VALUE` trap** — the most common mistake with these functions:
+**The `LAST_VALUE` trap**: the most common mistake with these functions:
 
-The default frame is `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`. For `LAST_VALUE`, this means "the last value seen so far" — which is always just the current row itself. Not the last in the partition. The current row.
+The default frame is `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`. For `LAST_VALUE`, this means "the last value seen so far", which is always just the current row itself. Not the last in the partition. The current row.
 
 ```sql
 SELECT
@@ -566,11 +566,11 @@ ORDER BY catch_order;
 | 7 | Primeape   | Route 23           | Pikachu     | Primeape   | Muk          |
 | 8 | Muk        | Gringey City       | Pikachu     | Muk        | Muk          |
 
-`first_catch` is always Pikachu — `FIRST_VALUE` works correctly with the default frame because it anchors at the start and never moves.
+`first_catch` is always Pikachu; `FIRST_VALUE` works correctly with the default frame because it anchors at the start and never moves.
 
 `last_wrong` just mirrors the current row’s Pokémon. It’s not looking at the end of the partition; it’s looking at the end of the current frame, which with the default definition is always right here.
 
-`last_correct` extends the frame to `UNBOUNDED FOLLOWING`, so every row can see all the way to the end of the window. Muk — the last Pokémon Ash caught in Kanto — appears on every row, as intended.
+`last_correct` extends the frame to `UNBOUNDED FOLLOWING`, so every row can see all the way to the end of the window. Muk, the last Pokémon Ash caught in Kanto, appears on every row, as intended.
 
 The practical fix: most SQL writers avoid `LAST_VALUE` entirely and use `FIRST_VALUE` with a reversed `ORDER BY DESC` instead. Same answer, no frame adjustment needed.
 
@@ -578,7 +578,7 @@ The practical fix: most SQL writers avoid `LAST_VALUE` entirely and use `FIRST_V
 
 ## Chapter 9: The Power Rankings
 
-*`NTILE(n)` — bucketing into equal groups*
+*`NTILE(n)`: bucketing into equal groups*
 
 End of season. Oak pulled Ash’s eight main Pokémon and their full-season battle records, then divided the team into four performance tiers by total wins.
 
@@ -625,7 +625,7 @@ ORDER BY wins DESC;
 | Butterfree | Bug      | 7       | 4    | 4          |
 | Muk        | Poison   | 5       | 3    | 4          |
 
-Tier 1: the carries. Pikachu with 21 wins and Charizard with 10 — the two Pokémon Ash relied on most in the biggest fights. Tier 4: Butterfree and Muk, role players who showed up when called but rarely led a match.
+Tier 1: the carries. Pikachu with 21 wins and Charizard with 10, the two Pokémon Ash relied on most in the biggest fights. Tier 4: Butterfree and Muk, role players who showed up when called but rarely led a match.
 
 Primeape and Pidgeotto tied at 5 wins, but `NTILE` doesn’t care about ties the way `RANK` does. It just fills buckets evenly. Both land in tier 3.
 
@@ -635,9 +635,9 @@ If the rows don’t divide evenly, the earlier buckets get the extra row. A comm
 
 ## Chapter 10: The Training Log
 
-*Islands and gaps — detecting consecutive sequences*
+*Islands and gaps: detecting consecutive sequences*
 
-Before the Indigo League, Ash trained. Not every day — travel days between towns broke the streak — but consistently enough that Oak could map out the rhythm.
+Before the Indigo League, Ash trained. Not every day; travel days between towns broke the streak, but consistently enough that Oak could map out the rhythm.
 
 Oak logged the days of October when Ash completed a formal training session.
 
@@ -663,7 +663,7 @@ SELECT * FROM training_sessions;
 
 Days 4, 7, 8, and 9 are missing. Three separate stretches of consecutive training, separated by gaps. The question is: can SQL find them?
 
-This is the hardest window function pattern — and the one interviewers reach for when they want to separate candidates who truly understand window functions from those who merely know the syntax.
+This is the hardest window function pattern, and the one that separates those who truly understand window functions from those who have only memorised the syntax.
 
 **The trick:** for a sequence to be consecutive, the difference between the value and its row number stays constant within the same run. The moment there’s a gap, that constant shifts.
 
@@ -693,7 +693,7 @@ FROM training_sessions;
 | 11      | 7  | 4        |
 | 12      | 8  | 4        |
 
-Days 1, 2, 3: each day increments by 1 and so does the row number. Difference stays 0. Day 4 is missing — day 5 arrives as row 4, making the difference jump to 1. Days 10–12 share `group_id = 4` for the same reason.
+Days 1, 2, 3: each day increments by 1 and so does the row number. Difference stays 0. Day 4 is missing; day 5 arrives as row 4, making the difference jump to 1. Days 10–12 share `group_id = 4` for the same reason.
 
 Now group by that constant to surface each streak:
 
@@ -728,7 +728,7 @@ ORDER BY streak_start;
 
 Three streaks. The first three days of October, then two days after a gap, then three more to close out the prep period.
 
-The same pattern on a `DATE` column with `ROW_NUMBER() OVER (ORDER BY date)` gives you consecutive-day user activity streaks — exactly the query behind every “N consecutive active days” interview problem.
+The same pattern on a `DATE` column with `ROW_NUMBER() OVER (ORDER BY date)` gives you consecutive-day user activity streaks, exactly the query behind every “N consecutive active days” SQL problem.
 
 ---
 
@@ -777,7 +777,7 @@ WHERE rnk <= 3;
 | 7         | Blaine   | 7               |
 | 9         | Ritchie  | 7               |
 
-Four rows, not three — because Blaine and Ritchie both scored 7 and both rank 3rd. `DENSE_RANK` doesn’t skip after a tie, so both clear the `rnk <= 3` filter.
+Four rows, not three, because Blaine and Ritchie both scored 7 and both rank 3rd. `DENSE_RANK` doesn’t skip after a tie, so both clear the `rnk <= 3` filter.
 
 The CTE computes the window result first. The outer query filters on it second. This two-step structure is the standard pattern for any "top-N" query in SQL.
 
@@ -797,10 +797,10 @@ FUNCTION(col) OVER (
 
 Read it in this order:
 
-1. **Which group?** (`PARTITION BY`) — resets the calculation per group
-2. **What order within the group?** (`ORDER BY`) — defines the timeline
-3. **How much of that timeline can this row see?** (`ROWS`/`RANGE BETWEEN`) — the frame
-4. **What calculation on that visible slice?** (`FUNCTION`) — the actual math
+1. **Which group?** (`PARTITION BY`): resets the calculation per group
+2. **What order within the group?** (`ORDER BY`): defines the timeline
+3. **How much of that timeline can this row see?** (`ROWS`/`RANGE BETWEEN`): the frame
+4. **What calculation on that visible slice?** (`FUNCTION`): the actual math
 
 ---
 
@@ -810,13 +810,30 @@ Read it in this order:
 
 ---
 
-### Q1 (Medium) — When did Ash’s team debut?
+### Q1 (Medium): When did Ash’s team debut?
 
 > Ash called on each Pokémon for the first time at a specific moment in the journey. Using `team_battles`, return the first battle each Pokémon participated in: the Pokémon name, episode, opponent, and result.
 
 **How to reason through it:**
 
-First row per group is `ROW_NUMBER() OVER (PARTITION BY pokemon ORDER BY battle_id)`. Filter to `rn = 1`. Window function aliases can’t be referenced in `WHERE` — wrap in a CTE.
+First row per group is `ROW_NUMBER() OVER (PARTITION BY pokemon ORDER BY battle_id)`. Filter to `rn = 1`. Window function aliases can’t be referenced in `WHERE`; wrap in a CTE.
+
+**Dataset: `team_battles`**
+
+| battle_id | episode | pokemon   | opponent | result | win_flag |
+|-----------|---------|-----------|----------|--------|----------|
+| 1         | EP001   | Pikachu   | Spearow  | W      | 1        |
+| 2         | EP005   | Pikachu   | Onix     | W      | 1        |
+| 3         | EP007   | Bulbasaur | Staryu   | W      | 1        |
+| 4         | EP011   | Pikachu   | Rhyhorn  | W      | 1        |
+| 5         | EP014   | Pikachu   | Raichu   | W      | 1        |
+| 6         | EP024   | Bulbasaur | Gloom    | W      | 1        |
+| 7         | EP032   | Bulbasaur | Koffing  | W      | 1        |
+| 8         | EP059   | Squirtle  | Haunter  | W      | 1        |
+| 9         | EP063   | Charizard | Magmar   | W      | 1        |
+| 10        | EP067   | Squirtle  | Rhyhorn  | W      | 1        |
+| 11        | EP079   | Pikachu   | Sparky   | W      | 1        |
+| 12        | EP079   | Charizard | Zippo    | L      | 0        |
 
 <details markdown="1">
 <summary>Answer</summary>
@@ -860,19 +877,33 @@ ORDER BY episode;
 | Squirtle  | EP059   | Haunter  | W      |
 | Charizard | EP063   | Magmar   | W      |
 
-Every first battle was a win. Pikachu’s debut was the flock of Spearow on Route 1 — the battle that forged their bond. This "first row per group" pattern is one of the most common in real data work: first purchase per customer, first login per user, first event per session.
+Every first battle was a win. Pikachu’s debut was the flock of Spearow on Route 1, the battle that forged their bond. This "first row per group" pattern is one of the most common in real data work: first purchase per customer, first login per user, first event per session.
 
 </details>
 
 ---
 
-### Q2 (Medium) — Ash’s win rate, battle by battle
+### Q2 (Medium): Ash’s win rate, battle by battle
 
 > Using `badge_journey`, show the cumulative win rate as a percentage (rounded to 1 decimal) after each gym battle and the Indigo League final.
 
 **How to reason through it:**
 
 Win rate = wins so far ÷ battles so far. Two running window functions: `SUM(win_flag)` and `COUNT(*)`, same `OVER()` clause. Divide and multiply by 100. Force decimal division with `100.0`.
+
+**Dataset: `badge_journey`**
+
+| battle_id | episode | venue          | opponent  | badge_earned  | win_flag |
+|-----------|---------|----------------|-----------|---------------|----------|
+| 1         | EP005   | Pewter Gym     | Brock     | Boulder Badge | 1        |
+| 2         | EP007   | Cerulean Gym   | Misty     | Cascade Badge | 1        |
+| 3         | EP014   | Vermilion Gym  | Lt. Surge | Thunder Badge | 1        |
+| 4         | EP024   | Celadon Gym    | Erika     | Rainbow Badge | 1        |
+| 5         | EP032   | Fuchsia Gym    | Koga      | Soul Badge    | 1        |
+| 6         | EP059   | Saffron Gym    | Sabrina   | Marsh Badge   | 1        |
+| 7         | EP063   | Cinnabar Gym   | Blaine    | Volcano Badge | 1        |
+| 8         | EP067   | Viridian Gym   | Giovanni  | Earth Badge   | 1        |
+| 9         | EP079   | Indigo League  | Ritchie   | NULL          | 0        |
 
 <details markdown="1">
 <summary>Answer</summary>
@@ -920,19 +951,37 @@ ORDER BY battle_id;
 | 8 | Viridian Gym   | Giovanni  | 100.0        |
 | 9 | Indigo League  | Ritchie   | 88.9         |
 
-100% right up until the last row. Then 88.9%. Two window functions in one `SELECT`, same `OVER()` definition, different aggregation functions. The `100.0 *` cast forces float division — without it, integer division returns 0 or 1.
+100% right up until the last row. Then 88.9%. Two window functions in one `SELECT`, same `OVER()` definition, different aggregation functions. The `100.0 *` cast forces float division, without it, integer division returns 0 or 1.
 
 </details>
 
 ---
 
-### Q3 (Medium) — Where did Ash come from, and where is he going?
+### Q3 (Medium): Where did Ash come from, and where is he going?
 
 > Using `kanto_route`, show each stop with the location before it and the location after it, all in a single query.
 
 **How to reason through it:**
 
 `LAG(location)` for the previous stop, `LEAD(location)` for the next. Both use `ORDER BY stop_order`. Both live in the same `SELECT`. First row gets `NULL` for prev; last row gets `NULL` for next.
+
+**Dataset: `kanto_route`**
+
+| stop_order | location        |
+|------------|-----------------|
+| 1          | Pallet Town     |
+| 2          | Route 1         |
+| 3          | Viridian Forest |
+| 4          | Pewter City     |
+| 5          | Mt. Moon        |
+| 6          | Cerulean City   |
+| 7          | Vermilion City  |
+| 8          | Celadon City    |
+| 9          | Fuchsia City    |
+| 10         | Saffron City    |
+| 11         | Cinnabar Island |
+| 12         | Viridian City   |
+| 13         | Indigo Plateau  |
 
 <details markdown="1">
 <summary>Answer</summary>
@@ -978,13 +1027,26 @@ Pallet Town knows where it’s sending Ash. Indigo Plateau doesn’t know what c
 
 ---
 
-### Q4 (Hard) — Pikachu’s recovery between battles
+### Q4 (Hard): Pikachu’s recovery between battles
 
 > Using `pikachu_battles`, show the HP change from the previous battle and classify each battle as `Recovered`, `Drained`, or `First Battle`. Use a CTE so `LAG(hp_after)` is computed once and reused.
 
 **How to reason through it:**
 
-Compute `prev_hp` with `LAG()` in a CTE. Then in the outer query, subtract for `hp_change` and use a `CASE` to classify. The CTE avoids calling `LAG()` twice in the same `SELECT` — cleaner and safer.
+Compute `prev_hp` with `LAG()` in a CTE. Then in the outer query, subtract for `hp_change` and use a `CASE` to classify. The CTE avoids calling `LAG()` twice in the same `SELECT`; cleaner and safer.
+
+**Dataset: `pikachu_battles`**
+
+| battle_id | location      | opponent      | result | hp_after |
+|-----------|---------------|---------------|--------|----------|
+| 1         | Route 1       | Spearow flock | W      | 45       |
+| 2         | Pewter Gym    | Onix          | W      | 20       |
+| 3         | Cerulean Gym  | Starmie       | L      | 0        |
+| 4         | Vermilion Gym | Raichu        | W      | 15       |
+| 5         | Fuchsia Gym   | Electrode     | W      | 30       |
+| 6         | Saffron Gym   | Kadabra       | W      | 25       |
+| 7         | Viridian Gym  | Rhyhorn       | W      | 38       |
+| 8         | Indigo League | Sparky        | W      | 8        |
 
 <details markdown="1">
 <summary>Answer</summary>
@@ -1038,19 +1100,32 @@ ORDER BY battle_id;
 | 7 | Viridian Gym  | W      | 38       | 25      | +13       | Recovered    |
 | 8 | Indigo League | W      | 8        | 38      | -26       | Drained      |
 
-The CTE computes `prev_hp` once. The outer query uses that alias for both the subtraction and the `CASE` — no repeated `LAG()` call, no risk of inconsistency if the window definition changes.
+The CTE computes `prev_hp` once. The outer query uses that alias for both the subtraction and the `CASE`; no repeated `LAG()` call, no risk of inconsistency if the window definition changes.
 
 </details>
 
 ---
 
-### Q5 (Hard) — Find every training streak of at least 2 days
+### Q5 (Hard): Find every training streak of at least 2 days
 
 > Using `training_sessions`, return each streak of consecutive training days that lasted at least 2 days. Show the start day, end day, and streak length, ordered by start.
 
 **How to reason through it:**
 
 Islands-and-gaps: `day_num - ROW_NUMBER() OVER (ORDER BY day_num)` produces a constant `group_id` for each consecutive run. Group by it, aggregate with `MIN`/`MAX`/`COUNT`. Use `HAVING COUNT(*) >= 2` to filter short streaks. `HAVING` runs after `GROUP BY` so it can reference `COUNT(*)` directly.
+
+**Dataset: `training_sessions`**
+
+| day_num |
+|---------|
+| 1       |
+| 2       |
+| 3       |
+| 5       |
+| 6       |
+| 10      |
+| 11      |
+| 12      |
 
 <details markdown="1">
 <summary>Answer</summary>
@@ -1085,8 +1160,8 @@ ORDER BY streak_start;
 | 5            | 6          | 2             |
 | 10           | 12         | 3             |
 
-All three qualify. To narrow to 3+ day streaks, change `HAVING COUNT(*) >= 2` to `>= 3` — which would exclude the days-5-to-6 run and return only the first and last streak.
+All three qualify. To narrow to 3+ day streaks, change `HAVING COUNT(*) >= 2` to `>= 3`, which would exclude the days-5-to-6 run and return only the first and last streak.
 
-`HAVING` works here because it runs after `GROUP BY` and after aggregates are computed. `WHERE` would not — it runs too early, before grouping.
+`HAVING` works here because it runs after `GROUP BY` and after aggregates are computed. `WHERE` would not; it runs too early, before grouping.
 
 </details>
