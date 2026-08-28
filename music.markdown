@@ -150,7 +150,7 @@ classes: music-page
   <section class="music-lane">
     <section class="music-note music-contact" id="music-contact">
       <h2>Get in touch</h2>
-      <p>Need a drummer? Email me at <a href="mailto:jas.m.evans@gmail.com">jas.m.evans@gmail.com</a>.</p>
+      <p>Want to jam? In the Vancouver region? Email me at: <a href="mailto:jas.m.evans@gmail.com">jas.m.evans@gmail.com</a>.</p>
     </section>
   </section>
 
