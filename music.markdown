@@ -10,7 +10,12 @@ classes: music-page
   <section class="music-hero">
     <div class="music-hero__copy">
       <p class="music-kicker">Drums</p>
-      <h1>Drummer focused on feel, pocket, and impact</h1>
+      <h1>I love to play drums and write music in my spare time</h1>
+      <div class="music-hero__video">
+        <div id="fb-root"></div>
+        <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v19.0"></script>
+        <div class="fb-video" data-href="https://www.facebook.com/share/v/AGE5F364qP8gR7Xh/" data-width="500" data-show-text="false"></div>
+      </div>
       <p>I have played for over 20 years across jazz, rock, folk, and punk, with a focus on strong time, musical dynamics, and emotional impact.</p>
     </div>
   </section>
@@ -147,81 +152,9 @@ classes: music-page
   <section class="music-lane">
     <section class="music-note music-contact" id="music-contact">
       <h2>Get in touch</h2>
-      <p>Need a drummer? Send a quick note and I will get back to you.</p>
-      <form id="music-contact-form" class="music-form" style="background: transparent !important; background-color: transparent !important; padding: 0 !important; border: 0 !important; box-shadow: none !important;" action="https://formsubmit.co/ajax/{{ site.email }}" method="post">
-        <input type="hidden" name="_subject" value="Music Contact Form Submission">
-        <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_next" value="{{ site.url }}/music/?submitted=1">
-
-        <label for="music-name">Name</label>
-        <input id="music-name" name="Name" type="text" autocomplete="name" required>
-
-        <label for="music-email">Email</label>
-        <input id="music-email" name="Email" type="email" autocomplete="email" required>
-
-        <label for="music-message">Message</label>
-        <textarea id="music-message" name="Message" rows="5" placeholder="Write your message." required></textarea>
-
-        <button class="btn btn--music" type="submit">Submit</button>
-      </form>
-      <p id="music-form-status" class="music-form__note" aria-live="polite"></p>
+      <p>Need a drummer? Email me at <a href="mailto:jas.m.evans@gmail.com">jas.m.evans@gmail.com</a>.</p>
     </section>
   </section>
-
-  <script>
-    (function() {
-      var form = document.getElementById("music-contact-form");
-      var status = document.getElementById("music-form-status");
-
-      if (!form) {
-        return;
-      }
-
-      form.addEventListener("submit", function(event) {
-        event.preventDefault();
-
-        var formData = new FormData(form);
-        if (status) {
-          status.textContent = "Sending...";
-        }
-
-        fetch(form.action, {
-          method: "POST",
-          headers: {
-            "Accept": "application/json"
-          },
-          body: formData
-        })
-          .then(function(response) {
-            if (!response.ok) {
-              throw new Error("submit_failed");
-            }
-            window.location.href = "{{ site.url }}/music/?submitted=1";
-          })
-          .catch(function() {
-            var name = formData.get("Name") || "";
-            var email = formData.get("Email") || "";
-            var message = formData.get("Message") || "";
-            var body = [
-              "Name: " + name,
-              "Email: " + email,
-              "",
-              message
-            ].join("\n");
-            var mailto = "mailto:{{ site.email }}"
-              + "?subject=" + encodeURIComponent("Music Contact Form Submission")
-              + "&body=" + encodeURIComponent(body);
-
-            if (status) {
-              status.textContent = "Web submit is temporarily unavailable. Opening your email app instead.";
-            }
-
-            window.location.href = mailto;
-          });
-      });
-    })();
-  </script>
 
   {% comment %}
     Dead Pixel / previous band section intentionally removed from the page.
