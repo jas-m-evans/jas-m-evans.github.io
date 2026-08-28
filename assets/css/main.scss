@@ -582,6 +582,20 @@ body.music-page .music-loadout p {
   height: auto;
 }
 
+.music-hero__video-caption {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+}
+
+.music-hero__video-caption a {
+  color: #d8d5e8;
+}
+
+.music-hero__video-caption a:hover,
+.music-hero__video-caption a:focus {
+  color: #ff83b2;
+}
+
 .music-hero__visual {
   display: grid;
   gap: 1rem;

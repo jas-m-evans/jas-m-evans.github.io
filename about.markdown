@@ -7,7 +7,7 @@ author_profile: true
 
 ## Hi, I'm Jason
 
-I'm a computer scientist with an M.Sc., working as a data engineer and musician. I enjoy building robust data pipelines, keeping systems reliable, and spending as much time as possible behind a drum kit.
+I'm a computer scientist with an M.Sc., working as a data platform developer and musician. I enjoy building robust data pipelines, keeping systems reliable, and spending as much time as possible behind a drum kit.
 
 ## Background
 
