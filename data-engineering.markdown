@@ -7,7 +7,7 @@ author_profile: true
 
 ## Data Engineering Blog
 
-Profesionally I've been working in tech for over 12 years, and as a data engineer for 6 of them. This space is where I talk about data engineering concepts I've found interesting.
+Profesionally I've been working in tech for over 12 years, and as a data platform developer for 6 of them. This space is where I talk about data engineering concepts I've found interesting.
 
 {% assign de_posts = site.categories.data-engineering | sort: 'date' | reverse %}
 
