@@ -12,11 +12,8 @@ classes: music-page
       <p class="music-kicker">Drums</p>
       <h1>I love to play drums and write music in my spare time</h1>
       <div class="music-hero__video">
-        <div id="fb-root"></div>
-        <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v19.0"></script>
-        <div class="fb-video" data-href="https://www.facebook.com/share/v/AGE5F364qP8gR7Xh/" data-width="500" data-show-text="false"></div>
+        <iframe src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2FDeadPixelYYC%2Fvideos%2F429473947635082%2F&show_text=false&width=560&t=0" width="560" height="314" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>
       </div>
-      <p>I have played for over 20 years across jazz, rock, folk, and punk, with a focus on strong time, musical dynamics, and emotional impact.</p>
     </div>
   </section>
 
