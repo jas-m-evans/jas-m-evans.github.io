@@ -13,7 +13,7 @@ classes: music-page
       <h1>I love to play drums and write music in my spare time</h1>
       <div class="music-hero__video">
         <iframe src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2FDeadPixelYYC%2Fvideos%2F429473947635082%2F&show_text=false&width=560&t=0" width="560" height="314" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>
-        <p class="music-hero__video-caption"><a href="https://deadpixelyyc.bandcamp.com" target="_blank" rel="noopener noreferrer">Rocking Out with Dead Pixel</a></p>
+        <p class="music-hero__video-caption">Rocking Out with <a href="https://deadpixelyyc.bandcamp.com" target="_blank" rel="noopener noreferrer">Dead Pixel</a></p>
       </div>
     </div>
   </section>
