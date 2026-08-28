@@ -57,9 +57,22 @@ body::before {
   position: sticky;
   top: 0;
   z-index: 20;
-  backdrop-filter: blur(14px);
-  background: rgba(249, 251, 253, 0.82);
+  isolation: isolate;
   border-bottom: 1px solid var(--site-border);
+}
+
+// Backdrop blur lives on its own layer, separate from the sticky element itself.
+// Chromium on Windows can silently drop a layer that combines `position: sticky`
+// with `backdrop-filter` directly (GPU/driver-dependent compositor bug, not seen
+// on Mac); splitting them into parent + pseudo-element avoids it.
+.masthead::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  background: rgba(249, 251, 253, 0.82);
 }
 
 .masthead::after {
@@ -439,7 +452,7 @@ body.music-page {
     linear-gradient(180deg, #05070c 0%, #090d14 45%, #05070b 100%);
 }
 
-body.music-page .masthead,
+body.music-page .masthead::before,
 body.music-page .page__footer {
   background: rgba(7, 10, 17, 0.94);
 }
