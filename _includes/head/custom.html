@@ -18,3 +18,15 @@
   }
 })();
 </script>
+<script>
+// The greedy-nav plugin measures menu item widths once on load to decide what
+// overflows into the hamburger. If the custom webfonts haven't swapped in yet
+// at that point, it measures fallback-font widths and can misjudge things,
+// collapsing the whole menu even when there's room. Re-trigger its resize
+// handler once fonts are actually ready so it remeasures with final widths.
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(function () {
+    window.dispatchEvent(new Event('resize'));
+  });
+}
+</script>
